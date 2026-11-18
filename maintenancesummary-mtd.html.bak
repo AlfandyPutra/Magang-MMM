@@ -1,0 +1,1546 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMS | Maintenance Summary (Month to Date) - PT Mitra Mulia Makmur</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+            color: #1e293b;
+        }
+
+        /* Warna khas header tabel MMS */
+        .mms-banner-yellow {
+            background-color: #ffc107;
+            color: #1f2937;
+        }
+
+        .mms-thead-blue {
+            background-color: #4472c4;
+            color: #ffffff;
+        }
+
+        /* Custom scrollbar untuk tabel responsif */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar (Menyerupai MMS Header) -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand & Menu Links -->
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2.5">
+                        <!-- SVG Logo MMM Plastic -->
+                        <div
+                            class="w-9 h-9 bg-amber-400 rounded-lg flex items-center justify-center shadow-xs border border-amber-500">
+                            <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="2.2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                            </svg>
+                        </div>
+                        <div class="leading-tight">
+                            <span class="font-bold text-lg tracking-tight text-gray-900 block">MMM</span>
+                            <span
+                                class="text-[10px] font-semibold tracking-widest text-gray-500 uppercase block -mt-1">PLASTIC</span>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links (Desktop) -->
+                    <nav class="hidden lg:flex items-center space-x-5 text-xs font-medium text-gray-600">
+                        <span class="hover:text-blue-600 cursor-pointer">Approval</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Master ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Project ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Quality Assurance ▾</span>
+                        <span class="text-blue-600 font-semibold border-b-2 border-blue-600 py-5 cursor-pointer">Report
+                            ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Transaction ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Work ▾</span>
+                    </nav>
+                </div>
+
+                <!-- Right Profile & Notification -->
+                <div class="flex items-center gap-3">
+                    <!-- Notification Badge -->
+                    <div class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                        <span
+                            class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">2</span>
+                    </div>
+
+                    <!-- User Account Info -->
+                    <div class="flex items-center gap-2.5 pl-2 border-l border-gray-200">
+                        <div
+                            class="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-bold">
+                            PM
+                        </div>
+                        <div class="hidden sm:block text-left leading-tight">
+                            <div class="text-xs font-bold text-gray-800">PLANNER MTC</div>
+                            <div class="text-[10px] text-gray-500">ADMINISTRATION MAINTENANCE MACHINE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb Bar -->
+    <div class="bg-[#fdfbf7] border-b border-gray-200 py-2.5 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 text-amber-700 font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+                <span>Dashboard</span>
+                <span class="text-gray-400">/</span>
+                <span>Report</span>
+                <span class="text-gray-400">/</span>
+                <span class="font-bold text-gray-800">Maintenance Summary (Month to Date)</span>
+            </div>
+            <div class="text-gray-500">
+                Mode Tampilan: <span class="font-semibold text-blue-700">Month to Date / Custom Date Range</span> • Klik
+                baris mesin untuk rincian log harian
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Toast Notification Box (Replaces alert) -->
+        <div id="toastBox"
+            class="hidden fixed bottom-5 right-5 z-50 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg text-sm flex items-center gap-3 transition-opacity duration-300">
+            <span id="toastIcon" class="text-emerald-400 font-bold">✓</span>
+            <span id="toastMessage">Pesan notifikasi</span>
+        </div>
+
+        <!-- Card 1: Title & Filter Panel -->
+        <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Maintenance Summary</h1>
+                        <span class="px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">MtD &
+                            Custom Date</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Rekapitulasi Downtime (Jam), Cost Pemeliharaan
+                        (IDR), dan Realisasi SPK berdasarkan rentang tanggal & kategori mesin.</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="resetFilters()"
+                        class="px-3.5 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition cursor-pointer">
+                        Reset Default (MtD)
+                    </button>
+                    <button onclick="exportToExcel()"
+                        class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs flex items-center gap-2 transition cursor-pointer"
+                        title="Unduh laporan lengkap Excel dengan warna rapi, lebar kolom pas & format Rupiah">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        <span>Export Excel (.XLS)</span>
+                    </button>
+                    <button onclick="exportToCSV()"
+                        class="px-3 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition cursor-pointer"
+                        title="Unduh format data mentah CSV">
+                        <span>CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Date Presets Bar -->
+            <div class="flex flex-wrap items-center gap-2 pt-3.5 pb-1">
+                <span class="text-xs font-semibold text-gray-500 mr-1">Pintasan Periode:</span>
+                <button type="button" onclick="setDatePreset('2026-08-01', '2026-08-31', 'Agustus 2026')"
+                    id="preset-aug"
+                    class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition cursor-pointer">
+                    Agustus 2026
+                </button>
+                <button type="button" onclick="setDatePreset('2026-09-01', '2026-09-30', 'September 2026')"
+                    id="preset-sep"
+                    class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition cursor-pointer">
+                    September 2026
+                </button>
+                <button type="button" onclick="setDatePreset('2026-10-01', '2026-10-31', 'Oktober 2026')"
+                    id="preset-oct"
+                    class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition cursor-pointer">
+                    Oktober 2026
+                </button>
+                <button type="button" onclick="setDatePreset('2026-11-01', '2026-11-17', 'November 2026 (MtD)')"
+                    id="preset-nov"
+                    class="preset-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-600 bg-blue-600 text-white transition cursor-pointer">
+                    November 2026 (MtD)
+                </button>
+            </div>
+
+            <!-- Filter Inputs Grid (5 Columns on Desktop) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 pt-3 items-end">
+                <!-- Start Date -->
+                <div>
+                    <label for="startDate" class="block text-xs font-semibold text-gray-700 mb-1.5">Start Date (Dari
+                        Tanggal)</label>
+                    <input type="date" id="startDate" value="2026-11-01" min="2026-08-01" max="2026-11-17"
+                        onchange="clearActivePreset(); applyFilters();"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- End Date -->
+                <div>
+                    <label for="endDate" class="block text-xs font-semibold text-gray-700 mb-1.5">End Date (Sampai
+                        Tanggal)</label>
+                    <input type="date" id="endDate" value="2026-11-17" min="2026-08-01" max="2026-11-17"
+                        onchange="clearActivePreset(); applyFilters();"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Kategori Mesin -->
+                <div>
+                    <label for="filterCategory" class="block text-xs font-semibold text-gray-700 mb-1.5">Kategori Mesin
+                        Utama</label>
+                    <select id="filterCategory" onchange="updateMachineDropdown(); applyFilters();"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
+                        <option value="ALL">Semua Kategori (24 Mesin)</option>
+                        <option value="Injection">Injection (INJ)</option>
+                        <option value="Printing">Printing (PRT)</option>
+                        <option value="Utility">Utility (Compressor, Chiller, Mold)</option>
+                        <option value="Lain-lain">Lain-lain (Conveyor, Mixing, Crushing)</option>
+                    </select>
+                </div>
+
+                <!-- Filter Kode Mesin Spesifik -->
+                <div>
+                    <label for="filterMachineCode" class="block text-xs font-semibold text-gray-700 mb-1.5">Filter Kode
+                        Mesin</label>
+                    <select id="filterMachineCode" onchange="applyFilters()"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
+                        <option value="ALL">Semua Kode Mesin</option>
+                    </select>
+                </div>
+
+                <!-- Pencarian Cepat / Tombol Cari -->
+                <div>
+                    <label for="searchInput" class="block text-xs font-semibold text-gray-700 mb-1.5">Cari Kode /
+                        Problem</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="INJ-01, Servo..."
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <button onclick="applyFilters()" title="Terapkan Filter"
+                            class="bg-[#0088cc] hover:bg-[#0077b3] text-white px-3.5 py-2 rounded-lg flex items-center justify-center transition cursor-pointer shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary KPI Cards (4 Kartu Ringkasan Atas) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1: Total DT Perbaikan -->
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-xs flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Total DT</p>
+                    <h3 id="kpiDtRepair" class="text-2xl font-bold text-red-600 mt-1">0 Jam</h3>
+                    <p class="text-[11px] text-gray-400 mt-1">Akumulasi kerusakan pada periode</p>
+                </div>
+                <div class="p-2.5 bg-red-50 text-red-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- KPI 2: Total DT Preventive (Reguler + Harian) -->
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-xs flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Total PM</p>
+                    <h3 id="kpiDtPm" class="text-2xl font-bold text-blue-600 mt-1">0 Jam</h3>
+                    <p class="text-[11px] text-gray-400 mt-1">Akumulasi jadwal preventive (PM)</p>
+                </div>
+                <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- KPI 3: Total Cost Maintenance -->
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-xs flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Total Cost Maintenance (IDR)</p>
+                    <h3 id="kpiTotalCost" class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Rp 0</h3>
+                    <p id="kpiCostBreakdown" class="text-[11px] text-gray-500 mt-1">DT: Rp 0 • PM: Rp 0</p>
+                </div>
+                <div class="p-2.5 bg-amber-50 text-amber-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- KPI 4: Total Realisasi SPK -->
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-xs flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Total SPK (DT & PM)</p>
+                    <h3 id="kpiTotalSpk" class="text-2xl font-bold text-emerald-600 mt-1">0 SPK</h3>
+                    <p id="kpiSpkBreakdown" class="text-[11px] text-gray-500 mt-1">SPK DT: 0 • SPK PM: 0</p>
+                </div>
+                <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA -->
+        <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-medium text-gray-500">Rentang Tanggal Aktif: <strong
+                        class="text-gray-800 period-label">01 Nov 2026 — 17 Nov 2026</strong></span>
+                <span class="text-xs text-blue-600 font-medium">*Otomatis menampilkan 5 mesin dengan jam downtime
+                    tertinggi pada rentang tanggal terpilih</span>
+            </div>
+
+            <div
+                class="mms-banner-yellow font-bold text-center py-2.5 px-4 rounded-t-lg text-sm sm:text-base tracking-wide uppercase">
+                Top 5 Downtime Terbesar & Detail Problem Utama
+            </div>
+            <div class="overflow-x-auto border border-t-0 border-gray-200 rounded-b-lg">
+                <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                    <thead class="mms-thead-blue">
+                        <tr>
+                            <th class="py-3 px-3 border-r border-blue-400/40 text-center w-14">Rank</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40">Kode Mesin</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40">Kategori</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40 text-right">Downtime (Jam)</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40 text-right">Total DT + PM (Jam)</th>
+                            <th class="py-3 px-3">Detail Problem Utama</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top5TableBody" class="divide-y divide-gray-200">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- BAGIAN 2: TABEL REKAP DOWNTIME MESIN (JAM) - FULL WIDTH ATAS -->
+        <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs text-gray-500">Urutan: <strong class="text-gray-700">Total Jam Downtime Tertinggi →
+                        Terendah</strong></span>
+                <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded font-medium">Satuan: Jam (Klik
+                    baris untuk detail log)</span>
+            </div>
+            <div
+                class="mms-banner-yellow font-bold text-center py-2.5 px-4 rounded-t-lg text-sm sm:text-base uppercase">
+                Rekap Downtime Mesin (Jam)
+            </div>
+            <div class="overflow-x-auto border border-t-0 border-gray-200 rounded-b-lg">
+                <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                    <thead class="mms-thead-blue">
+                        <tr>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 w-12 text-center">No</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40">Kode Mesin</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40">Nama / Spesifikasi Unit</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40">Kategori</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 text-right">Downtime (Jam)</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 text-right">PM (Jam)</th>
+                            <th class="py-2.5 px-3 text-right font-bold bg-[#365fa8]">Total Jam</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dtHoursTableBody" class="divide-y divide-gray-200">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                    <tfoot id="dtHoursTableFoot"
+                        class="bg-slate-100 font-bold text-gray-800 border-t-2 border-gray-300">
+                        <!-- Total Row -->
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- BAGIAN 3: TABEL REKAP COST MAINTENANCE (IDR) - FULL WIDTH BAWAH DENGAN KOLOM ALASAN / DETAIL PROBLEM -->
+        <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs text-gray-500">Urutan: <strong class="text-gray-700">Total Cost Terbesar →
+                        Terkecil</strong></span>
+                <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded font-medium">Satuan: Rupiah
+                    (IDR) • Dilengkapi Rincian Problem & Spare Part</span>
+            </div>
+            <div
+                class="mms-banner-yellow font-bold text-center py-2.5 px-4 rounded-t-lg text-sm sm:text-base uppercase">
+                Rekap Cost Maintenance (IDR) & Detail Problem Perbaikan
+            </div>
+            <div class="overflow-x-auto border border-t-0 border-gray-200 rounded-b-lg">
+                <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                    <thead class="mms-thead-blue">
+                        <tr>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 w-12 text-center">No</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 whitespace-nowrap">Kode Mesin</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40">Kategori</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 text-right whitespace-nowrap">Cost DT
+                                Perbaikan</th>
+                            <th class="py-2.5 px-3 border-r border-blue-400/40 text-right whitespace-nowrap">Cost
+                                Preventive (PM)</th>
+                            <th
+                                class="py-2.5 px-3 border-r border-blue-400/40 text-right font-bold bg-[#365fa8] whitespace-nowrap">
+                                Total Cost (IDR)</th>
+                            <th class="py-2.5 px-3 min-w-[280px]">Alasan / Detail Problem Perbaikan & Spare Part</th>
+                        </tr>
+                    </thead>
+                    <tbody id="costTableBody" class="divide-y divide-gray-200">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                    <tfoot id="costTableFoot" class="bg-slate-100 font-bold text-gray-800 border-t-2 border-gray-300">
+                        <!-- Total Row -->
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- BAGIAN 4: TABEL JUMLAH REALISASI SPK PER MESIN -->
+        <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs text-gray-500">Perbandingan Tiket Kerja: <strong class="text-gray-700">SPK
+                        Perbaikan (DT) vs SPK Preventive (PM)</strong></span>
+                <span class="text-xs text-gray-500">Menampilkan <strong id="showingCount">0</strong> entri mesin</span>
+            </div>
+            <div
+                class="mms-banner-yellow font-bold text-center py-2.5 px-4 rounded-t-lg text-sm sm:text-base uppercase">
+                Jumlah Realisasi SPK per Mesin
+            </div>
+            <div class="overflow-x-auto border border-t-0 border-gray-200 rounded-b-lg">
+                <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                    <thead class="mms-thead-blue">
+                        <tr>
+                            <th class="py-3 px-3 border-r border-blue-400/40">Kode Mesin</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40">Nama / Spesifikasi Unit</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40">Kategori</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40 text-center">Jumlah SPK DT (Perbaikan)</th>
+                            <th class="py-3 px-3 border-r border-blue-400/40 text-center">Jumlah SPK PM (Preventive)
+                            </th>
+                            <th class="py-3 px-3 text-center font-bold bg-[#365fa8]">Total SPK</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spkTableBody" class="divide-y divide-gray-200">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                    <tfoot id="spkTableFoot" class="bg-slate-100 font-bold text-gray-800 border-t-2 border-gray-300">
+                        <!-- Total Row -->
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer (Menyerupai MMS Footer) -->
+    <footer class="bg-white border-t border-gray-200 py-4 px-4 sm:px-6 lg:px-8 mt-8 text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                Copyright © 2026 <strong class="text-gray-800">PT Mitra Mulia Makmur (MMM Plastic)</strong>. All rights
+                reserved.
+            </div>
+            <div class="bg-gray-100 px-3 py-1 rounded text-gray-700 font-medium">
+                MMM Management System • Prototype MtD v1.0
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Detail Mesin (Muncul saat baris mesin diklik) -->
+    <div id="machineModal" onclick="closeModalOnBackdrop(event)"
+        class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-gray-200 overflow-hidden"
+            onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="bg-[#4472c4] text-white px-6 py-4 flex items-center justify-between">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="modalCategoryBadge"
+                            class="px-2 py-0.5 text-[10px] font-bold uppercase bg-white/20 rounded">Category</span>
+                        <span id="modalPeriodBadge" class="text-xs text-blue-100">Periode</span>
+                    </div>
+                    <h3 id="modalTitle" class="text-lg font-bold mt-1">Kode Mesin — Nama Unit</h3>
+                </div>
+                <button onclick="closeModal()" class="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4 text-sm max-h-[75vh] overflow-y-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-3">
+                        <span class="text-xs text-red-600 font-semibold block">DT Perbaikan & Cost</span>
+                        <strong id="modalDtInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam • Rp 0</strong>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3">
+                        <span class="text-xs text-blue-600 font-semibold block">DT Preventive (PM) & Cost</span>
+                        <strong id="modalPmInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam • Rp 0</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold uppercase text-gray-500 mb-1.5">Catatan Problem & Sparepart Terpakai
+                        (Periode Terpilih)</h4>
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-gray-700 space-y-2">
+                        <p id="modalProblemText" class="font-medium text-gray-900"></p>
+                        <p id="modalSparepartText" class="text-xs text-gray-600"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold uppercase text-gray-500 mb-2">Log Aktivitas & Kejadian Harian (Sesuai
+                        Rentang Tanggal)</h4>
+                    <div id="modalLogsList" class="space-y-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg cursor-pointer">
+                    Tutup Detail
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * MMS (Maintenance Management System) - MtD Module
+         * PT Mitra Mulia Makmur (MMM Plastic)
+         *
+         * Architecture:
+         * 1. Data Store (Mock Master Data & Riwayat Log Harian)
+         * 2. State Management
+         * 3. Utility & Formatting Helpers
+         * 4. Aggregation & Business Logic Engine
+         * 5. View Renderers (Modular Table & KPI Renderers)
+         * 6. Controller & Filter Orchestration
+         * 7. Modal Handlers
+         * 8. Data Export (CSV)
+         * 9. Application Lifecycle & Event Listeners
+         * ============================================================================
+         */
+
+        // ============================================================================
+        // 1. DATA STORE (Database Simulasi Mesin & Log Pemeliharaan)
+        // ============================================================================
+        // Master Daftar 24 Mesin PT Mitra Mulia Makmur
+        const masterMachines = [
+            // Injection (8 Unit)
+            { code: "INJ-01", unitName: "Mesin Injection EG-180T #01", category: "Injection" },
+            { code: "INJ-02", unitName: "Mesin Injection EG-380T #02", category: "Injection" },
+            { code: "INJ-03", unitName: "Mesin Injection LY-700T #03", category: "Injection" },
+            { code: "INJ-04", unitName: "Mesin Injection KSP-815 #04", category: "Injection" },
+            { code: "INJ-05", unitName: "Mesin Injection LY-600T #05", category: "Injection" },
+            { code: "INJ-06", unitName: "Mesin Injection EG-250T #06", category: "Injection" },
+            { code: "INJ-07", unitName: "Mesin Injection LY-305T #07", category: "Injection" },
+            { code: "INJ-08", unitName: "Mesin Injection K908H #08", category: "Injection" },
+            // Printing (4 Unit)
+            { code: "PRT-01", unitName: "Mesin Printing Offset 6-Color #01", category: "Printing" },
+            { code: "PRT-02", unitName: "Mesin Printing UV Curing #02", category: "Printing" },
+            { code: "PRT-03", unitName: "Mesin Printing Dry Offset Cup #03", category: "Printing" },
+            { code: "PRT-04", unitName: "Mesin Printing High-Speed Lid #04", category: "Printing" },
+            // Utility (6 Unit: Compressor, Chiller, Mold)
+            { code: "CMP-01", unitName: "Compressor Screw Atlas Copco #01", category: "Utility" },
+            { code: "CMP-02", unitName: "Compressor Booster High-Pressure #02", category: "Utility" },
+            { code: "CHL-01", unitName: "Chiller Water Cooling System #01", category: "Utility" },
+            { code: "CHL-02", unitName: "Chiller Mold Temperature Unit #02", category: "Utility" },
+            { code: "MLD-01", unitName: "Mold Cup 16oz Cavity-8 #01", category: "Utility" },
+            { code: "MLD-02", unitName: "Mold Bowl 500ml Cavity-4 #02", category: "Utility" },
+            // Lain-lain (6 Unit: Conveyor, Mixing, Crushing)
+            { code: "CNV-01", unitName: "Conveyor Line Packing #01", category: "Lain-lain" },
+            { code: "CNV-02", unitName: "Conveyor Transfer Auto-Stacker #02", category: "Lain-lain" },
+            { code: "MIX-01", unitName: "Mixer Material & Pigment #01", category: "Lain-lain" },
+            { code: "MIX-02", unitName: "Mixer Auto-Dosing Resin #02", category: "Lain-lain" },
+            { code: "CRS-01", unitName: "Crusher Waste Plastic Heavy #01", category: "Lain-lain" },
+            { code: "CRS-02", unitName: "Crusher Inline Runner #02", category: "Lain-lain" }
+        ];
+
+        // Log Harian (Sep 2026, Okt 2026, Nov 1-10, Nov 11-17)
+        const dailyMaintenanceLogs = [
+            // --- LOG TANGGAL TERAKHIR: 2026-11-17 (7 Mesin memiliki aktivitas DT/PM) ---
+            { date: "2026-11-17", code: "PRT-01", dtRepair: 3.5, pmRegular: 1.0, pmDaily: 0.5, costDt: 11500000, costPm: 350000, spkDt: 1, spkPm: 1, problem: "Motor Servo SEW error overload & tinta tidak rata", sparepart: "Repair Motor Servo SEW CFM112L/KTY/VR 400VAC (Rp 11.500.000)" },
+            { date: "2026-11-17", code: "INJ-01", dtRepair: 2.5, pmRegular: 1.5, pmDaily: 0.5, costDt: 450000, costPm: 300000, spkDt: 1, spkPm: 1, problem: "Oscilating no 6 macet, rol isolating fontain no 7 macet", sparepart: "Swing Arm Roll Oscilating 20x115 (Rp 210.000), Bearing 6009 2RS" },
+            { date: "2026-11-17", code: "CMP-01", dtRepair: 2.0, pmRegular: 1.0, pmDaily: 0.5, costDt: 850000, costPm: 450000, spkDt: 1, spkPm: 1, problem: "Tekanan angin drop pada jalur utama, solenoid valve bocor", sparepart: "Solenoid Valve Angin 1/2 Inch & Seal Kit" },
+            { date: "2026-11-17", code: "INJ-05", dtRepair: 1.5, pmRegular: 1.0, pmDaily: 0.5, costDt: 620000, costPm: 250000, spkDt: 1, spkPm: 1, problem: "Heater nozzle putus & sensor suhu thermocouple error", sparepart: "Nozzle Heater Band 220V 800W & Thermocouple Type-K" },
+            { date: "2026-11-17", code: "CHL-01", dtRepair: 1.0, pmRegular: 1.0, pmDaily: 0.5, costDt: 380000, costPm: 200000, spkDt: 1, spkPm: 1, problem: "Suhu sirkulasi air naik ke 18°C, strainer kotor tersumbat", sparepart: "Chemical Descaling & Filter Strainer" },
+            { date: "2026-11-17", code: "CNV-01", dtRepair: 0.8, pmRegular: 0.5, pmDaily: 0.5, costDt: 220000, costPm: 150000, spkDt: 1, spkPm: 1, problem: "Conveyor off mendadak, belt selip & roller aus", sparepart: "V-Belt A-42 & Bearing Pillow Block" },
+            { date: "2026-11-17", code: "MLD-02", dtRepair: 0.5, pmRegular: 1.0, pmDaily: 0.5, costDt: 175000, costPm: 250000, spkDt: 1, spkPm: 1, problem: "Pin ejektor seret saat buka mold bowl", sparepart: "Ejector Pin SKD61 & High-Temp Mold Grease" },
+
+            // --- LOG PERIODE 11 - 16 NOVEMBER 2026 ---
+            { date: "2026-11-15", code: "INJ-02", dtRepair: 3.0, pmRegular: 2.5, pmDaily: 1.0, costDt: 420000, costPm: 500000, spkDt: 2, spkPm: 3, problem: "Takeout error, baut takeout kendor & proximity sensor lepas", sparepart: "Baut Verseng L 6x25, Baut L 5x25, Proximity Sensor Omron" },
+            { date: "2026-11-14", code: "PRT-03", dtRepair: 2.8, pmRegular: 2.0, pmDaily: 1.0, costDt: 2450000, costPm: 600000, spkDt: 1, spkPm: 3, problem: "Gearbox feeder cup aus dan mandrel tidak presisi", sparepart: "Bevel Gear Set & Bearing Taper Roller" },
+            { date: "2026-11-13", code: "INJ-06", dtRepair: 2.2, pmRegular: 2.0, pmDaily: 1.0, costDt: 1350000, costPm: 450000, spkDt: 1, spkPm: 2, problem: "Kebocoran oli hidrolik pada cylinder clamping utama", sparepart: "Hydraulic Piston Seal Kit & Oli Hidrolik ISO VG 46" },
+            { date: "2026-11-12", code: "CRS-01", dtRepair: 1.8, pmRegular: 1.5, pmDaily: 0.5, costDt: 950000, costPm: 300000, spkDt: 1, spkPm: 2, problem: "Pisau crusher patah terkena material keras, screen sobek", sparepart: "Set Pisau Crusher SKD-11 & Mesh Screen 8mm" },
+            { date: "2026-11-11", code: "CMP-02", dtRepair: 1.5, pmRegular: 2.0, pmDaily: 1.0, costDt: 1120000, costPm: 700000, spkDt: 1, spkPm: 2, problem: "Unloader valve kompresor booster macet pada 28 Bar", sparepart: "Unloader Valve Repair Kit & Filter Udara" },
+
+            // --- LOG PERIODE 01 - 10 NOVEMBER 2026 ---
+            { date: "2026-11-09", code: "INJ-01", dtRepair: 3.5, pmRegular: 4.5, pmDaily: 1.5, costDt: 1180000, costPm: 1200000, spkDt: 2, spkPm: 5, problem: "Proportional valve tekanan injeksi tidak stabil", sparepart: "Proportional Pressure Valve Coil & O-Ring Viton" },
+            { date: "2026-11-08", code: "INJ-03", dtRepair: 3.0, pmRegular: 4.0, pmDaily: 1.5, costDt: 780000, costPm: 650000, spkDt: 2, spkPm: 4, problem: "Flamer mati mendadak, tarik dorong body macet", sparepart: "Ignitor Busbar Flamer & Linear Bushing LM20" },
+            { date: "2026-11-07", code: "PRT-02", dtRepair: 2.5, pmRegular: 3.5, pmDaily: 1.5, costDt: 1850000, costPm: 550000, spkDt: 1, spkPm: 4, problem: "Lampu UV curing redup, penggantian ballast & reflektor", sparepart: "UV Lamp 400W High Intensity & Kabel Tahan Panas" },
+            { date: "2026-11-06", code: "INJ-07", dtRepair: 2.2, pmRegular: 3.0, pmDaily: 1.0, costDt: 540000, costPm: 480000, spkDt: 1, spkPm: 4, problem: "Water flow meter cooling tersumbat kerak", sparepart: "Acrylic Flow Meter 4-Zone & Selang PU 12mm" },
+            { date: "2026-11-05", code: "CHL-02", dtRepair: 2.0, pmRegular: 3.0, pmDaily: 1.0, costDt: 920000, costPm: 500000, spkDt: 1, spkPm: 3, problem: "Kontaktor kompresor chiller terbakar akibat lonjakan arus", sparepart: "Magnetic Contactor 3-Phase 40A & Thermal Overload" },
+            { date: "2026-11-04", code: "INJ-04", dtRepair: 1.8, pmRegular: 3.0, pmDaily: 1.5, costDt: 310000, costPm: 450000, spkDt: 1, spkPm: 4, problem: "Ejektor angin lemah saat pelepasan produk cup", sparepart: "Air Jet Valve 12 (Rp 137.000) & Quick Coupler" },
+            { date: "2026-11-03", code: "MIX-01", dtRepair: 1.5, pmRegular: 2.5, pmDaily: 1.0, costDt: 480000, costPm: 320000, spkDt: 1, spkPm: 3, problem: "Suara kasar pada gearbox pengaduk & seal as bocor", sparepart: "Oli Gearbox SAE 90, Oil Seal TC & Bearing 6208" },
+            { date: "2026-11-03", code: "PRT-04", dtRepair: 1.4, pmRegular: 2.5, pmDaily: 1.0, costDt: 690000, costPm: 420000, spkDt: 1, spkPm: 3, problem: "Counter sensor stacker lid tidak menghitung akurat", sparepart: "Fiber Optic Amplifier Sensor Omron" },
+            { date: "2026-11-02", code: "INJ-08", dtRepair: 1.2, pmRegular: 2.5, pmDaily: 1.0, costDt: 290000, costPm: 400000, spkDt: 1, spkPm: 3, problem: "Safety gate limit switch patah", sparepart: "Interlock Safety Limit Switch" },
+            { date: "2026-11-02", code: "MLD-01", dtRepair: 1.0, pmRegular: 3.0, pmDaily: 1.0, costDt: 250000, costPm: 550000, spkDt: 1, spkPm: 3, problem: "Flashing tipis pada bibir cup, poles parting line & ganti O-ring", sparepart: "Diamond Paste & O-Ring Viton Cooling Mold" },
+            { date: "2026-11-01", code: "CNV-02", dtRepair: 0.8, pmRegular: 2.0, pmDaily: 1.0, costDt: 195000, costPm: 280000, spkDt: 1, spkPm: 3, problem: "Motor stepper diverter stacker macet", sparepart: "Coupling Flexible & Pulley Timing" },
+            { date: "2026-11-01", code: "MIX-02", dtRepair: 0.5, pmRegular: 2.0, pmDaily: 0.5, costDt: 160000, costPm: 240000, spkDt: 1, spkPm: 2, problem: "Hopper loader vacuum motor filter tersumbat debu resin", sparepart: "Cartridge Filter Vacuum Loader" },
+            { date: "2026-11-01", code: "CRS-02", dtRepair: 0.4, pmRegular: 2.0, pmDaily: 0.5, costDt: 120000, costPm: 220000, spkDt: 1, spkPm: 2, problem: "V-belt penggerak crusher inline kendor", sparepart: "V-Belt B-38 (2 pcs)" },
+
+            // --- LOG BULAN LALU: OKTOBER 2026 (Lengkap 24 Mesin) ---
+            { date: "2026-10-25", code: "INJ-02", dtRepair: 6.5, pmRegular: 8.0, pmDaily: 3.0, costDt: 4200000, costPm: 1500000, spkDt: 4, spkPm: 12, problem: "Heater barrel zona 2 putus & kebocoran selang hidrolik utama", sparepart: "Band Heater 220V 1500W (3 pcs), Hose Hidrolik High Pressure" },
+            { date: "2026-10-24", code: "INJ-03", dtRepair: 4.5, pmRegular: 6.0, pmDaily: 2.0, costDt: 2150000, costPm: 950000, spkDt: 2, spkPm: 8, problem: "Hydraulic motor charging lambat & filter oli kotor", sparepart: "Cartridge Filter Hidrolik & Seal Kit Motor" },
+            { date: "2026-10-23", code: "PRT-02", dtRepair: 4.2, pmRegular: 5.5, pmDaily: 2.0, costDt: 2600000, costPm: 850000, spkDt: 2, spkPm: 8, problem: "Curing lamp transformer overheat & trip proteksi", sparepart: "Trafo Step-Up UV Lamp 5kW & Kipas Blower" },
+            { date: "2026-10-22", code: "CMP-01", dtRepair: 5.5, pmRegular: 7.0, pmDaily: 2.5, costDt: 3800000, costPm: 1800000, spkDt: 3, spkPm: 10, problem: "Overheat pada unit kompresor saat beban puncak siang hari", sparepart: "Thermostatic Valve Kit, Oil Cooler Flush & Air Filter" },
+            { date: "2026-10-20", code: "INJ-04", dtRepair: 3.8, pmRegular: 5.5, pmDaily: 2.0, costDt: 1850000, costPm: 800000, spkDt: 2, spkPm: 8, problem: "Suhu oli hidrolik tinggi, oil cooler tersumbat kerak", sparepart: "Chemical Cleaning Cooler & Thermostat Valve" },
+            { date: "2026-10-19", code: "CMP-02", dtRepair: 3.6, pmRegular: 5.0, pmDaily: 2.0, costDt: 1950000, costPm: 900000, spkDt: 2, spkPm: 8, problem: "Tekanan stage 2 drop, katup discharge berkerak", sparepart: "Valve Plate Set & Gasket High-Pressure" },
+            { date: "2026-10-18", code: "PRT-01", dtRepair: 4.8, pmRegular: 6.0, pmDaily: 2.5, costDt: 2350000, costPm: 1200000, spkDt: 3, spkPm: 10, problem: "Roll blanket aus dan sensor feeder kertas error", sparepart: "Printing Blanket Sheet & Photocell Sensor" },
+            { date: "2026-10-17", code: "INJ-06", dtRepair: 3.0, pmRegular: 5.0, pmDaily: 2.0, costDt: 1250000, costPm: 700000, spkDt: 2, spkPm: 7, problem: "Linear scale clamping kotor pembacaan stroke loncat", sparepart: "Linear Ruler Sensor 600mm & Kabel Shield" },
+            { date: "2026-10-16", code: "PRT-04", dtRepair: 2.6, pmRegular: 4.5, pmDaily: 1.5, costDt: 980000, costPm: 650000, spkDt: 2, spkPm: 7, problem: "Mandrel suction cup pecah & vacuum tidak hisap", sparepart: "Vacuum Suction Pad Silicone & Solenoid SMC" },
+            { date: "2026-10-15", code: "INJ-01", dtRepair: 4.0, pmRegular: 7.5, pmDaily: 2.5, costDt: 950000, costPm: 1400000, spkDt: 2, spkPm: 11, problem: "Level mesin bergeser (mesin goyang saat clamping)", sparepart: "Leveling Pad Rubber Heavy Duty & Baut Angkur" },
+            { date: "2026-10-14", code: "INJ-07", dtRepair: 2.5, pmRegular: 4.5, pmDaily: 1.5, costDt: 780000, costPm: 600000, spkDt: 1, spkPm: 7, problem: "Solenoid valve mould open seret / respon lambat", sparepart: "Directional Valve Yuken 24VDC & O-Ring" },
+            { date: "2026-10-13", code: "CHL-02", dtRepair: 2.7, pmRegular: 4.5, pmDaily: 1.5, costDt: 1200000, costPm: 600000, spkDt: 1, spkPm: 7, problem: "Heater mold temperature controller elemen putus 1 phasa", sparepart: "Tubular Immersion Heater 6kW & SSR Celduc" },
+            { date: "2026-10-12", code: "CHL-01", dtRepair: 3.5, pmRegular: 6.0, pmDaily: 2.0, costDt: 1450000, costPm: 950000, spkDt: 2, spkPm: 9, problem: "Pompa sirkulasi chiller macet karena bearing aus", sparepart: "Mechanical Seal & Bearing Pompa Grundfos" },
+            { date: "2026-10-11", code: "INJ-08", dtRepair: 2.2, pmRegular: 4.0, pmDaily: 1.5, costDt: 650000, costPm: 550000, spkDt: 1, spkPm: 6, problem: "Heater band sprue bushing putus & bocor lelehan", sparepart: "Nozzle Brass Heater 220V 500W" },
+            { date: "2026-10-10", code: "INJ-05", dtRepair: 3.2, pmRegular: 5.5, pmDaily: 2.0, costDt: 1100000, costPm: 850000, spkDt: 2, spkPm: 9, problem: "Screw tip & check ring aus menyebabkan short shot", sparepart: "Check Ring & Thrust Collar Set" },
+            { date: "2026-10-09", code: "MLD-02", dtRepair: 2.1, pmRegular: 4.0, pmDaily: 1.5, costDt: 820000, costPm: 700000, spkDt: 1, spkPm: 7, problem: "Parting line bowl aus timbul flash halus", sparepart: "Touch-up Parting Line & Diamond Paste Polish" },
+            { date: "2026-10-08", code: "PRT-03", dtRepair: 2.8, pmRegular: 5.0, pmDaily: 2.0, costDt: 890000, costPm: 750000, spkDt: 2, spkPm: 8, problem: "Corona treater elektroda keramik retak", sparepart: "Ceramic Electrode Tube & High Voltage Cable" },
+            { date: "2026-10-07", code: "CNV-02", dtRepair: 1.5, pmRegular: 3.5, pmDaily: 1.0, costDt: 420000, costPm: 450000, spkDt: 1, spkPm: 6, problem: "Sensor stopper Conveyor lid tergores kotoran oli", sparepart: "Photoelectric Sensor Keyence & Bracket" },
+            { date: "2026-10-06", code: "MIX-01", dtRepair: 1.7, pmRegular: 3.5, pmDaily: 1.0, costDt: 580000, costPm: 400000, spkDt: 1, spkPm: 6, problem: "Bearing pedestal pengaduk berisik getaran tinggi", sparepart: "Flange Bearing UCF 208 & Grease Mobilith" },
+            { date: "2026-10-05", code: "CRS-01", dtRepair: 2.0, pmRegular: 4.0, pmDaily: 1.5, costDt: 850000, costPm: 500000, spkDt: 1, spkPm: 7, problem: "Penggantian set pisau crusher tumpul", sparepart: "Pisau Crusher Rotary & Fixed" },
+            { date: "2026-10-04", code: "MIX-02", dtRepair: 1.1, pmRegular: 3.0, pmDaily: 1.0, costDt: 350000, costPm: 350000, spkDt: 1, spkPm: 5, problem: "Motor feeder resin screw slip saat material pelet pekat", sparepart: "Pulley Timing Belt & Belt HTD-8M" },
+            { date: "2026-10-03", code: "MLD-01", dtRepair: 1.8, pmRegular: 5.0, pmDaily: 1.5, costDt: 550000, costPm: 800000, spkDt: 1, spkPm: 8, problem: "Pin ejektor patah 1 titik & pembersihan air vent", sparepart: "Ejector Pin SKD61 & Copper Beryllium Bush" },
+            { date: "2026-10-02", code: "CNV-01", dtRepair: 1.2, pmRegular: 3.5, pmDaily: 1.5, costDt: 320000, costPm: 400000, spkDt: 1, spkPm: 6, problem: "Splicing ulang sambungan belt Conveyor", sparepart: "Fastener Belt Stainless & Lem" },
+            { date: "2026-10-01", code: "CRS-02", dtRepair: 1.0, pmRegular: 3.0, pmDaily: 1.0, costDt: 280000, costPm: 300000, spkDt: 1, spkPm: 5, problem: "Pisau rotary tumpul ganti celah clearance 0.3mm", sparepart: "Asah Pisau Rotary & Baut Grade 10.9" },
+
+            // --- LOG BULAN SEPTEMBER 2026 ---
+            { date: "2026-09-24", code: "INJ-03", dtRepair: 5.5, pmRegular: 7.0, pmDaily: 2.5, costDt: 3150000, costPm: 1100000, spkDt: 3, spkPm: 10, problem: "Transducer posisi linear injection rusak (pembacaan stroke loncat)", sparepart: "Linear Transducer Novotechnik 450mm" },
+            { date: "2026-09-20", code: "PRT-02", dtRepair: 4.5, pmRegular: 6.0, pmDaily: 2.0, costDt: 2750000, costPm: 900000, spkDt: 2, spkPm: 9, problem: "Inverter motor utama printing trip overvoltage", sparepart: "Inverter Mitsubishi FR-D700 3.7kW" },
+            { date: "2026-09-16", code: "CMP-02", dtRepair: 4.0, pmRegular: 6.5, pmDaily: 2.0, costDt: 2200000, costPm: 1300000, spkDt: 2, spkPm: 9, problem: "Kebocoran pipa tembaga aftercooler kompresor", sparepart: "Brazing Perak, Fitting Kuningan & Oli Kompresor" },
+            { date: "2026-09-12", code: "INJ-06", dtRepair: 3.5, pmRegular: 5.5, pmDaily: 2.0, costDt: 1420000, costPm: 850000, spkDt: 2, spkPm: 8, problem: "Kartu kontrol suhu PID zone 3 mati", sparepart: "Solid State Relay (SSR) 40A & Modul PID" },
+            { date: "2026-09-08", code: "CHL-02", dtRepair: 3.0, pmRegular: 5.0, pmDaily: 2.0, costDt: 1150000, costPm: 750000, spkDt: 2, spkPm: 8, problem: "Freon R407C berkurang akibat kebocoran flare nut", sparepart: "Refrigerant R407C, Filter Drier & Flare Nut" },
+            { date: "2026-09-04", code: "INJ-01", dtRepair: 2.5, pmRegular: 6.0, pmDaily: 2.0, costDt: 680000, costPm: 950000, spkDt: 1, spkPm: 9, problem: "Nozzle bocor lelehan plastik pada sprue bushing", sparepart: "Nozzle Tip Radius & Heater Band" },
+
+            // --- LOG BULAN AGUSTUS 2026 ---
+            { date: "2026-08-26", code: "INJ-04", dtRepair: 6.0, pmRegular: 7.5, pmDaily: 2.5, costDt: 4850000, costPm: 1250000, spkDt: 3, spkPm: 10, problem: "Pompa hidrolik utama berisik dan tekanan clamping drop", sparepart: "Variable Vane Hydraulic Pump Cartridge & Filter Oli" },
+            { date: "2026-08-21", code: "PRT-01", dtRepair: 5.0, pmRegular: 6.5, pmDaily: 2.0, costDt: 3200000, costPm: 1100000, spkDt: 3, spkPm: 9, problem: "Encoder putaran drum printing error sehingga register warna geser", sparepart: "Rotary Incremental Encoder 1024 PPR & Coupling" },
+            { date: "2026-08-18", code: "CHL-01", dtRepair: 4.2, pmRegular: 6.0, pmDaily: 2.0, costDt: 2650000, costPm: 950000, spkDt: 2, spkPm: 9, problem: "Fan motor kondensor chiller terbakar & trip overload", sparepart: "Axial Condenser Fan Motor 3-Phase & Kontaktor" },
+            { date: "2026-08-14", code: "INJ-02", dtRepair: 3.5, pmRegular: 7.0, pmDaily: 2.5, costDt: 1450000, costPm: 1300000, spkDt: 2, spkPm: 10, problem: "Tie-bar nut kendor menyebabkan ketebalan produk tidak rata", sparepart: "Locking Ring, Thrust Bearing & Kalibrasi Tie-Bar" },
+            { date: "2026-08-09", code: "CRS-01", dtRepair: 2.8, pmRegular: 4.5, pmDaily: 1.5, costDt: 1750000, costPm: 600000, spkDt: 2, spkPm: 8, problem: "Bearing rotor utama crusher macet akibat beban giling tinggi", sparepart: "Spherical Roller Bearing 22216 & Grease High-Load" },
+            { date: "2026-08-05", code: "MIX-01", dtRepair: 2.0, pmRegular: 4.0, pmDaily: 1.5, costDt: 720000, costPm: 450000, spkDt: 1, spkPm: 7, problem: "Timer panel auto-mixing rusak & kabel sensor level putus", sparepart: "Digital Twin Timer Omron & Capacitive Level Sensor" }
+        ];
+
+        // ============================================================================
+        // 2. STATE MANAGEMENT
+        // ============================================================================
+        let currentAggregatedList = [];
+
+        // ============================================================================
+        // 3. UTILITY & FORMATTING HELPERS
+        // ============================================================================
+        // Format Angka ke Rupiah
+        function formatIDR(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Format Tanggal ke Bahasa Indonesia (contoh: 01 Nov 2026)
+        function formatDateIndo(dateStr) {
+            if (!dateStr) return "-";
+            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            const parts = dateStr.split("-");
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+        }
+
+        // Tampilkan Notifikasi Toast
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toastBox');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+
+            msg.textContent = message;
+            icon.textContent = isError ? '⚠' : '✓';
+            icon.className = isError ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold';
+
+            toast.classList.remove('hidden');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Hapus status aktif pada semua tombol pintasan
+        function clearActivePreset() {
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
+            });
+        }
+
+        // Set Pintasan Periode Bulanan
+        function setDatePreset(start, end, label) {
+            document.getElementById('startDate').value = start;
+            document.getElementById('endDate').value = end;
+
+            clearActivePreset();
+            const mapId = {
+                '2026-08-01': 'preset-aug',
+                '2026-09-01': 'preset-sep',
+                '2026-10-01': 'preset-oct',
+                '2026-11-01': 'preset-nov'
+            };
+            const activeBtn = document.getElementById(mapId[start]);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
+            }
+
+            applyFilters();
+            showToast(`Menampilkan periode ${label}`);
+        }
+
+        // Update pilihan kode mesin berdasarkan kategori
+        function updateMachineDropdown() {
+            const selectedCat = document.getElementById('filterCategory').value;
+            const machineSelect = document.getElementById('filterMachineCode');
+            const currentVal = machineSelect.value;
+
+            const filteredMachines = selectedCat === 'ALL'
+                ? masterMachines
+                : masterMachines.filter(m => m.category === selectedCat);
+
+            machineSelect.innerHTML = `<option value="ALL">Semua Kode Mesin (${filteredMachines.length} Unit)</option>` +
+                filteredMachines.map(m => `<option value="${m.code}">${m.code} — ${m.unitName}</option>`).join('');
+
+            if (filteredMachines.some(m => m.code === currentVal)) {
+                machineSelect.value = currentVal;
+            } else {
+                machineSelect.value = 'ALL';
+            }
+        }
+
+        // Badge warna berdasarkan kategori mesin
+        function getCategoryBadge(category) {
+            const styles = {
+                'Injection': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                'Printing': 'bg-purple-50 text-purple-700 border-purple-200',
+                'Utility': 'bg-amber-50 text-amber-800 border-amber-200',
+                'Lain-lain': 'bg-teal-50 text-teal-700 border-teal-200'
+            };
+            const cls = styles[category] || 'bg-gray-100 text-gray-700 border-gray-200';
+            return `<span class="px-2 py-0.5 text-[11px] font-semibold rounded border ${cls}">${category}</span>`;
+        }
+
+        // ============================================================================
+        // 4. AGGREGATION & BUSINESS CALCULATION ENGINE
+        // ============================================================================
+        function computeAggregates(startDate, endDate, category, machineCode, keyword) {
+            // Filter target machines based on category & machine code
+            const targetMachines = masterMachines.filter(m => {
+                const matchCategory = (category === 'ALL') || (m.category === category);
+                const matchCode = (machineCode === 'ALL') || (m.code === machineCode);
+                return matchCategory && matchCode;
+            });
+
+            // Agregasi log harian untuk tiap mesin
+            let aggregated = targetMachines.map(machine => {
+                const logs = dailyMaintenanceLogs.filter(log =>
+                    log.code === machine.code &&
+                    (!startDate || log.date >= startDate) &&
+                    (!endDate || log.date <= endDate)
+                );
+
+                const dtRepair = logs.reduce((sum, l) => sum + l.dtRepair, 0);
+                const dtPm = logs.reduce((sum, l) => sum + (l.pmRegular + l.pmDaily), 0);
+                const totalHours = dtRepair + dtPm;
+
+                const costDt = logs.reduce((sum, l) => sum + l.costDt, 0);
+                const costPm = logs.reduce((sum, l) => sum + l.costPm, 0);
+                const totalCost = costDt + costPm;
+
+                const spkDt = logs.reduce((sum, l) => sum + l.spkDt, 0);
+                const spkPm = logs.reduce((sum, l) => sum + l.spkPm, 0);
+                const totalSpk = spkDt + spkPm;
+
+                const problemSummary = logs.length > 0
+                    ? logs.map(l => `[${l.date.slice(8, 10)}/${l.date.slice(5, 7)}] ${l.problem}`).join('; ')
+                    : 'Tidak ada catatan kerusakan pada periode ini';
+
+                const sparepartSummary = logs.length > 0
+                    ? logs.map(l => l.sparepart).join('; ')
+                    : '-';
+
+                return {
+                    ...machine,
+                    logs,
+                    dtRepair,
+                    dtPm,
+                    totalHours,
+                    costDt,
+                    costPm,
+                    totalCost,
+                    spkDt,
+                    spkPm,
+                    totalSpk,
+                    problemSummary,
+                    sparepartSummary
+                };
+            });
+
+            // Filter kata kunci pencarian
+            if (keyword) {
+                const q = keyword.toLowerCase();
+                aggregated = aggregated.filter(item =>
+                    item.code.toLowerCase().includes(q) ||
+                    item.unitName.toLowerCase().includes(q) ||
+                    item.problemSummary.toLowerCase().includes(q) ||
+                    item.sparepartSummary.toLowerCase().includes(q)
+                );
+            }
+
+            // Hitung akumulasi KPI
+            const totals = {
+                dtRepair: aggregated.reduce((s, i) => s + i.dtRepair, 0),
+                dtPm: aggregated.reduce((s, i) => s + i.dtPm, 0),
+                costDt: aggregated.reduce((s, i) => s + i.costDt, 0),
+                costPm: aggregated.reduce((s, i) => s + i.costPm, 0),
+                spkDt: aggregated.reduce((s, i) => s + i.spkDt, 0),
+                spkPm: aggregated.reduce((s, i) => s + i.spkPm, 0),
+            };
+            totals.totalHours = totals.dtRepair + totals.dtPm;
+            totals.totalCost = totals.costDt + totals.costPm;
+            totals.totalSpk = totals.spkDt + totals.spkPm;
+
+            return { aggregated, totals };
+        }
+
+        // ============================================================================
+        // 5. VIEW RENDERERS (Modular UI Components)
+        // ============================================================================
+        function renderEmptyRow(colSpan, message) {
+            return `<tr><td colspan="${colSpan}" class="py-4 text-center text-gray-500">${message}</td></tr>`;
+        }
+
+        function renderKpiCards(totals) {
+            document.getElementById('kpiDtRepair').textContent = `${totals.dtRepair.toFixed(1)} Jam`;
+            document.getElementById('kpiDtPm').textContent = `${totals.dtPm.toFixed(1)} Jam`;
+            document.getElementById('kpiTotalCost').textContent = formatIDR(totals.totalCost);
+            document.getElementById('kpiCostBreakdown').textContent = `DT: ${formatIDR(totals.costDt)} • PM: ${formatIDR(totals.costPm)}`;
+            document.getElementById('kpiTotalSpk').textContent = `${totals.totalSpk} SPK`;
+            document.getElementById('kpiSpkBreakdown').textContent = `SPK DT: ${totals.spkDt} • SPK PM: ${totals.spkPm}`;
+        }
+
+        function renderTop5Table(items) {
+            const sortedByDt = [...items].sort((a, b) => b.totalHours - a.totalHours || b.dtRepair - a.dtRepair);
+            const top5List = sortedByDt.filter(i => i.totalHours > 0).slice(0, 5);
+            const tbody = document.getElementById('top5TableBody');
+
+            if (top5List.length === 0) {
+                tbody.innerHTML = renderEmptyRow(6, "Tidak ada data downtime pada periode dan filter yang dipilih.");
+                return;
+            }
+
+            tbody.innerHTML = top5List.map((item, idx) => `
+                <tr onclick="openMachineModal('${item.code}')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                    <td class="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full ${idx === 0 ? 'bg-red-600 text-white' : 'bg-slate-200 text-slate-800'} text-xs">${idx + 1}</span>
+                    </td>
+                    <td class="py-2.5 px-3 border-r border-gray-200 font-bold text-blue-700 whitespace-nowrap">${item.code}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-200 text-right font-semibold text-red-600">${item.dtRepair.toFixed(1)} Jam</td>
+                    <td class="py-2.5 px-3 border-r border-gray-200 text-right font-bold text-gray-900">${item.totalHours.toFixed(1)} Jam</td>
+                    <td class="py-2.5 px-3 text-gray-700">${item.problemSummary}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderDtHoursTable(items, totals) {
+            const sorted = [...items].sort((a, b) => b.totalHours - a.totalHours || b.dtRepair - a.dtRepair);
+            const tbody = document.getElementById('dtHoursTableBody');
+            const tfoot = document.getElementById('dtHoursTableFoot');
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = renderEmptyRow(7, "Data mesin tidak ditemukan.");
+            } else {
+                tbody.innerHTML = sorted.map((item, idx) => `
+                    <tr onclick="openMachineModal('${item.code}')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center text-gray-500">${idx + 1}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 font-bold text-blue-700 whitespace-nowrap">${item.code}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-gray-800">${item.unitName}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right font-semibold ${item.dtRepair > 0 ? 'text-red-600' : 'text-gray-400'}">${item.dtRepair.toFixed(1)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right font-medium ${item.dtPm > 0 ? 'text-blue-700' : 'text-gray-400'}">${item.dtPm.toFixed(1)}</td>
+                        <td class="py-2.5 px-3 text-right font-bold bg-slate-50 text-gray-900">${item.totalHours.toFixed(1)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-2.5 px-3 border-r border-gray-300 text-right uppercase text-xs">Total Keseluruhan Downtime (Jam)</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-right text-red-600">${totals.dtRepair.toFixed(1)}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-right text-blue-700">${totals.dtPm.toFixed(1)}</td>
+                    <td class="py-2.5 px-3 text-right bg-slate-200 text-gray-900">${totals.totalHours.toFixed(1)}</td>
+                </tr>
+            `;
+        }
+
+        function renderCostTable(items, totals) {
+            const sorted = [...items].sort((a, b) => b.totalCost - a.totalCost);
+            const tbody = document.getElementById('costTableBody');
+            const tfoot = document.getElementById('costTableFoot');
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = renderEmptyRow(7, "Data cost tidak ditemukan.");
+            } else {
+                tbody.innerHTML = sorted.map((item, idx) => `
+                    <tr onclick="openMachineModal('${item.code}')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center text-gray-500">${idx + 1}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 font-bold text-blue-700 whitespace-nowrap">${item.code}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right whitespace-nowrap ${item.costDt > 0 ? 'text-red-600 font-semibold' : 'text-gray-400'}">${formatIDR(item.costDt)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right whitespace-nowrap ${item.costPm > 0 ? 'text-blue-700 font-medium' : 'text-gray-400'}">${formatIDR(item.costPm)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right font-bold bg-slate-50 whitespace-nowrap text-gray-900">${formatIDR(item.totalCost)}</td>
+                        <td class="py-2.5 px-3 text-gray-700">
+                            ${item.logs.length > 0
+                        ? `<div class="font-medium text-gray-800">${item.problemSummary}</div><div class="text-[11px] text-gray-500 mt-0.5">Part: ${item.sparepartSummary}</div>`
+                        : `<span class="text-gray-400 italic">Tidak ada biaya perbaikan / penggantian part</span>`
+                    }
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="py-2.5 px-3 border-r border-gray-300 text-right uppercase text-xs">Total Keseluruhan Cost (IDR)</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-right text-red-600 whitespace-nowrap">${formatIDR(totals.costDt)}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-right text-blue-700 whitespace-nowrap">${formatIDR(totals.costPm)}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-right bg-slate-200 text-gray-900 whitespace-nowrap">${formatIDR(totals.totalCost)}</td>
+                    <td class="py-2.5 px-3 text-xs font-normal text-gray-500">Akumulasi seluruh mesin terfilter</td>
+                </tr>
+            `;
+        }
+
+        function renderSpkTable(items, totals) {
+            const sorted = [...items].sort((a, b) => b.totalSpk - a.totalSpk);
+            const tbody = document.getElementById('spkTableBody');
+            const tfoot = document.getElementById('spkTableFoot');
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = renderEmptyRow(6, "Data SPK tidak ditemukan.");
+            } else {
+                tbody.innerHTML = sorted.map(item => `
+                    <tr onclick="openMachineModal('${item.code}')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                        <td class="py-2.5 px-3 border-r border-gray-200 font-bold text-blue-700 whitespace-nowrap">${item.code}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-gray-800">${item.unitName}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center font-semibold ${item.spkDt > 0 ? 'text-red-600' : 'text-gray-400'}">${item.spkDt}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center font-semibold ${item.spkPm > 0 ? 'text-blue-700' : 'text-gray-400'}">${item.spkPm}</td>
+                        <td class="py-2.5 px-3 text-center font-bold bg-slate-50 text-gray-900">${item.totalSpk}</td>
+                    </tr>
+                `).join('');
+            }
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="py-2.5 px-3 border-r border-gray-300 text-right uppercase text-xs">Total Keseluruhan Realisasi SPK</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-center text-red-600">${totals.spkDt}</td>
+                    <td class="py-2.5 px-3 border-r border-gray-300 text-center text-blue-700">${totals.spkPm}</td>
+                    <td class="py-2.5 px-3 text-center bg-slate-200 text-gray-900">${totals.totalSpk}</td>
+                </tr>
+            `;
+        }
+
+        // ============================================================================
+        // 6. CONTROLLER & FILTER ORCHESTRATION
+        // ============================================================================
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (startDate && endDate && startDate > endDate) {
+                showToast("Start Date tidak boleh melebihi End Date!", true);
+                return;
+            }
+
+            // Update label rentang periode aktif
+            const periodText = `${formatDateIndo(startDate)} — ${formatDateIndo(endDate)}`;
+            document.querySelectorAll('.period-label').forEach(el => {
+                el.textContent = periodText;
+            });
+
+            const category = document.getElementById('filterCategory').value;
+            const machineCode = document.getElementById('filterMachineCode').value;
+            const keyword = document.getElementById('searchInput').value.trim();
+
+            // Eksekusi kalkulasi data melalui business logic engine
+            const { aggregated, totals } = computeAggregates(startDate, endDate, category, machineCode, keyword);
+
+            // Simpan ke state global
+            currentAggregatedList = aggregated;
+            document.getElementById('showingCount').textContent = aggregated.length;
+
+            // Delegasikan rendering ke modul view masing-masing
+            renderKpiCards(totals);
+            renderTop5Table(aggregated);
+            renderDtHoursTable(aggregated, totals);
+            renderCostTable(aggregated, totals);
+            renderSpkTable(aggregated, totals);
+        }
+
+        // ============================================================================
+        // 7. MODAL HANDLERS
+        // ============================================================================
+        // Buka Modal Detail Mesin saat baris diklik
+        function openMachineModal(code) {
+            const machine = currentAggregatedList.find(m => m.code === code);
+            if (!machine) return;
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            document.getElementById('modalCategoryBadge').textContent = machine.category;
+            document.getElementById('modalPeriodBadge').textContent = `${formatDateIndo(startDate)} — ${formatDateIndo(endDate)}`;
+            document.getElementById('modalTitle').textContent = `${machine.code} — ${machine.unitName}`;
+
+            document.getElementById('modalDtInfo').textContent = `${machine.dtRepair.toFixed(1)} Jam • ${formatIDR(machine.costDt)}`;
+            document.getElementById('modalPmInfo').textContent = `${machine.dtPm.toFixed(1)} Jam • ${formatIDR(machine.costPm)}`;
+
+            document.getElementById('modalProblemText').textContent = `Problem: ${machine.problemSummary}`;
+            document.getElementById('modalSparepartText').textContent = `Sparepart / Tindakan: ${machine.sparepartSummary}`;
+
+            const logsContainer = document.getElementById('modalLogsList');
+            if (machine.logs.length === 0) {
+                logsContainer.innerHTML = `<div class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500 text-center">Tidak ada log kejadian kerusakan maupun PM pada rentang tanggal terpilih.</div>`;
+            } else {
+                logsContainer.innerHTML = machine.logs.map(log => `
+                    <div class="p-3 bg-white border border-gray-200 rounded-xl shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <span class="text-xs font-bold text-gray-800">Tanggal: ${formatDateIndo(log.date)}</span>
+                            <p class="text-xs text-gray-700 mt-0.5">${log.problem}</p>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Spare Part: ${log.sparepart}</p>
+                        </div>
+                        <div class="text-left sm:text-right shrink-0">
+                            <span class="text-xs font-bold text-red-600 block">DT: ${log.dtRepair.toFixed(1)}j • PM: ${(log.pmRegular + log.pmDaily).toFixed(1)}j</span>
+                            <span class="text-[11px] font-semibold text-gray-700">Cost: ${formatIDR(log.costDt + log.costPm)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('machineModal').classList.remove('hidden');
+        }
+
+        // Tutup Modal
+        function closeModal() {
+            document.getElementById('machineModal').classList.add('hidden');
+        }
+
+        // Tutup Modal saat klik backdrop luar
+        function closeModalOnBackdrop(event) {
+            if (event.target.id === 'machineModal') {
+                closeModal();
+            }
+        }
+
+        // ============================================================================
+        // 8. DATA EXPORT (EXCEL .XLS BERWARNA & CSV)
+        // ============================================================================
+
+        // 8.1 Ekspor Laporan Excel Berwarna (.XLS) dengan Format Tabel Rapi, Kartu KPI & Kolom Proporsional
+        function exportToExcel() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const selectedCat = document.getElementById('filterCategory').value;
+            const selectedCode = document.getElementById('filterMachineCode').value;
+
+            // Urutkan data berdasarkan Total Downtime tertinggi
+            const sortedData = [...currentAggregatedList].sort(
+                (a, b) => b.totalHours - a.totalHours || b.dtRepair - a.dtRepair
+            );
+
+            // Hitung akumulasi KPI
+            const totalDtRepair = sortedData.reduce((s, i) => s + i.dtRepair, 0);
+            const totalDtPm = sortedData.reduce((s, i) => s + i.dtPm, 0);
+            const totalHours = totalDtRepair + totalDtPm;
+            const totalCostDt = sortedData.reduce((s, i) => s + i.costDt, 0);
+            const totalCostPm = sortedData.reduce((s, i) => s + i.costPm, 0);
+            const totalCost = totalCostDt + totalCostPm;
+            const totalSpkDt = sortedData.reduce((s, i) => s + i.spkDt, 0);
+            const totalSpkPm = sortedData.reduce((s, i) => s + i.spkPm, 0);
+            const totalSpk = totalSpkDt + totalSpkPm;
+
+            const top5Data = sortedData.slice(0, 5);
+
+            const escapeHTML = (str) => {
+                if (str === null || str === undefined) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
+
+            const getCategoryStyle = (cat) => {
+                const styles = {
+                    'Injection': 'background-color: #e0e7ff; color: #3730a3; border: 0.5pt solid #c7d2fe;',
+                    'Printing': 'background-color: #f3e8ff; color: #6b21a8; border: 0.5pt solid #e9d5ff;',
+                    'Utility': 'background-color: #fef3c7; color: #92400e; border: 0.5pt solid #fde68a;',
+                    'Lain-lain': 'background-color: #ccfbf1; color: #115e59; border: 0.5pt solid #99f6e4;'
+                };
+                return styles[cat] || 'background-color: #f1f5f9; color: #334155; border: 0.5pt solid #cbd5e1;';
+            };
+
+            let tableRowsHtml = '';
+            sortedData.forEach((item, idx) => {
+                const zebraBg = (idx % 2 === 1) ? 'background-color: #f8fafc;' : 'background-color: #ffffff;';
+                const catStyle = getCategoryStyle(item.category);
+
+                tableRowsHtml += `
+<tr style="${zebraBg}">
+  <td class="td-c">${idx + 1}</td>
+  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(item.code)}</td>
+  <td class="td-l" style="font-weight: 500;">${escapeHTML(item.unitName)}</td>
+  <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${catStyle}">${escapeHTML(item.category)}</span></td>
+  <td class="num-dec" style="color: #dc2626; font-weight: bold;">${item.dtRepair.toFixed(1)}</td>
+  <td class="num-dec" style="color: #2563eb;">${item.dtPm.toFixed(1)}</td>
+  <td class="num-dec" style="font-weight: bold; background-color: #f1f5f9;">${item.totalHours.toFixed(1)}</td>
+  <td class="num-curr">${item.costDt}</td>
+  <td class="num-curr">${item.costPm}</td>
+  <td class="num-curr" style="font-weight: bold; background-color: #fef3c7;">${item.totalCost}</td>
+  <td class="num-int">${item.spkDt}</td>
+  <td class="num-int">${item.spkPm}</td>
+  <td class="num-int" style="font-weight: bold; background-color: #d1fae5;">${item.totalSpk}</td>
+  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(item.problemSummary)}</td>
+  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(item.sparepartSummary)}</td>
+</tr>`;
+            });
+
+            let top5RowsHtml = '';
+            top5Data.forEach((item, idx) => {
+                const rankBadgeStyle = idx === 0
+                    ? 'background-color: #fee2e2; color: #b91c1c; font-weight: bold; border: 1pt solid #f87171;'
+                    : 'background-color: #fef3c7; color: #92400e; font-weight: bold; border: 1pt solid #fbbf24;';
+
+                top5RowsHtml += `
+<tr>
+  <td class="td-c" style="${rankBadgeStyle}">#${idx + 1}</td>
+  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(item.code)}</td>
+  <td class="td-l" colspan="2" style="font-weight: bold;">${escapeHTML(item.unitName)}</td>
+  <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${getCategoryStyle(item.category)}">${escapeHTML(item.category)}</span></td>
+  <td class="num-dec" style="color: #dc2626; font-weight: bold; font-size: 10.5pt;">${item.dtRepair.toFixed(1)}</td>
+  <td class="num-dec" style="color: #2563eb;">${item.dtPm.toFixed(1)}</td>
+  <td class="num-dec" style="font-weight: bold; background-color: #fee2e2; font-size: 10.5pt;">${item.totalHours.toFixed(1)}</td>
+  <td class="num-curr" colspan="2" style="font-weight: bold;">${item.totalCost}</td>
+  <td class="num-int">${item.totalSpk}</td>
+  <td class="td-l" colspan="4" style="font-size: 8.5pt; white-space: normal;"><strong>Problem:</strong> ${escapeHTML(item.problemSummary)}<br><strong>Sparepart:</strong> ${escapeHTML(item.sparepartSummary)}</td>
+</tr>`;
+            });
+
+            const tagHtmlOpen = '<' + 'html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+            const tagHeadOpen = '<' + 'head>';
+            const tagHeadClose = '</' + 'head>';
+            const tagBodyOpen = '<' + 'body>';
+            const tagBodyClose = '</' + 'body>';
+            const tagHtmlClose = '</' + 'html>';
+
+            const excelTemplate = `${tagHtmlOpen}
+${tagHeadOpen}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--[if gte mso 9]>
+<xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Maintenance Summary</x:Name>
+    <x:WorksheetOptions>
+     <x:DisplayGridlines/>
+     <x:Print>
+      <x:ValidPrinterInfo/>
+      <x:Orientation>Landscape</x:Orientation>
+     </x:Print>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+ </x:ExcelWorkbook>
+</xml>
+<![endif]-->
+<style>
+  body, table, td, th { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 9.5pt; color: #1e293b; }
+  .banner-company { background-color: #1e3a8a; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; padding: 12px; }
+  .banner-subtitle { background-color: #dbeafe; color: #1e3a8a; font-size: 11pt; font-weight: bold; text-align: center; padding: 7px; border-bottom: 2pt solid #2563eb; }
+  .section-header { background-color: #1e40af; color: #ffffff; font-size: 10.5pt; font-weight: bold; padding: 8px 12px; border: 1pt solid #1e3a8a; text-transform: uppercase; }
+  .meta-title { font-size: 9pt; color: #475569; font-weight: bold; padding: 5px 8px; border: 0.5pt solid #cbd5e1; background-color: #f1f5f9; }
+  .meta-val { font-size: 9pt; color: #0f172a; padding: 5px 8px; border: 0.5pt solid #cbd5e1; }
+  .th-blue { background-color: #2563eb; color: #ffffff; font-weight: bold; text-align: center; border: 1pt solid #1d4ed8; padding: 8px 6px; font-size: 9pt; }
+  .th-accent { background-color: #1d4ed8; color: #ffffff; font-weight: bold; text-align: center; border: 1pt solid #172554; padding: 8px 6px; font-size: 9pt; }
+  .td-c { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: center; vertical-align: middle; }
+  .td-l { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: left; vertical-align: middle; }
+  .td-r { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; }
+  .num-dec { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; mso-number-format: "0\\.0"; }
+  .num-curr { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; mso-number-format: "\"Rp \"\\#\\,\\#\\#0"; }
+  .num-int { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: center; vertical-align: middle; mso-number-format: "\\#\\,\\#\\#0"; }
+  .total-row { background-color: #e2e8f0; font-weight: bold; border-top: 2pt solid #334155; border-bottom: 3pt double #334155; }
+</style>
+${tagHeadClose}
+${tagBodyOpen}
+<table border="0" cellpadding="0" cellspacing="0">
+<!-- Definisi Lebar Kolom Proporsional agar tampilan rapi & tidak terpotong di Excel -->
+<col width="45">
+<col width="85">
+<col width="230">
+<col width="105">
+<col width="125">
+<col width="120">
+<col width="130">
+<col width="150">
+<col width="150">
+<col width="165">
+<col width="80">
+<col width="80">
+<col width="90">
+<col width="340">
+<col width="320">
+
+<!-- Header Perusahaan -->
+<tr><td colspan="15" class="banner-company">PT MITRA MULIA MAKMUR (MMM PLASTIC)</td></tr>
+<tr><td colspan="15" class="banner-subtitle">LAPORAN SUMMARY MAINTENANCE (MONTH TO DATE)</td></tr>
+<tr><td colspan="15" style="height: 6px;"></td></tr>
+
+<!-- Meta Info Laporan -->
+<tr>
+  <td colspan="3" class="meta-title">Periode Laporan:</td>
+  <td colspan="4" class="meta-val"><strong>${formatDateIndo(startDate)} s/d ${formatDateIndo(endDate)}</strong></td>
+  <td colspan="3" class="meta-title">Filter Terpasang:</td>
+  <td colspan="5" class="meta-val">Kategori: <strong>${escapeHTML(selectedCat)}</strong> | Mesin: <strong>${escapeHTML(selectedCode)}</strong></td>
+</tr>
+<tr>
+  <td colspan="3" class="meta-title">Tanggal & Jam Unduh:</td>
+  <td colspan="4" class="meta-val">${new Date().toLocaleString('id-ID')}</td>
+  <td colspan="3" class="meta-title">Total Unit Terekam:</td>
+  <td colspan="5" class="meta-val"><strong>${sortedData.length} Mesin</strong></td>
+</tr>
+<tr><td colspan="15" style="height: 10px;"></td></tr>
+
+<!-- Kartu KPI Berwarna -->
+<tr>
+  <td colspan="3" style="background-color: #fee2e2; border: 1.5pt solid #ef4444; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DT PERBAIKAN</span><br>
+    <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totalDtRepair.toFixed(1)} Jam</span><br>
+    <span style="font-size: 8pt; color: #7f1d1d;">Akumulasi breakdown mesin</span>
+  </td>
+  <td style="border: none;"></td>
+  <td colspan="3" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">TOTAL PREVENTIVE (PM)</span><br>
+    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totalDtPm.toFixed(1)} Jam</span><br>
+    <span style="font-size: 8pt; color: #1e3a8a;">Akumulasi jadwal PM rutin</span>
+  </td>
+  <td style="border: none;"></td>
+  <td colspan="3" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">TOTAL BIAYA MAINTENANCE</span><br>
+    <span style="font-size: 15pt; color: #b45309; font-weight: bold;">Rp ${totalCost.toLocaleString('id-ID')}</span><br>
+    <span style="font-size: 8pt; color: #78350f;">DT: Rp ${totalCostDt.toLocaleString('id-ID')} | PM: Rp ${totalCostPm.toLocaleString('id-ID')}</span>
+  </td>
+  <td style="border: none;"></td>
+  <td colspan="3" style="background-color: #d1fae5; border: 1.5pt solid #10b981; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #065f46; font-weight: bold;">TOTAL REALISASI SPK</span><br>
+    <span style="font-size: 16pt; color: #059669; font-weight: bold;">${totalSpk} SPK</span><br>
+    <span style="font-size: 8pt; color: #064e3b;">DT: ${totalSpkDt} SPK | PM: ${totalSpkPm} SPK</span>
+  </td>
+</tr>
+<tr><td colspan="15" style="height: 14px;"></td></tr>
+
+<!-- Bagian 1: Top 5 Pareto -->
+<tr><td colspan="15" class="section-header">BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA (PARETO)</td></tr>
+<tr>
+  <th class="th-accent" style="width: 45px;">Rank</th>
+  <th class="th-accent" style="width: 85px;">Kode Mesin</th>
+  <th class="th-accent" colspan="2" style="width: 335px;">Nama / Spesifikasi Unit</th>
+  <th class="th-accent" style="width: 105px;">Kategori</th>
+  <th class="th-accent" style="width: 125px;">DT Perbaikan (Jam)</th>
+  <th class="th-accent" style="width: 120px;">PM (Jam)</th>
+  <th class="th-accent" style="width: 130px; background-color: #991b1b;">Total DT+PM</th>
+  <th class="th-accent" colspan="2" style="width: 300px;">Total Biaya (IDR)</th>
+  <th class="th-accent" style="width: 80px;">Total SPK</th>
+  <th class="th-accent" colspan="4">Detail Problem Terbesar & Sparepart Terpakai</th>
+</tr>
+${top5RowsHtml}
+<tr><td colspan="15" style="height: 14px;"></td></tr>
+
+<!-- Bagian 2: Rekapitulasi Komprehensif Seluruh Mesin -->
+<tr><td colspan="15" class="section-header">BAGIAN 2: REKAPITULASI DETAIL SELURUH MESIN (DOWNTIME, BIAYA & SPK)</td></tr>
+<tr>
+  <th class="th-blue">No</th>
+  <th class="th-blue">Kode Mesin</th>
+  <th class="th-blue">Nama / Spesifikasi Unit</th>
+  <th class="th-blue">Kategori</th>
+  <th class="th-blue">DT Perbaikan (Jam)</th>
+  <th class="th-blue">PM (Jam)</th>
+  <th class="th-accent">Total Jam</th>
+  <th class="th-blue">Cost DT (IDR)</th>
+  <th class="th-blue">Cost PM (IDR)</th>
+  <th class="th-accent">Total Cost (IDR)</th>
+  <th class="th-blue">SPK DT</th>
+  <th class="th-blue">SPK PM</th>
+  <th class="th-accent">Total SPK</th>
+  <th class="th-blue">Detail Problem Perbaikan</th>
+  <th class="th-blue">Sparepart Terpakai</th>
+</tr>
+${tableRowsHtml}
+<tr class="total-row">
+  <td colspan="4" class="td-r" style="font-size: 9.5pt; padding-right: 12px;">TOTAL KESELURUHAN</td>
+  <td class="num-dec" style="color: #dc2626;">${totalDtRepair.toFixed(1)}</td>
+  <td class="num-dec" style="color: #2563eb;">${totalDtPm.toFixed(1)}</td>
+  <td class="num-dec" style="background-color: #cbd5e1;">${totalHours.toFixed(1)}</td>
+  <td class="num-curr" style="color: #dc2626;">${totalCostDt}</td>
+  <td class="num-curr" style="color: #2563eb;">${totalCostPm}</td>
+  <td class="num-curr" style="background-color: #cbd5e1;">${totalCost}</td>
+  <td class="num-int" style="color: #dc2626;">${totalSpkDt}</td>
+  <td class="num-int" style="color: #2563eb;">${totalSpkPm}</td>
+  <td class="num-int" style="background-color: #cbd5e1;">${totalSpk}</td>
+  <td colspan="2" class="td-l" style="font-size: 8.5pt; color: #475569;">Akumulasi Seluruh Unit Terfilter (${sortedData.length} Mesin)</td>
+</tr>
+</table>
+${tagBodyClose}
+${tagHtmlClose}`;
+
+            const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Maintenance_Summary_${startDate}_sd_${endDate}.xls`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast("File laporan Excel (.XLS) berwarna & terformat rapi berhasil diunduh!");
+        }
+
+        // 8.2 Ekspor Data Mentah CSV (Kompatibel dengan Sistem & Database Eksternal)
+        function exportToCSV() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const selectedCat = document.getElementById('filterCategory').value;
+            const selectedCode = document.getElementById('filterMachineCode').value;
+
+            // Helper untuk escape format CSV sesuai standar RFC 4180
+            const escapeCSV = (val) => {
+                if (val === null || val === undefined) return '""';
+                const str = String(val).replace(/"/g, '""');
+                return `"${str}"`;
+            };
+
+            // Urutkan data berdasarkan Total Downtime tertinggi (sesuai tabel utama pada halaman)
+            const sortedData = [...currentAggregatedList].sort(
+                (a, b) => b.totalHours - a.totalHours || b.dtRepair - a.dtRepair
+            );
+
+            // Hitung akumulasi untuk ringkasan KPI dan baris total
+            const totalDtRepair = sortedData.reduce((s, i) => s + i.dtRepair, 0);
+            const totalDtPm = sortedData.reduce((s, i) => s + i.dtPm, 0);
+            const totalHours = totalDtRepair + totalDtPm;
+            const totalCostDt = sortedData.reduce((s, i) => s + i.costDt, 0);
+            const totalCostPm = sortedData.reduce((s, i) => s + i.costPm, 0);
+            const totalCost = totalCostDt + totalCostPm;
+            const totalSpkDt = sortedData.reduce((s, i) => s + i.spkDt, 0);
+            const totalSpkPm = sortedData.reduce((s, i) => s + i.spkPm, 0);
+            const totalSpk = totalSpkDt + totalSpkPm;
+
+            // 1. Metadata Laporan & Ringkasan KPI Atas
+            const metaRows = [
+                ["PT MITRA MULIA MAKMUR (MMM PLASTIC)"],
+                ["LAPORAN MAINTENANCE SUMMARY (MONTH TO DATE)"],
+                [`Periode Laporan: ${formatDateIndo(startDate)} s/d ${formatDateIndo(endDate)}`],
+                [`Filter Kategori: ${selectedCat} | Filter Kode Mesin: ${selectedCode}`],
+                [`Tanggal Unduh: ${new Date().toLocaleString('id-ID')}`],
+                [],
+                ["RINGKASAN KPI:"],
+                ["Total Downtime Perbaikan (DT)", `${totalDtRepair.toFixed(1)} Jam`],
+                ["Total Downtime Preventive (PM)", `${totalDtPm.toFixed(1)} Jam`],
+                ["Total Akumulasi Jam DT + PM", `${totalHours.toFixed(1)} Jam`],
+                ["Total Biaya DT Perbaikan (IDR)", totalCostDt],
+                ["Total Biaya Preventive PM (IDR)", totalCostPm],
+                ["Total Biaya Maintenance (IDR)", totalCost],
+                ["Total Realisasi SPK", `${totalSpk} SPK (DT: ${totalSpkDt}, PM: ${totalSpkPm})`],
+                []
+            ];
+
+            // 2. Header Kolom Tabel
+            const tableHeaders = [
+                "No",
+                "Kode Mesin",
+                "Nama / Spesifikasi Unit",
+                "Kategori",
+                "DT Perbaikan (Jam)",
+                "DT Preventive PM (Jam)",
+                "Total Downtime (Jam)",
+                "Cost DT Perbaikan (IDR)",
+                "Cost Preventive PM (IDR)",
+                "Total Cost (IDR)",
+                "SPK DT",
+                "SPK PM",
+                "Total SPK",
+                "Detail Problem Perbaikan",
+                "Sparepart Terpakai"
+            ];
+
+            // 3. Baris Data Mesin
+            const dataRows = sortedData.map((item, idx) => [
+                idx + 1,
+                item.code,
+                item.unitName,
+                item.category,
+                item.dtRepair.toFixed(1),
+                item.dtPm.toFixed(1),
+                item.totalHours.toFixed(1),
+                item.costDt,
+                item.costPm,
+                item.totalCost,
+                item.spkDt,
+                item.spkPm,
+                item.totalSpk,
+                item.problemSummary,
+                item.sparepartSummary
+            ]);
+
+            // 4. Baris Total Keseluruhan
+            const summaryRow = [
+                "TOTAL KESELURUHAN",
+                "",
+                "",
+                "",
+                totalDtRepair.toFixed(1),
+                totalDtPm.toFixed(1),
+                totalHours.toFixed(1),
+                totalCostDt,
+                totalCostPm,
+                totalCost,
+                totalSpkDt,
+                totalSpkPm,
+                totalSpk,
+                "",
+                ""
+            ];
+
+            // Gabungkan semua baris menjadi format CSV
+            const csvLines = [
+                ...metaRows.map(row => row.map(escapeCSV).join(",")),
+                tableHeaders.map(escapeCSV).join(","),
+                ...dataRows.map(row => row.map(escapeCSV).join(",")),
+                summaryRow.map(escapeCSV).join(",")
+            ];
+
+            const csvContent = csvLines.join("\r\n");
+
+            // Menggunakan Blob dengan UTF-8 BOM (\uFEFF) agar seluruh karakter dan tanda '#' tidak terpotong di Excel
+            const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Maintenance_Summary_${startDate}_sd_${endDate}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast("File laporan Excel (.CSV) berhasil diunduh secara lengkap!");
+        }
+
+        // Reset semua filter ke default MtD (1 - 17 Nov 2026)
+        function resetFilters() {
+            document.getElementById('startDate').value = '2026-11-01';
+            document.getElementById('endDate').value = '2026-11-17';
+            document.getElementById('filterCategory').value = 'ALL';
+            updateMachineDropdown();
+            document.getElementById('filterMachineCode').value = 'ALL';
+            document.getElementById('searchInput').value = '';
+
+            clearActivePreset();
+            const novBtn = document.getElementById('preset-nov');
+            if (novBtn) {
+                novBtn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
+                novBtn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
+            }
+
+            applyFilters();
+            showToast("Filter direset ke November 2026 (MtD: 01 - 17 Nov 2026).");
+        }
+
+        // ============================================================================
+        // 9. APPLICATION LIFECYCLE & EVENT LISTENERS
+        // ============================================================================
+        // Event Listener Tombol Keyboard ESC untuk tutup modal
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Inisialisasi saat halaman pertama kali dibuka
+        window.onload = function () {
+            updateMachineDropdown();
+            applyFilters();
+        };
+    </script>
+</body>
+
+</html>

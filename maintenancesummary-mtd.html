@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -337,11 +337,11 @@
                         • 33 Waiting</p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('spk')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 mt-2 hover:underline cursor-pointer">
-                        <!-- <span id="cardSpkActionText">Buka Detail Tabel SPK</span>
+                        <span id="cardSpkActionText">Buka Detail Tabel SPK</span>
                         <svg id="cardSpkActionIcon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none"
                             stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg> -->
+                        </svg>
                     </span>
                 </div>
                 <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
@@ -520,7 +520,7 @@
                                 DT (%)</button>
                             <button type="button" id="btnChartModeHours" onclick="setDtChartMode('hours')"
                                 class="px-2 py-0.5 text-xs font-medium rounded bg-transparent text-gray-600 hover:text-gray-900 transition cursor-pointer">Jam
-                                DT (Hours)</button>
+                                DT (Jam)</button>
                         </div>
                     </div>
                     <div class="relative w-full h-52 sm:h-56">
@@ -3786,6 +3786,9 @@
 
             if (tabId === 'dt') renderMonthlyDtChart();
             if (tabId === 'cost') renderMonthlyCostChart();
+            if (tabId === 'spk') {
+                closeWorkflowDetail();
+            }
             if (tabId === 'prj') {
                 closePrjWorkflowDetail();
                 renderPrjTable();
@@ -3801,6 +3804,16 @@
                 } else {
                     switchDashboardTab('prj');
                     toggleProjectStatusDetail('ALL');
+                }
+                return;
+            }
+            if (type === 'spk') {
+                const container = document.getElementById('spkWorkflowDetailContainer');
+                if (container && !container.classList.contains('hidden')) {
+                    closeWorkflowDetail();
+                } else {
+                    switchDashboardTab('spk');
+                    toggleWorkflowStatusDetail('OPEN');
                 }
                 return;
             }
@@ -3925,7 +3938,7 @@
                             y: {
                                 beginAtZero: true,
                                 max: isRatio ? 100 : undefined,
-                                ticks: { callback: v => isRatio ? v + '%' : v + 'h', font: { size: 10 }, color: '#64748b' },
+                                ticks: { callback: v => isRatio ? v + '%' : v + ' Jam', font: { size: 10 }, color: '#64748b' },
                                 grid: { color: '#f1f5f9' }
                             },
                             x: { ticks: { font: { size: 11, weight: '600' }, color: '#334155' }, grid: { display: false } }
@@ -3933,7 +3946,7 @@
                     }
                 });
             } else {
-                renderSvgFallbackChart(canvas, isRatio, labels, dataValues, '#dc2626', '#f87171', isRatio ? '%' : 'h');
+                renderSvgFallbackChart(canvas, isRatio, labels, dataValues, '#dc2626', '#f87171', isRatio ? '%' : ' Jam');
             }
         }
 
@@ -3966,7 +3979,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: isRatio ? 'Rasio Biaya DT (%)' : 'Total Biaya (Juta IDR)',
+                            label: isRatio ? 'Rasio Biaya DT (%)' : 'Total Biaya (Juta Rp)',
                             data: dataValues,
                             backgroundColor: bgColors,
                             borderColor: borderColors,
@@ -3989,7 +4002,7 @@
                                         const idx = context.dataIndex;
                                         return isRatio
                                             ? [` Rasio Biaya DT: ${context.parsed.y}%`, ` Total: Rp ${lastChartData.costAmounts[idx]} Juta`, ` Biaya DT: Rp ${lastChartData.costDtAmounts[idx]} Juta`]
-                                            : ` Total Biaya: Rp ${context.parsed.y} Juta (DT: Rp ${lastChartData.costDtAmounts[idx]}M)`;
+                                            : ` Total Biaya: Rp ${context.parsed.y} Juta (DT: Rp ${lastChartData.costDtAmounts[idx]} Juta)`;
                                     }
                                 }
                             }
@@ -3998,7 +4011,7 @@
                             y: {
                                 beginAtZero: true,
                                 max: isRatio ? 100 : undefined,
-                                ticks: { callback: v => isRatio ? v + '%' : 'Rp ' + v + 'M', font: { size: 10 }, color: '#64748b' },
+                                ticks: { callback: v => isRatio ? v + '%' : 'Rp ' + v + ' Juta', font: { size: 10 }, color: '#64748b' },
                                 grid: { color: '#f1f5f9' }
                             },
                             x: { ticks: { font: { size: 11, weight: '600' }, color: '#334155' }, grid: { display: false } }
@@ -4006,7 +4019,7 @@
                     }
                 });
             } else {
-                renderSvgFallbackChart(canvas, isRatio, labels, dataValues, '#d97706', '#fbbf24', isRatio ? '%' : 'M');
+                renderSvgFallbackChart(canvas, isRatio, labels, dataValues, '#d97706', '#fbbf24', isRatio ? '%' : ' Juta');
             }
         }
 
@@ -4151,16 +4164,6 @@
             if (spkCountWait) spkCountWait.textContent = waitingCloseTickets;
             if (spkCountClose) spkCountClose.textContent = closedTickets.toLocaleString('id-ID');
 
-            // Update label aksi pada 4 kartu
-            const spkActionOpen = document.getElementById('spkAction_OPEN');
-            const spkActionProg = document.getElementById('spkAction_PROSES');
-            const spkActionWait = document.getElementById('spkAction_OUTSTANDING');
-            const spkActionClose = document.getElementById('spkAction_CLOSED');
-            if (spkActionOpen) spkActionOpen.textContent = currentWorkflowStatus === 'OPEN' ? 'Tutup Rincian ▲' : `Buka ${openTickets} Tiket Open ▼`;
-            if (spkActionProg) spkActionProg.textContent = currentWorkflowStatus === 'PROSES' ? 'Tutup Rincian ▲' : `Buka ${inProgressTickets} Tiket Assignment ▼`;
-            if (spkActionWait) spkActionWait.textContent = currentWorkflowStatus === 'OUTSTANDING' ? 'Tutup Rincian ▲' : `Buka ${waitingCloseTickets} Tiket Waiting to Close ▼`;
-            if (spkActionClose) spkActionClose.textContent = currentWorkflowStatus === 'CLOSED' ? 'Tutup Rincian ▲' : `Buka ${closedTickets.toLocaleString('id-ID')} Tiket Closed ▼`;
-
             const completionRate = totalTickets > 0 ? ((closedTickets / totalTickets) * 100).toFixed(1) : '94.4';
             const spkCompletionEl = document.getElementById('spkCompletionPct');
             if (spkCompletionEl) spkCompletionEl.textContent = `${completionRate}% Tuntas`;
@@ -4171,16 +4174,8 @@
             const spkSubtitle = document.getElementById('kpiSpkStatusSubtitle');
             if (spkSubtitle) spkSubtitle.textContent = `Closed: ${completionRate}% • ${inProgressTickets} Assignment • ${waitingCloseTickets} Waiting`;
 
-            const isSpkContainerHidden = document.getElementById('spkWorkflowDetailContainer')?.classList.contains('hidden');
-            const cardSpkActionText = document.getElementById('cardSpkActionText');
-            const cardSpkActionIcon = document.getElementById('cardSpkActionIcon');
-            if (cardSpkActionText) {
-                cardSpkActionText.textContent = isSpkContainerHidden ? 'Buka Detail Tabel SPK' : 'Tutup Detail Tabel SPK';
-            }
-            if (cardSpkActionIcon) {
-                if (isSpkContainerHidden) cardSpkActionIcon.classList.remove('rotate-180');
-                else cardSpkActionIcon.classList.add('rotate-180');
-            }
+            // Update label aksi pada 4 kartu SPK dan KPI Card 3
+            updateSpkWorkflowCardActions();
 
             // Jika tabel rincian workflow sedang terbuka, render ulang tabelnya
             if (currentWorkflowStatus) {
@@ -4257,6 +4252,52 @@
             }
 
             return list;
+        }
+
+        function updateSpkWorkflowCardActions() {
+            const container = document.getElementById('spkWorkflowDetailContainer');
+            const isHidden = !container || container.classList.contains('hidden');
+
+            const openTickets = getFilteredWorkflowTickets('OPEN').length;
+            const inProgressTickets = getFilteredWorkflowTickets('PROSES').length;
+            const waitingCloseTickets = getFilteredWorkflowTickets('OUTSTANDING').length;
+            const closedTickets = getFilteredWorkflowTickets('CLOSED').length;
+
+            const spkActionOpen = document.getElementById('spkAction_OPEN');
+            const spkActionProg = document.getElementById('spkAction_PROSES');
+            const spkActionWait = document.getElementById('spkAction_OUTSTANDING');
+            const spkActionClose = document.getElementById('spkAction_CLOSED');
+
+            if (spkActionOpen) {
+                spkActionOpen.textContent = (!isHidden && currentWorkflowStatus === 'OPEN')
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${openTickets} Tiket Open ▼`;
+            }
+            if (spkActionProg) {
+                spkActionProg.textContent = (!isHidden && currentWorkflowStatus === 'PROSES')
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${inProgressTickets} Tiket Assignment ▼`;
+            }
+            if (spkActionWait) {
+                spkActionWait.textContent = (!isHidden && currentWorkflowStatus === 'OUTSTANDING')
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${waitingCloseTickets} Tiket Waiting to Close ▼`;
+            }
+            if (spkActionClose) {
+                spkActionClose.textContent = (!isHidden && currentWorkflowStatus === 'CLOSED')
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${closedTickets.toLocaleString('id-ID')} Tiket Closed ▼`;
+            }
+
+            const cardSpkActionText = document.getElementById('cardSpkActionText');
+            const cardSpkActionIcon = document.getElementById('cardSpkActionIcon');
+            if (cardSpkActionText) {
+                cardSpkActionText.textContent = isHidden ? 'Buka Detail Tabel SPK' : 'Tutup Detail Tabel SPK';
+            }
+            if (cardSpkActionIcon) {
+                if (isHidden) cardSpkActionIcon.classList.remove('rotate-180');
+                else cardSpkActionIcon.classList.add('rotate-180');
+            }
         }
 
         function toggleWorkflowStatusDetail(status) {
@@ -4343,10 +4384,7 @@
 
             renderWorkflowStatusTable();
 
-            const cardSpkText = document.getElementById('cardSpkActionText');
-            const cardSpkIcon = document.getElementById('cardSpkActionIcon');
-            if (cardSpkText) cardSpkText.textContent = 'Tutup Detail Tabel SPK';
-            if (cardSpkIcon) cardSpkIcon.classList.add('rotate-180');
+            updateSpkWorkflowCardActions();
 
             setTimeout(() => {
                 container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -4362,10 +4400,7 @@
             });
             currentWorkflowStatus = null;
 
-            const cardSpkText = document.getElementById('cardSpkActionText');
-            const cardSpkIcon = document.getElementById('cardSpkActionIcon');
-            if (cardSpkText) cardSpkText.textContent = 'Buka Detail Tabel SPK';
-            if (cardSpkIcon) cardSpkIcon.classList.remove('rotate-180');
+            updateSpkWorkflowCardActions();
         }
 
         function handleWorkflowSearch(keyword) {
@@ -5302,6 +5337,64 @@
             const totals = currentTotals;
             const top5Data = sortedData.filter(i => i.totalHours > 0).slice(0, 5);
 
+            let branchProjects = maintenanceProjectsList;
+            if (selectedBranch !== 'ALL') {
+                branchProjects = branchProjects.filter(p => p.branch === selectedBranch);
+            }
+
+            const spkOpenCount = getFilteredWorkflowTickets('OPEN').length;
+            const spkProgCount = getFilteredWorkflowTickets('PROSES').length;
+            const spkWaitCount = getFilteredWorkflowTickets('OUTSTANDING').length;
+            const spkClosedCount = getFilteredWorkflowTickets('CLOSED').length;
+            const spkTotalWorkflow = spkOpenCount + spkProgCount + spkWaitCount + spkClosedCount;
+            const spkCompletionRate = spkTotalWorkflow > 0 ? ((spkClosedCount / spkTotalWorkflow) * 100).toFixed(1) : '94.4';
+
+            const prjDoneCount = branchProjects.filter(p => p.status === 'SELESAI').length;
+            const prjProgCount = branchProjects.filter(p => p.status === 'PROSES').length;
+            const prjWaitCount = branchProjects.filter(p => p.status === 'OUTSTANDING').length;
+            const prjOpenCount = branchProjects.filter(p => p.status === 'OPEN').length;
+
+            const totalHours = totals.dtRepair + totals.dtPm;
+            const dtRatio = totalHours > 0 ? ((totals.dtRepair / totalHours) * 100).toFixed(1) : '72.1';
+            const pmRatio = totalHours > 0 ? ((totals.dtPm / totalHours) * 100).toFixed(1) : '27.9';
+
+            const costDtRatio = totals.totalCost > 0 ? ((totals.costDt / totals.totalCost) * 100).toFixed(1) : '72.3';
+            const costPmRatio = totals.totalCost > 0 ? ((totals.costPm / totals.totalCost) * 100).toFixed(1) : '27.7';
+
+            const getProjectStatusBadge = (status) => {
+                if (status === 'SELESAI') {
+                    return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 0.5pt solid #a7f3d0; border-radius: 4px;">4. CLOSED</span>';
+                }
+                if (status === 'PROSES') {
+                    return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #dbeafe; color: #1e40af; border: 0.5pt solid #bfdbfe; border-radius: 4px;">2. ASSIGNMENT</span>';
+                }
+                if (status === 'OUTSTANDING') {
+                    return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #f3e8ff; color: #6b21a8; border: 0.5pt solid #e9d5ff; border-radius: 4px;">3. WAITING TO CLOSE</span>';
+                }
+                return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #fef3c7; color: #92400e; border: 0.5pt solid #fde68a; border-radius: 4px;">1. OPEN</span>';
+            };
+
+            let projectRowsHtml = '';
+            branchProjects.forEach((p, idx) => {
+                const zebraBg = (idx % 2 === 1) ? 'background-color: #f8fafc;' : 'background-color: #ffffff;';
+                const statusBadge = getProjectStatusBadge(p.status);
+                const catStyle = getCategoryStyle(p.category);
+                projectRowsHtml += `
+<tr style="${zebraBg}">
+  <td class="td-c">${idx + 1}</td>
+  <td class="td-c" style="font-weight: bold;">${escapeHTML(p.branch)}</td>
+  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(p.code)}</td>
+  <td class="td-l" colspan="2" style="font-weight: 500;"><strong>${escapeHTML(p.name)}</strong><br><span style="font-size: 8pt; color: #64748b;">${escapeHTML(p.desc)}</span></td>
+  <td class="td-l" colspan="2" style="font-size: 8.5pt;">${escapeHTML(p.machine)}</td>
+  <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${catStyle}">${escapeHTML(p.category)}</span></td>
+  <td class="td-l">${escapeHTML(p.pic)}</td>
+  <td class="td-c" style="font-weight: bold;">${p.progress}%</td>
+  <td class="td-c">${statusBadge}</td>
+  <td class="td-c">${escapeHTML(p.target)}</td>
+  <td class="td-l" colspan="4" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(p.impact)}</td>
+</tr>`;
+            });
+
             const escapeHTML = (str) => {
                 if (str === null || str === undefined) return '';
                 return String(str)
@@ -5454,27 +5547,27 @@ ${tagBodyOpen}
 </tr>
 <tr><td colspan="16" style="height: 10px;"></td></tr>
 
-<!-- Kartu KPI Berwarna -->
+<!-- Kartu KPI Berwarna Eksekutif -->
 <tr>
   <td colspan="4" style="background-color: #fee2e2; border: 1.5pt solid #ef4444; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DT PERBAIKAN</span><br>
-    <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totals.dtRepair.toFixed(1)} Jam</span><br>
-    <span style="font-size: 8pt; color: #7f1d1d;">Akumulasi breakdown mesin</span>
-  </td>
-  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">TOTAL PREVENTIVE (PM)</span><br>
-    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totals.dtPm.toFixed(1)} Jam</span><br>
-    <span style="font-size: 8pt; color: #1e3a8a;">Akumulasi jadwal PM rutin</span>
+    <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DOWNTIME (DT)</span><br>
+    <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totals.totalHours.toFixed(1)} Jam</span><br>
+    <span style="font-size: 8pt; color: #7f1d1d;">Rasio DT: ${dtRatio}% • PM: ${pmRatio}%</span>
   </td>
   <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
     <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">TOTAL BIAYA MAINTENANCE</span><br>
     <span style="font-size: 15pt; color: #b45309; font-weight: bold;">${formatIDR(totals.totalCost)}</span><br>
     <span style="font-size: 8pt; color: #78350f;">DT: ${formatIDR(totals.costDt)} | PM: ${formatIDR(totals.costPm)}</span>
   </td>
-  <td colspan="4" style="background-color: #d1fae5; border: 1.5pt solid #10b981; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #065f46; font-weight: bold;">TOTAL REALISASI SPK</span><br>
-    <span style="font-size: 16pt; color: #059669; font-weight: bold;">${totals.totalSpk} SPK</span><br>
-    <span style="font-size: 8pt; color: #064e3b;">DT: ${totals.spkDt} SPK | PM: ${totals.spkPm} SPK</span>
+  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">STATUS SPK & POSISI TIKET</span><br>
+    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totals.totalSpk} SPK</span><br>
+    <span style="font-size: 8pt; color: #1e3a8a;">Closed: ${spkCompletionRate}% • ${spkProgCount} Assignment • ${spkWaitCount} Waiting</span>
+  </td>
+  <td colspan="4" style="background-color: #ede9fe; border: 1.5pt solid #8b5cf6; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #5b21b6; font-weight: bold;">DATA PROJECT MAINTENANCE</span><br>
+    <span style="font-size: 16pt; color: #6d28d9; font-weight: bold;">${branchProjects.length} Project</span><br>
+    <span style="font-size: 8pt; color: #4c1d95;">${prjDoneCount} Closed • ${prjProgCount} Assignment • ${prjWaitCount} Waiting • ${prjOpenCount} Open</span>
   </td>
 </tr>
 <tr><td colspan="16" style="height: 14px;"></td></tr>
@@ -5531,6 +5624,50 @@ ${tableRowsHtml}
   <td class="num-int" style="background-color: #cbd5e1;">${totals.totalSpk}</td>
   <td colspan="2" class="td-l" style="font-size: 8.5pt; color: #475569;">Akumulasi Seluruh Unit Terfilter (${sortedData.length} Mesin)</td>
 </tr>
+<tr><td colspan="16" style="height: 14px;"></td></tr>
+
+<!-- Bagian 3: Status SPK & Posisi Tiket Kerja -->
+<tr><td colspan="16" class="section-header">BAGIAN 3: STATUS SPK & POSISI TIKET KERJA (WORKFLOW ALUR)</td></tr>
+<tr>
+  <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">1. OPEN</span><br>
+    <span style="font-size: 16pt; color: #b45309; font-weight: bold;">${spkOpenCount} Tiket</span><br>
+    <span style="font-size: 8pt; color: #78350f;">Pekerjaan belum dikerjakan namun sudah ada SPK-nya</span>
+  </td>
+  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">2. ASSIGNMENT</span><br>
+    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${spkProgCount} Tiket</span><br>
+    <span style="font-size: 8pt; color: #1e3a8a;">Menentukan siapa pelaksana / proyek sedang berjalan</span>
+  </td>
+  <td colspan="4" style="background-color: #f3e8ff; border: 1.5pt solid #a855f7; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #6b21a8; font-weight: bold;">3. WAITING TO CLOSE</span><br>
+    <span style="font-size: 16pt; color: #7e22ce; font-weight: bold;">${spkWaitCount} Tiket</span><br>
+    <span style="font-size: 8pt; color: #581c87;">Pekerjaan fisik selesai, menunggu disetujui</span>
+  </td>
+  <td colspan="4" style="background-color: #d1fae5; border: 1.5pt solid #10b981; padding: 10px; text-align: center;">
+    <span style="font-size: 8.5pt; color: #065f46; font-weight: bold;">4. CLOSED (${spkCompletionRate}% Tuntas)</span><br>
+    <span style="font-size: 16pt; color: #059669; font-weight: bold;">${spkClosedCount.toLocaleString('id-ID')} Tiket</span><br>
+    <span style="font-size: 8pt; color: #064e3b;">Pekerjaan disetujui & ditutup resmi</span>
+  </td>
+</tr>
+<tr><td colspan="16" style="height: 14px;"></td></tr>
+
+<!-- Bagian 4: Monitoring Data Project Maintenance & Upgrading -->
+<tr><td colspan="16" class="section-header">BAGIAN 4: MONITORING DATA PROJECT MAINTENANCE & UPGRADING</td></tr>
+<tr>
+  <th class="th-accent" style="width: 45px;">No</th>
+  <th class="th-accent" style="width: 65px;">Cabang</th>
+  <th class="th-accent" style="width: 110px;">Kode Proyek</th>
+  <th class="th-accent" colspan="2" style="width: 335px;">Nama Proyek & Deskripsi Rinci</th>
+  <th class="th-accent" colspan="2" style="width: 225px;">Mesin / Fasilitas Terkait</th>
+  <th class="th-accent" style="width: 105px;">Kategori</th>
+  <th class="th-accent" style="width: 130px;">PIC Pelaksana</th>
+  <th class="th-accent" style="width: 80px;">Progress</th>
+  <th class="th-accent" style="width: 140px;">Status Proyek</th>
+  <th class="th-accent" style="width: 110px;">Target Selesai</th>
+  <th class="th-accent" colspan="4">Dampak Efisiensi & Target Operasional</th>
+</tr>
+${projectRowsHtml}
 </table>
 ${tagBodyClose}
 ${tagHtmlClose}`;
@@ -5570,6 +5707,23 @@ ${tagHtmlClose}`;
 
             const totals = currentTotals;
 
+            let branchProjects = maintenanceProjectsList;
+            if (selectedBranch !== 'ALL') {
+                branchProjects = branchProjects.filter(p => p.branch === selectedBranch);
+            }
+
+            const spkOpenCount = getFilteredWorkflowTickets('OPEN').length;
+            const spkProgCount = getFilteredWorkflowTickets('PROSES').length;
+            const spkWaitCount = getFilteredWorkflowTickets('OUTSTANDING').length;
+            const spkClosedCount = getFilteredWorkflowTickets('CLOSED').length;
+            const spkTotalWorkflow = spkOpenCount + spkProgCount + spkWaitCount + spkClosedCount;
+            const spkCompletionRate = spkTotalWorkflow > 0 ? ((spkClosedCount / spkTotalWorkflow) * 100).toFixed(1) : '94.4';
+
+            const prjDoneCount = branchProjects.filter(p => p.status === 'SELESAI').length;
+            const prjProgCount = branchProjects.filter(p => p.status === 'PROSES').length;
+            const prjWaitCount = branchProjects.filter(p => p.status === 'OUTSTANDING').length;
+            const prjOpenCount = branchProjects.filter(p => p.status === 'OPEN').length;
+
             const metaRows = [
                 ["PT MITRA MULIA MAKMUR (MMM PLASTIC)"],
                 ["LAPORAN MAINTENANCE SUMMARY (MONTH TO DATE)"],
@@ -5577,14 +5731,11 @@ ${tagHtmlClose}`;
                 [`Filter Cabang: ${selectedBranch} | Filter Kategori: ${selectedCat} | Filter Kode Mesin: ${selectedCode}`],
                 [`Tanggal Unduh: ${new Date().toLocaleString('id-ID')}`],
                 [],
-                ["RINGKASAN KPI:"],
-                ["Total Downtime Perbaikan (DT)", `${totals.dtRepair.toFixed(1)} Jam`],
-                ["Total Downtime Preventive (PM)", `${totals.dtPm.toFixed(1)} Jam`],
-                ["Total Akumulasi Jam DT + PM", `${totals.totalHours.toFixed(1)} Jam`],
-                ["Total Biaya DT Perbaikan (IDR)", totals.costDt],
-                ["Total Biaya Preventive PM (IDR)", totals.costPm],
-                ["Total Biaya Maintenance (IDR)", totals.totalCost],
-                ["Total Realisasi SPK", `${totals.totalSpk} SPK (DT: ${totals.spkDt}, PM: ${totals.spkPm})`],
+                ["RINGKASAN KPI EKSEKUTIF:"],
+                ["1. Total Downtime (DT + PM)", `${totals.totalHours.toFixed(1)} Jam (DT Perbaikan: ${totals.dtRepair.toFixed(1)} Jam, PM Rutin: ${totals.dtPm.toFixed(1)} Jam)`],
+                ["2. Total Biaya Maintenance", `${totals.totalCost} (Cost DT: ${totals.costDt}, Cost PM: ${totals.costPm})`],
+                ["3. Status SPK & Posisi Tiket", `${totals.totalSpk} SPK (1. OPEN: ${spkOpenCount}, 2. ASSIGNMENT: ${spkProgCount}, 3. WAITING TO CLOSE: ${spkWaitCount}, 4. CLOSED: ${spkClosedCount} [${spkCompletionRate}% Tuntas])`],
+                ["4. Data Project Maintenance", `${branchProjects.length} Proyek (4. CLOSED: ${prjDoneCount}, 2. ASSIGNMENT: ${prjProgCount}, 3. WAITING TO CLOSE: ${prjWaitCount}, 1. OPEN: ${prjOpenCount})`],
                 []
             ];
 
@@ -5645,11 +5796,53 @@ ${tagHtmlClose}`;
                 ""
             ];
 
+            const projectHeaders = [
+                "No",
+                "Cabang",
+                "Kode Proyek",
+                "Nama Proyek",
+                "Deskripsi Rinci",
+                "Mesin Terkait",
+                "Kategori",
+                "PIC / Tim Pelaksana",
+                "Progress (%)",
+                "Status Proyek",
+                "Target Selesai",
+                "Dampak Efisiensi & Hasil Mesin"
+            ];
+
+            const projectRows = branchProjects.map((p, idx) => {
+                let statusText = '1. OPEN';
+                if (p.status === 'SELESAI') statusText = '4. CLOSED';
+                else if (p.status === 'PROSES') statusText = '2. ASSIGNMENT';
+                else if (p.status === 'OUTSTANDING') statusText = '3. WAITING TO CLOSE';
+
+                return [
+                    idx + 1,
+                    p.branch,
+                    p.code,
+                    p.name,
+                    p.desc,
+                    p.machine,
+                    p.category,
+                    p.pic,
+                    `${p.progress}%`,
+                    statusText,
+                    p.target,
+                    p.impact
+                ];
+            });
+
             const csvLines = [
                 ...metaRows.map(row => row.map(escapeCSV).join(",")),
+                ["BAGIAN 2: REKAPITULASI DETAIL MESIN (DOWNTIME, BIAYA & SPK)"],
                 tableHeaders.map(escapeCSV).join(","),
                 ...dataRows.map(row => row.map(escapeCSV).join(",")),
-                summaryRow.map(escapeCSV).join(",")
+                summaryRow.map(escapeCSV).join(","),
+                [],
+                ["BAGIAN 4: MONITORING DATA PROJECT MAINTENANCE & UPGRADING"],
+                projectHeaders.map(escapeCSV).join(","),
+                ...projectRows.map(row => row.map(escapeCSV).join(","))
             ];
 
             const csvContent = csvLines.join("\r\n");

@@ -57,8 +57,8 @@
             const kpiPrjSub = document.getElementById('kpiPrjSubtitle');
             if (kpiPrjSub) {
                 kpiPrjSub.textContent = branch === 'ALL'
-                    ? `${doneCount} Closed â€¢ ${progCount} Assignment â€¢ ${outCount} Waiting`
-                    : `Proyek Cabang ${branch}: ${totalCount} Terdaftar â€¢ ${doneCount} Closed`;
+                    ? `${doneCount} Closed • ${progCount} Assignment • ${outCount} Waiting`
+                    : `Proyek Cabang ${branch}: ${totalCount} Terdaftar • ${doneCount} Closed`;
             }
 
             const isPrjContainerHidden = document.getElementById('prjWorkflowDetailContainer')?.classList.contains('hidden');
@@ -89,16 +89,16 @@
             const actProg = document.getElementById('prjAction_progress');
             const actOut = document.getElementById('prjAction_outstanding');
             const actDone = document.getElementById('prjAction_completed');
-            if (actOpen) actOpen.textContent = currentPrjStatus === 'OPEN' ? 'Tutup Rincian â–²' : `Buka ${openCount} Proyek Open â–¼`;
-            if (actProg) actProg.textContent = currentPrjStatus === 'PROSES' ? 'Tutup Rincian â–²' : `Buka ${progCount} Proyek Assignment â–¼`;
-            if (actOut) actOut.textContent = currentPrjStatus === 'OUTSTANDING' ? 'Tutup Rincian â–²' : `Buka ${outCount} Proyek Waiting to Close â–¼`;
-            if (actDone) actDone.textContent = currentPrjStatus === 'SELESAI' ? 'Tutup Rincian â–²' : `Buka ${doneCount} Proyek Closed â–¼`;
+            if (actOpen) actOpen.textContent = currentPrjStatus === 'OPEN' ? 'Tutup Rincian ▲' : `Buka ${openCount} Proyek Open ▼`;
+            if (actProg) actProg.textContent = currentPrjStatus === 'PROSES' ? 'Tutup Rincian ▲' : `Buka ${progCount} Proyek Assignment ▼`;
+            if (actOut) actOut.textContent = currentPrjStatus === 'OUTSTANDING' ? 'Tutup Rincian ▲' : `Buka ${outCount} Proyek Waiting to Close ▼`;
+            if (actDone) actDone.textContent = currentPrjStatus === 'SELESAI' ? 'Tutup Rincian ▲' : `Buka ${doneCount} Proyek Closed ▼`;
 
             // 3. Update Tombol Header Toggle
             const btnToggleText = document.getElementById('btnTogglePrjText');
             if (btnToggleText) {
                 const isContainerHidden = document.getElementById('prjWorkflowDetailContainer')?.classList.contains('hidden');
-                btnToggleText.textContent = isContainerHidden ? `Buka Detail Seluruh ${totalCount} Proyek â–¼` : (currentPrjStatus && currentPrjStatus !== 'ALL' ? `Tampilkan Semua ${totalCount} Proyek` : `Tutup Daftar Proyek â–²`);
+                btnToggleText.textContent = isContainerHidden ? `Buka Detail Seluruh ${totalCount} Proyek ▼` : (currentPrjStatus && currentPrjStatus !== 'ALL' ? `Tampilkan Semua ${totalCount} Proyek` : `Tutup Daftar Proyek ▲`);
             }
 
             // 4. Update Rata-rata Progress & Bar
@@ -173,11 +173,11 @@
                                 <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition block text-xs">${p.code}: ${p.name}</span>
                                 ${getBranchBadge(p.branch)}
                             </div>
-                            <span class="text-[11px] text-gray-500 block mt-0.5">PIC: ${p.pic} â€¢ Target: ${p.target}</span>
+                            <span class="text-[11px] text-gray-500 block mt-0.5">PIC: ${p.pic} • Target: ${p.target}</span>
                         </div>
                         <div class="text-right shrink-0">
                             <span class="px-2 py-0.5 rounded text-[11px] font-bold ${badgeBg}">${statusText}</span>
-                            <span class="block text-[10px] text-indigo-600 font-semibold mt-1 group-hover:underline">Lihat Rincian â†’</span>
+                            <span class="block text-[10px] text-indigo-600 font-semibold mt-1 group-hover:underline">Lihat Rincian →</span>
                         </div>
                     </div>
                 `;
@@ -270,7 +270,7 @@
             if (branch !== 'ALL') branchProjects = branchProjects.filter(p => p.branch === branch);
 
             const btnToggleText = document.getElementById('btnTogglePrjText');
-            if (btnToggleText) btnToggleText.textContent = `Tutup Daftar Proyek â–²`;
+            if (btnToggleText) btnToggleText.textContent = `Tutup Daftar Proyek ▲`;
 
             // Update label aksi dan icon panah di KPI Card 4 atas
             const cardPrjText = document.getElementById('cardPrjActionText');
@@ -283,10 +283,10 @@
             const actProg = document.getElementById('prjAction_progress');
             const actOut = document.getElementById('prjAction_outstanding');
             const actDone = document.getElementById('prjAction_completed');
-            if (actOpen) actOpen.textContent = currentPrjStatus === 'OPEN' ? 'Tutup Rincian â–²' : `Buka ${branchProjects.filter(p => p.status === 'OPEN').length} Proyek Open â–¼`;
-            if (actProg) actProg.textContent = currentPrjStatus === 'PROSES' ? 'Tutup Rincian â–²' : `Buka ${branchProjects.filter(p => p.status === 'PROSES').length} Proyek Assignment â–¼`;
-            if (actOut) actOut.textContent = currentPrjStatus === 'OUTSTANDING' ? 'Tutup Rincian â–²' : `Buka ${branchProjects.filter(p => p.status === 'OUTSTANDING').length} Proyek Waiting to Close â–¼`;
-            if (actDone) actDone.textContent = currentPrjStatus === 'SELESAI' ? 'Tutup Rincian â–²' : `Buka ${branchProjects.filter(p => p.status === 'SELESAI').length} Proyek Closed â–¼`;
+            if (actOpen) actOpen.textContent = currentPrjStatus === 'OPEN' ? 'Tutup Rincian ▲' : `Buka ${branchProjects.filter(p => p.status === 'OPEN').length} Proyek Open ▼`;
+            if (actProg) actProg.textContent = currentPrjStatus === 'PROSES' ? 'Tutup Rincian ▲' : `Buka ${branchProjects.filter(p => p.status === 'PROSES').length} Proyek Assignment ▼`;
+            if (actOut) actOut.textContent = currentPrjStatus === 'OUTSTANDING' ? 'Tutup Rincian ▲' : `Buka ${branchProjects.filter(p => p.status === 'OUTSTANDING').length} Proyek Waiting to Close ▼`;
+            if (actDone) actDone.textContent = currentPrjStatus === 'SELESAI' ? 'Tutup Rincian ▲' : `Buka ${branchProjects.filter(p => p.status === 'SELESAI').length} Proyek Closed ▼`;
 
             setTimeout(() => {
                 container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -307,7 +307,7 @@
             if (branch !== 'ALL') branchProjects = branchProjects.filter(p => p.branch === branch);
 
             const btnToggleText = document.getElementById('btnTogglePrjText');
-            if (btnToggleText) btnToggleText.textContent = `Buka Detail Seluruh ${branchProjects.length} Proyek â–¼`;
+            if (btnToggleText) btnToggleText.textContent = `Buka Detail Seluruh ${branchProjects.length} Proyek ▼`;
 
             // Update label aksi dan icon panah di KPI Card 4 atas
             const cardPrjText = document.getElementById('cardPrjActionText');
@@ -319,10 +319,10 @@
             const actProg = document.getElementById('prjAction_progress');
             const actOut = document.getElementById('prjAction_outstanding');
             const actDone = document.getElementById('prjAction_completed');
-            if (actOpen) actOpen.textContent = `Buka ${branchProjects.filter(p => p.status === 'OPEN').length} Proyek Open â–¼`;
-            if (actProg) actProg.textContent = `Buka ${branchProjects.filter(p => p.status === 'PROSES').length} Proyek Assignment â–¼`;
-            if (actOut) actOut.textContent = `Buka ${branchProjects.filter(p => p.status === 'OUTSTANDING').length} Proyek Waiting to Close â–¼`;
-            if (actDone) actDone.textContent = `Buka ${branchProjects.filter(p => p.status === 'SELESAI').length} Proyek Closed â–¼`;
+            if (actOpen) actOpen.textContent = `Buka ${branchProjects.filter(p => p.status === 'OPEN').length} Proyek Open ▼`;
+            if (actProg) actProg.textContent = `Buka ${branchProjects.filter(p => p.status === 'PROSES').length} Proyek Assignment ▼`;
+            if (actOut) actOut.textContent = `Buka ${branchProjects.filter(p => p.status === 'OUTSTANDING').length} Proyek Waiting to Close ▼`;
+            if (actDone) actDone.textContent = `Buka ${branchProjects.filter(p => p.status === 'SELESAI').length} Proyek Closed ▼`;
         }
 
         function handlePrjSearch(keyword) {
@@ -386,7 +386,7 @@
                         <td class="py-2.5 px-3 border-r border-gray-200 text-center text-xs font-semibold text-gray-600 whitespace-nowrap">${item.target}</td>
                         <td class="py-2.5 px-3 text-center whitespace-nowrap">
                             <button type="button" onclick="event.stopPropagation(); openProjectModal('${item.code}')" class="px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] transition shadow-2xs cursor-pointer">
-                                Detail ðŸ”
+                                Detail 🔍
                             </button>
                         </td>
                     </tr>
@@ -443,7 +443,7 @@
                 milestonesList.innerHTML = milestones.map(m => `
                     <div class="p-2.5 rounded-lg border ${m.done ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200'} flex items-start gap-2.5">
                         <span class="mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full ${m.done ? 'bg-emerald-600 text-white' : 'bg-gray-300 text-gray-700'} text-[11px] font-bold shrink-0">
-                            ${m.done ? 'âœ“' : 'â€¢'}
+                            ${m.done ? '✓' : '•'}
                         </span>
                         <div>
                             <strong class="text-xs ${m.done ? 'text-emerald-900' : 'text-gray-700'} block">${m.name}</strong>

@@ -3,7 +3,6 @@
  * PT Mitra Mulia Makmur (MMM Plastic)
  * Main Application Controller (State, Calculations, Filter Orchestration, Renderers)
  */
-
         // ============================================================================
         // 2. STATE MANAGEMENT
         // ============================================================================
@@ -68,7 +67,7 @@
             const msg = document.getElementById('toastMessage');
 
             msg.textContent = message;
-            icon.textContent = isError ? 'âš ' : 'âœ“';
+            icon.textContent = isError ? '⚠' : '✓';
             icon.className = isError ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold';
 
             toast.classList.remove('hidden');
@@ -130,7 +129,7 @@
             });
 
             machineSelect.innerHTML = `<option value="ALL">Semua Unit Mesin (${filteredMachines.length} Unit)</option>` +
-                filteredMachines.map(m => `<option value="${m.code}">[${m.branch}] ${m.code} â€” ${m.unitName}</option>`).join('');
+                filteredMachines.map(m => `<option value="${m.code}">[${m.branch}] ${m.code} — ${m.unitName}</option>`).join('');
 
             if (filteredMachines.some(m => m.code === currentVal)) {
                 machineSelect.value = currentVal;
@@ -238,7 +237,7 @@
                 const totalHours = totals.dtRepair + totals.dtPm;
                 const dtRatio = totalHours > 0 ? ((totals.dtRepair / totalHours) * 100).toFixed(1) : '72.1';
                 const pmRatio = totalHours > 0 ? ((totals.dtPm / totalHours) * 100).toFixed(1) : '27.9';
-                dtSub.textContent = `Rasio DT: ${dtRatio}% â€¢ PM: ${pmRatio}%`;
+                dtSub.textContent = `Rasio DT: ${dtRatio}% • PM: ${pmRatio}%`;
             }
 
             const costEl = document.getElementById('kpiTotalCost');
@@ -261,8 +260,8 @@
                 const progCount = branchProjects.filter(p => p.status === 'PROSES').length;
                 const outCount = branchProjects.filter(p => p.status === 'OUTSTANDING').length;
                 prjSub.textContent = selectedBranch === 'ALL'
-                    ? `${doneCount} Closed â€¢ ${progCount} Assignment â€¢ ${outCount} Waiting`
-                    : `Proyek Cabang ${selectedBranch}: ${branchProjects.length} Terdaftar â€¢ ${doneCount} Closed`;
+                    ? `${doneCount} Closed • ${progCount} Assignment • ${outCount} Waiting`
+                    : `Proyek Cabang ${selectedBranch}: ${branchProjects.length} Terdaftar • ${doneCount} Closed`;
             }
             const isPrjOpen = !document.getElementById('prjWorkflowDetailContainer')?.classList.contains('hidden');
             const cardPrjActionText = document.getElementById('cardPrjActionText');
@@ -366,7 +365,7 @@
             if (isHidden) {
                 container.classList.remove('hidden');
                 const titleMap = { dt: 'Detail Tabel DT', cost: 'Detail Biaya', spk: 'Detail Tabel SPK', prj: 'Rincian Project' };
-                if (btnText) btnText.textContent = `Tutup ${titleMap[type] || 'Detail'} â–²`;
+                if (btnText) btnText.textContent = `Tutup ${titleMap[type] || 'Detail'} ▲`;
                 if (cardText) cardText.textContent = `Tutup ${titleMap[type] || 'Detail'}`;
                 if (cardIcon) cardIcon.classList.add('rotate-180');
                 setTimeout(() => {
@@ -375,7 +374,7 @@
             } else {
                 container.classList.add('hidden');
                 const titleMap = { dt: 'Detail Tabel DT', cost: 'Detail Biaya', spk: 'Detail Tabel SPK', prj: 'Rincian Project' };
-                if (btnText) btnText.textContent = `Buka ${titleMap[type] || 'Detail'} â–¼`;
+                if (btnText) btnText.textContent = `Buka ${titleMap[type] || 'Detail'} ▼`;
                 if (cardText) cardText.textContent = `Buka ${titleMap[type] || 'Detail'}`;
                 if (cardIcon) cardIcon.classList.remove('rotate-180');
             }
@@ -385,6 +384,7 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        // UPDATE EXECUTIVE ANALYTICS SUMMARY
         function updateModularAnalytics(aggregated, totals, startDate, endDate) {
             // 1. Metrik DT
             const dtHoursEl = document.getElementById('dtSummaryHours');
@@ -445,7 +445,7 @@
             const costPmRatio = totals.totalCost > 0 ? (totals.costPm / totals.totalCost * 100) : 0;
 
             const costSubtitle = document.getElementById('kpiCostRatioSubtitle');
-            if (costSubtitle) costSubtitle.textContent = `Rasio DT: ${costDtRatio.toFixed(1)}% â€¢ PM: ${costPmRatio.toFixed(1)}%`;
+            if (costSubtitle) costSubtitle.textContent = `Rasio DT: ${costDtRatio.toFixed(1)}% • PM: ${costPmRatio.toFixed(1)}%`;
 
             const costDtBarText = document.getElementById('costDtBarText');
             const costPmBarText = document.getElementById('costPmBarText');
@@ -513,7 +513,7 @@
             if (spkBarClosed) spkBarClosed.style.width = `${completionRate}%`;
 
             const spkSubtitle = document.getElementById('kpiSpkStatusSubtitle');
-            if (spkSubtitle) spkSubtitle.textContent = `Closed: ${completionRate}% â€¢ ${inProgressTickets} Assignment â€¢ ${waitingCloseTickets} Waiting`;
+            if (spkSubtitle) spkSubtitle.textContent = `Closed: ${completionRate}% • ${inProgressTickets} Assignment • ${waitingCloseTickets} Waiting`;
 
             // Update label aksi pada 4 kartu SPK dan KPI Card 3
             updateSpkWorkflowCardActions();
@@ -810,7 +810,7 @@
             const keyword = searchEl ? searchEl.value.trim() : '';
 
             document.querySelectorAll('.period-label').forEach(el => {
-                el.textContent = `${formatDateIndo(startDate)} â€” ${formatDateIndo(endDate)}`;
+                el.textContent = `${formatDateIndo(startDate)} — ${formatDateIndo(endDate)}`;
             });
 
             const { aggregated, totals } = computeAggregates(startDate, endDate, branch, category, machineCode, keyword);
@@ -867,11 +867,11 @@
             const endDate = document.getElementById('endDate').value;
 
             document.getElementById('modalCategoryBadge').innerHTML = `${getBranchBadge(machine.branch)} ${getCategoryBadge(machine.category)}`;
-            document.getElementById('modalPeriodBadge').textContent = `${formatDateIndo(startDate)} â€” ${formatDateIndo(endDate)}`;
-            document.getElementById('modalTitle').textContent = `[${machine.branch}] ${machine.code} â€” ${machine.unitName}`;
+            document.getElementById('modalPeriodBadge').textContent = `${formatDateIndo(startDate)} — ${formatDateIndo(endDate)}`;
+            document.getElementById('modalTitle').textContent = `[${machine.branch}] ${machine.code} — ${machine.unitName}`;
 
-            document.getElementById('modalDtInfo').textContent = `${machine.dtRepair.toFixed(1)} Jam â€¢ ${formatIDR(machine.costDt)}`;
-            document.getElementById('modalPmInfo').textContent = `${machine.dtPm.toFixed(1)} Jam â€¢ ${formatIDR(machine.costPm)}`;
+            document.getElementById('modalDtInfo').textContent = `${machine.dtRepair.toFixed(1)} Jam • ${formatIDR(machine.costDt)}`;
+            document.getElementById('modalPmInfo').textContent = `${machine.dtPm.toFixed(1)} Jam • ${formatIDR(machine.costPm)}`;
 
             document.getElementById('modalProblemText').textContent = `Problem: ${machine.problemSummary}`;
             document.getElementById('modalSparepartText').textContent = `Sparepart / Catatan: ${machine.sparepartSummary}`;
@@ -892,7 +892,7 @@
                             ${log.sparepart && log.sparepart !== '-' ? `<p class="text-[11px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 inline-block">Part/Action: ${log.sparepart}</p>` : ''}
                         </div>
                         <div class="text-left sm:text-right shrink-0">
-                            <span class="text-xs font-bold text-red-600 block">DT: ${log.dtRepair.toFixed(1)}j â€¢ PM: ${(log.pmRegular + log.pmDaily).toFixed(1)}j</span>
+                            <span class="text-xs font-bold text-red-600 block">DT: ${log.dtRepair.toFixed(1)}j • PM: ${(log.pmRegular + log.pmDaily).toFixed(1)}j</span>
                             <span class="text-[11px] font-semibold text-gray-700">Cost: ${formatIDR(log.costDt + log.costPm)}</span>
                         </div>
                     </div>
@@ -911,7 +911,6 @@
                 closeModal();
             }
         }
-
 
 
 // ============================================================================

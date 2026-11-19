@@ -28,8 +28,8 @@
             , { code: 'I118-LY305', unitName: 'LIEN YU305', category: 'Injection', branch: 'MMM' }
             , { code: 'I128-LY155', unitName: 'LIEN YU 155', category: 'Injection', branch: 'MMM' }
             , { code: 'I139 - LY600', unitName: 'INJ-139 INJECTION MOULDING LIEN YU (LYTF600SV 380V)', category: 'Injection', branch: 'MMM' }
-            , { code: 'I153-HWD308', unitName: 'HWAMDAÂ 308', category: 'Injection', branch: 'MMM' }
-            , { code: 'I155-HWD308', unitName: 'HWAMDAÂ 308', category: 'Injection', branch: 'MMM' }
+            , { code: 'I153-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMM' }
+            , { code: 'I155-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMM' }
             , { code: 'I161-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMM' }
             , { code: 'I183-BI650', unitName: 'BORCHE BI650', category: 'Injection', branch: 'MMM' }
             , { code: 'I62-LY555', unitName: 'LIEN YU 555', category: 'Injection', branch: 'MMM' }
@@ -145,11 +145,11 @@
             , { code: 'I02-LY155', unitName: 'LIEN YU 155', category: 'Injection', branch: 'MMN' }
             , { code: 'I03-LY155', unitName: 'LIEN YU 155', category: 'Injection', branch: 'MMN' }
             , { code: 'I152-HWD1080', unitName: 'HWAMDA 1080', category: 'Injection', branch: 'MMN' }
-            , { code: 'I154-HWD308', unitName: 'HWAMDAÂ 308', category: 'Injection', branch: 'MMN' }
-            , { code: 'I156-HWD308', unitName: 'HWAMDAÂ 308', category: 'Injection', branch: 'MMN' }
+            , { code: 'I154-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMN' }
+            , { code: 'I156-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMN' }
             , { code: 'I157-HWD700', unitName: 'HWAMDA 700', category: 'Injection', branch: 'MMN' }
             , { code: 'I158-HWD700', unitName: 'HWAMDA 700', category: 'Injection', branch: 'MMN' }
-            , { code: 'I160-HWD1080', unitName: 'HWAMDAÂ 1080', category: 'Injection', branch: 'MMN' }
+            , { code: 'I160-HWD1080', unitName: 'HWAMDA 1080', category: 'Injection', branch: 'MMN' }
             , { code: 'I162-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMN' }
             , { code: 'I163-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMN' }
             , { code: 'I164-HWD308', unitName: 'HWAMDA 308', category: 'Injection', branch: 'MMN' }

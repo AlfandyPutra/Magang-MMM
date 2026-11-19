@@ -42,13 +42,13 @@
                     <!-- Navigation Links (Desktop) -->
                     <nav class="hidden lg:flex items-center space-x-5 text-xs font-medium text-gray-600">
                         <span class="hover:text-blue-600 cursor-pointer">Approval</span>
-                        <span class="hover:text-blue-600 cursor-pointer">Master â–¾</span>
-                        <span class="hover:text-blue-600 cursor-pointer">Project â–¾</span>
-                        <span class="hover:text-blue-600 cursor-pointer">Quality Assurance â–¾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Master ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Project ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Quality Assurance ▾</span>
                         <span class="text-blue-600 font-semibold border-b-2 border-blue-600 py-5 cursor-pointer">Report
-                            â–¾</span>
-                        <span class="hover:text-blue-600 cursor-pointer">Transaction â–¾</span>
-                        <span class="hover:text-blue-600 cursor-pointer">Work â–¾</span>
+                            ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Transaction ▾</span>
+                        <span class="hover:text-blue-600 cursor-pointer">Work ▾</span>
                     </nav>
                 </div>
 
@@ -95,7 +95,7 @@
                 <span class="font-bold text-gray-800">Maintenance Summary (Month to Date)</span>
             </div>
             <div class="text-gray-500">
-                Mode Tampilan: <span class="font-semibold text-blue-700">Month to Date / Custom Date Range</span> â€¢ Klik
+                Mode Tampilan: <span class="font-semibold text-blue-700">Month to Date / Custom Date Range</span> • Klik
                 baris mesin untuk rincian log harian
             </div>
         </div>
@@ -107,7 +107,7 @@
         <!-- Toast Notification Box (Replaces alert) -->
         <div id="toastBox"
             class="hidden fixed bottom-5 right-5 z-50 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg text-sm flex items-center gap-3 transition-opacity duration-300">
-            <span id="toastIcon" class="text-emerald-400 font-bold">âœ“</span>
+            <span id="toastIcon" class="text-emerald-400 font-bold">✓</span>
             <span id="toastMessage">Pesan notifikasi</span>
         </div>
 
@@ -240,7 +240,7 @@
                             class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-700">Aktif</span>
                     </div>
                     <h3 id="kpiDtRepair" class="text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam</h3>
-                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">Rasio DT: 72.1% â€¢ PM: 27.9%</p>
+                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">Rasio DT: 72.1% • PM: 27.9%</p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('dt')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 mt-2 hover:underline cursor-pointer">
                         <!-- <span id="cardDtActionText">Buka Detail Tabel DT</span>
@@ -269,7 +269,7 @@
                     </div>
                     <h3 id="kpiTotalCost" class="text-xl sm:text-2xl font-black text-gray-900 mt-1 tracking-tight">Rp 0
                     </h3>
-                    <p id="kpiCostRatioSubtitle" class="text-[11px] text-gray-500 mt-0.5">Rasio DT: 72.3% â€¢ PM: 27.7%
+                    <p id="kpiCostRatioSubtitle" class="text-[11px] text-gray-500 mt-0.5">Rasio DT: 72.3% • PM: 27.7%
                     </p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('cost')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 mt-2 hover:underline cursor-pointer">
@@ -298,15 +298,15 @@
                             class="hidden inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-blue-100 text-blue-700">Aktif</span>
                     </div>
                     <h3 id="kpiTotalSpk" class="text-2xl font-black text-blue-600 mt-1 tracking-tight">0 SPK</h3>
-                    <p id="kpiSpkStatusSubtitle" class="text-[11px] text-gray-500 mt-0.5">Closed: 94.4% â€¢ 32 Assignment
-                        â€¢ 33 Waiting</p>
+                    <p id="kpiSpkStatusSubtitle" class="text-[11px] text-gray-500 mt-0.5">Closed: 94.4% • 32 Assignment
+                        • 33 Waiting</p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('spk')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 mt-2 hover:underline cursor-pointer">
-                        <span id="cardSpkActionText">Buka Detail Tabel SPK</span>
+                        <!-- <span id="cardSpkActionText">Buka Detail Tabel SPK</span>
                         <svg id="cardSpkActionIcon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none"
                             stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
+                        </svg> -->
                     </span>
                 </div>
                 <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
@@ -327,7 +327,7 @@
                             class="hidden inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">Aktif</span>
                     </div>
                     <h3 id="kpiTotalPrj" class="text-2xl font-black text-indigo-600 mt-1 tracking-tight">13 Project</h3>
-                    <p id="kpiPrjSubtitle" class="text-[11px] text-gray-500 mt-0.5">8 Closed â€¢ 3 Assignment â€¢ 1 Waiting
+                    <p id="kpiPrjSubtitle" class="text-[11px] text-gray-500 mt-0.5">8 Closed • 3 Assignment • 1 Waiting
                     </p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('prj')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 mt-2 hover:underline cursor-pointer">
@@ -370,7 +370,7 @@
                 </div>
                 <button type="button" onclick="toggleDetailTable('dt')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-xs transition cursor-pointer">
-                    <span id="btnToggleDtText">Buka Detail Tabel DT â–¼</span>
+                    <span id="btnToggleDtText">Buka Detail Tabel DT ▼</span>
                 </button>
             </div>
 
@@ -384,7 +384,7 @@
                                 Downtime</span>
                             <span
                                 class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded period-label">01
-                                Nov 2026 â€” 10 Nov 2026</span>
+                                Nov 2026 — 10 Nov 2026</span>
                         </div>
                         <div class="mb-3">
                             <div class="flex items-baseline gap-2">
@@ -543,8 +543,8 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">â‰¤ 3.00%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                        class="text-gray-900 font-mono">≤ 3.00%</strong></span>
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-emerald-700">0.15</strong></span>
                             </div>
                         </div>
@@ -579,7 +579,7 @@
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
                                         class="text-gray-900 font-mono">0 Kasus</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-red-700">0.05</strong></span>
                             </div>
                         </div>
@@ -609,7 +609,7 @@
                 </div>
                 <button type="button" onclick="toggleDetailTable('cost')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition cursor-pointer">
-                    <span id="btnToggleCostText">Buka Detail Tabel Biaya â–¼</span>
+                    <span id="btnToggleCostText">Buka Detail Tabel Biaya ▼</span>
                 </button>
             </div>
 
@@ -623,7 +623,7 @@
                                 Pengeluaran Biaya</span>
                             <span
                                 class="text-[11px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded period-label">01
-                                Nov 2026 â€” 10 Nov 2026</span>
+                                Nov 2026 — 10 Nov 2026</span>
                         </div>
                         <div class="mb-3">
                             <div class="flex items-baseline gap-2">
@@ -783,8 +783,8 @@
                                 <span class="text-lg font-black text-red-600 font-mono">Rp 363.50</span>
                             </div>
                             <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>â‰¤ Rp 220</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 20% â€¢ Skor <strong
+                                <span class="text-gray-500 block">Target: <strong>≤ Rp 220</strong></span>
+                                <span class="text-gray-400 font-mono">Bobot 20% • Skor <strong
                                         class="text-red-700">0.20</strong></span>
                             </div>
                         </div>
@@ -810,8 +810,8 @@
                                 <span class="text-lg font-black text-red-600 font-mono">Rp 402.57</span>
                             </div>
                             <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>â‰¤ Rp 190</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 15% â€¢ Skor <strong
+                                <span class="text-gray-500 block">Target: <strong>≤ Rp 190</strong></span>
+                                <span class="text-gray-400 font-mono">Bobot 15% • Skor <strong
                                         class="text-red-700">0.15</strong></span>
                             </div>
                         </div>
@@ -837,8 +837,8 @@
                                 <span class="text-lg font-black text-red-600 font-mono">5.79%</span>
                             </div>
                             <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>â‰¥ 90%</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 15% â€¢ Skor <strong
+                                <span class="text-gray-500 block">Target: <strong>≥ 90%</strong></span>
+                                <span class="text-gray-400 font-mono">Bobot 15% • Skor <strong
                                         class="text-red-700">0.15</strong></span>
                             </div>
                         </div>
@@ -863,8 +863,8 @@
                                 <span class="text-lg font-black text-emerald-600 font-mono">1,289.6</span>
                             </div>
                             <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>â‰¤ 1,310</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 20% â€¢ Skor <strong
+                                <span class="text-gray-500 block">Target: <strong>≤ 1,310</strong></span>
+                                <span class="text-gray-400 font-mono">Bobot 20% • Skor <strong
                                         class="text-emerald-700">0.80</strong></span>
                             </div>
                         </div>
@@ -894,7 +894,7 @@
                 </div>
                 <button type="button" onclick="toggleDetailTable('spk')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
-                    <span id="btnToggleSpkText">Buka Detail Tabel SPK â–¼</span>
+                    <span id="btnToggleSpkText">Buka Detail Tabel SPK ▼</span>
                 </button>
             </div>
 
@@ -921,7 +921,7 @@
                         SPK-nya</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-amber-200/80 flex items-center justify-between text-[11px] font-bold text-amber-800 group-hover:underline">
-                        <span id="spkAction_OPEN">Buka 2 Tiket Open â–¼</span>
+                        <span id="spkAction_OPEN">Buka 2 Tiket Open ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -947,7 +947,7 @@
                         atau project sedang berjalan</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-blue-200/80 flex items-center justify-between text-[11px] font-bold text-blue-800 group-hover:underline">
-                        <span id="spkAction_PROSES">Buka 32 Tiket Assignment â–¼</span>
+                        <span id="spkAction_PROSES">Buka 32 Tiket Assignment ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -975,7 +975,7 @@
                         disetujui</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-purple-200/80 flex items-center justify-between text-[11px] font-bold text-purple-800 group-hover:underline">
-                        <span id="spkAction_OUTSTANDING">Buka 33 Tiket Waiting to Close â–¼</span>
+                        <span id="spkAction_OUTSTANDING">Buka 33 Tiket Waiting to Close ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1003,7 +1003,7 @@
                         selesai (closed)</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-emerald-200/80 flex items-center justify-between text-[11px] font-bold text-emerald-800 group-hover:underline">
-                        <span id="spkAction_CLOSED">Buka 1.123 Tiket Closed â–¼</span>
+                        <span id="spkAction_CLOSED">Buka 1.123 Tiket Closed ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1209,8 +1209,8 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">â‰¥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-emerald-700">0.20</strong></span>
                             </div>
                         </div>
@@ -1244,8 +1244,8 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">â‰¥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-emerald-700">0.20</strong></span>
                             </div>
                         </div>
@@ -1275,7 +1275,7 @@
                 </div>
                 <button type="button" onclick="toggleDetailTable('prj')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition cursor-pointer">
-                    <span id="btnTogglePrjText">Buka Detail Seluruh 13 Proyek â–¼</span>
+                    <span id="btnTogglePrjText">Buka Detail Seluruh 13 Proyek ▼</span>
                 </button>
             </div>
 
@@ -1301,7 +1301,7 @@
                         perencanaannya / SPK</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-amber-200/80 flex items-center justify-between text-[11px] font-bold text-amber-800 group-hover:underline">
-                        <span id="prjAction_open">Buka 1 Proyek Open â–¼</span>
+                        <span id="prjAction_open">Buka 1 Proyek Open ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1326,7 +1326,7 @@
                         atau project sedang berjalan</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-blue-200/80 flex items-center justify-between text-[11px] font-bold text-blue-800 group-hover:underline">
-                        <span id="prjAction_progress">Buka 3 Proyek Assignment â–¼</span>
+                        <span id="prjAction_progress">Buka 3 Proyek Assignment ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1353,7 +1353,7 @@
                         menunggu disetujui</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-purple-200/80 flex items-center justify-between text-[11px] font-bold text-purple-800 group-hover:underline">
-                        <span id="prjAction_outstanding">Buka 1 Proyek Waiting to Close â–¼</span>
+                        <span id="prjAction_outstanding">Buka 1 Proyek Waiting to Close ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1380,7 +1380,7 @@
                         selesai (closed)</p>
                     <div
                         class="mt-2.5 pt-2 border-t border-emerald-200/80 flex items-center justify-between text-[11px] font-bold text-emerald-800 group-hover:underline">
-                        <span id="prjAction_completed">Buka 8 Proyek Closed â–¼</span>
+                        <span id="prjAction_completed">Buka 8 Proyek Closed ▼</span>
                         <span>&rarr;</span>
                     </div>
                 </div>
@@ -1517,7 +1517,7 @@
                         <span class="text-xs font-bold text-gray-800 uppercase tracking-wider">Highlight Proyek Utama
                             (Klik untuk Detail):</span>
                         <span class="text-[11px] text-indigo-600 font-semibold cursor-pointer hover:underline"
-                            onclick="toggleProjectStatusDetail('ALL')">Lihat Semua â†’</span>
+                            onclick="toggleProjectStatusDetail('ALL')">Lihat Semua →</span>
                     </div>
                     <div id="prjHighlightList" class="space-y-2 text-xs">
                         <!-- Populated dynamically via renderHighlightProjects() -->
@@ -1565,8 +1565,8 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">â‰¥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-emerald-700">0.20</strong></span>
                             </div>
                         </div>
@@ -1600,8 +1600,8 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">â‰¥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% â€¢ Skor Akhir: <strong
+                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
+                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
                                         class="text-emerald-700">0.20</strong></span>
                             </div>
                         </div>
@@ -1618,17 +1618,17 @@
         <div id="dtDetailContainer" class="hidden mt-4 space-y-4">
             <div
                 class="bg-red-50 border border-red-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-red-800">
-                <span class="font-medium">ðŸ“‹ Rincian Lengkap: Menampilkan 5 Mesin Breakdown Tertinggi & Rekap Downtime
+                <span class="font-medium">📋 Rincian Lengkap: Menampilkan 5 Mesin Breakdown Tertinggi & Rekap Downtime
                     Seluruh Unit</span>
                 <button type="button" onclick="toggleDetailTable('dt')"
-                    class="text-red-700 font-bold hover:underline cursor-pointer">Tutup Detail â–²</button>
+                    class="text-red-700 font-bold hover:underline cursor-pointer">Tutup Detail ▲</button>
             </div>
 
             <!-- BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA -->
             <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                     <span class="text-xs font-medium text-gray-500">Rentang Tanggal Aktif: <strong
-                            class="text-gray-800 period-label">01 Nov 2026 â€” 10 Nov 2026</strong></span>
+                            class="text-gray-800 period-label">01 Nov 2026 — 10 Nov 2026</strong></span>
                     <span class="text-xs text-blue-600 font-medium">*Otomatis 5 mesin jam downtime tertinggi</span>
                 </div>
                 <div
@@ -1674,7 +1674,7 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs text-gray-500">Urutan: <strong class="text-gray-700">Total Jam Downtime
-                                Tertinggi â†’ Terendah</strong></span>
+                                Tertinggi → Terendah</strong></span>
                         <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded font-medium">Satuan: Jam
                             (Klik baris untuk detail log)</span>
                     </div>
@@ -1713,11 +1713,11 @@
         <!-- DETAIL 2: TABEL BIAYA MAINTENANCE (COST) -->
         <div id="costDetailContainer" class="hidden mt-4 bg-white rounded-xl shadow-xs border border-gray-200 p-4">
             <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100">
-                <span class="text-xs font-bold text-amber-800">ðŸ“‹ Rincian Lengkap Biaya Pemeliharaan & Detail Problem
+                <span class="text-xs font-bold text-amber-800">📋 Rincian Lengkap Biaya Pemeliharaan & Detail Problem
                     Perbaikan</span>
                 <button type="button" onclick="toggleDetailTable('cost')"
                     class="text-amber-700 font-bold text-xs hover:underline cursor-pointer">Tutup Rincian Biaya
-                    â–²</button>
+                    ▲</button>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <div class="flex items-center gap-2">
@@ -1733,10 +1733,10 @@
                     <span class="text-xs text-gray-700 font-medium">entries</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-xs text-gray-500">Urutan: <strong class="text-gray-700">Total Cost Terbesar â†’
+                    <span class="text-xs text-gray-500">Urutan: <strong class="text-gray-700">Total Cost Terbesar →
                             Terkecil</strong></span>
                     <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded font-medium">Satuan: Rupiah
-                        (IDR) â€¢ Dilengkapi Rincian Problem & Spare Part</span>
+                        (IDR) • Dilengkapi Rincian Problem & Spare Part</span>
                 </div>
             </div>
             <div class="mms-banner-yellow font-bold text-center py-2 px-4 rounded-t-lg text-sm uppercase">
@@ -1775,10 +1775,10 @@
         <!-- DETAIL 3: TABEL SPK PER MESIN -->
         <div id="spkDetailContainer" class="hidden mt-4 bg-white rounded-xl shadow-xs border border-gray-200 p-4">
             <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100">
-                <span class="text-xs font-bold text-blue-800">ðŸ“‹ Rincian Realisasi SPK & Posisi Tiket Kerja per
+                <span class="text-xs font-bold text-blue-800">📋 Rincian Realisasi SPK & Posisi Tiket Kerja per
                     Mesin</span>
                 <button type="button" onclick="toggleDetailTable('spk')"
-                    class="text-blue-700 font-bold text-xs hover:underline cursor-pointer">Tutup Rincian SPK â–²</button>
+                    class="text-blue-700 font-bold text-xs hover:underline cursor-pointer">Tutup Rincian SPK ▲</button>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <div class="flex items-center gap-2">
@@ -1831,11 +1831,11 @@
         <!-- DETAIL 4: TABEL DATA PROJECT LENGKAP -->
         <div id="prjDetailContainer" class="hidden mt-4 bg-white rounded-xl shadow-xs border border-gray-200 p-4">
             <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100">
-                <span class="text-xs font-bold text-indigo-800">ðŸ“‹ Rincian 13 Proyek Maintenance, Modifikasi &
+                <span class="text-xs font-bold text-indigo-800">📋 Rincian 13 Proyek Maintenance, Modifikasi &
                     Upgrading</span>
                 <button type="button" onclick="toggleDetailTable('prj')"
                     class="text-indigo-700 font-bold text-xs hover:underline cursor-pointer">Tutup Daftar Proyek
-                    â–²</button>
+                    ▲</button>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <div class="flex items-center gap-2">
@@ -1884,11 +1884,11 @@
     <footer class="bg-white border-t border-gray-200 py-4 px-4 sm:px-6 lg:px-8 mt-8 text-xs text-gray-500">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>
-                Copyright Â© 2026 <strong class="text-gray-800">PT Mitra Mulia Makmur (MMM Plastic)</strong>. All rights
+                Copyright © 2026 <strong class="text-gray-800">PT Mitra Mulia Makmur (MMM Plastic)</strong>. All rights
                 reserved.
             </div>
             <div class="bg-gray-100 px-3 py-1 rounded text-gray-700 font-medium">
-                MMM Management System â€¢ Prototype MtD v1.0
+                MMM Management System • Prototype MtD v1.0
             </div>
         </div>
     </footer>
@@ -1906,7 +1906,7 @@
                             class="px-2 py-0.5 text-[10px] font-bold uppercase bg-white/20 rounded">Category</span>
                         <span id="modalPeriodBadge" class="text-xs text-blue-100">Periode</span>
                     </div>
-                    <h3 id="modalTitle" class="text-lg font-bold mt-1">Kode Mesin â€” Nama Unit</h3>
+                    <h3 id="modalTitle" class="text-lg font-bold mt-1">Kode Mesin — Nama Unit</h3>
                 </div>
                 <button onclick="closeModal()" class="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1920,11 +1920,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="bg-red-50 border border-red-100 rounded-xl p-3">
                         <span class="text-xs text-red-600 font-semibold block">DT Perbaikan & Cost</span>
-                        <strong id="modalDtInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam â€¢ Rp 0</strong>
+                        <strong id="modalDtInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam • Rp 0</strong>
                     </div>
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-3">
                         <span class="text-xs text-blue-600 font-semibold block">DT Preventive (PM) & Cost</span>
-                        <strong id="modalPmInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam â€¢ Rp 0</strong>
+                        <strong id="modalPmInfo" class="text-base text-gray-900 mt-0.5 block">0 Jam • Rp 0</strong>
                     </div>
                 </div>
 

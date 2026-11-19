@@ -68,7 +68,6 @@
                 };
                 return styles[cat] || 'background-color: #f1f5f9; color: #334155; border: 0.5pt solid #cbd5e1;';
             };
-
             const getProjectStatusBadge = (status) => {
                 if (status === 'SELESAI') {
                     return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 0.5pt solid #a7f3d0; border-radius: 4px;">4. CLOSED</span>';
@@ -238,7 +237,7 @@ ${tagBodyOpen}
   <td colspan="4" style="background-color: #fee2e2; border: 1.5pt solid #ef4444; padding: 10px; text-align: center;">
     <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DOWNTIME (DT)</span><br>
     <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totals.totalHours.toFixed(1)} Jam</span><br>
-    <span style="font-size: 8pt; color: #7f1d1d;">Rasio DT: ${dtRatio}% â€¢ PM: ${pmRatio}%</span>
+    <span style="font-size: 8pt; color: #7f1d1d;">Rasio DT: ${dtRatio}% • PM: ${pmRatio}%</span>
   </td>
   <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
     <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">TOTAL BIAYA MAINTENANCE</span><br>
@@ -248,12 +247,12 @@ ${tagBodyOpen}
   <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
     <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">STATUS SPK & POSISI TIKET</span><br>
     <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totals.totalSpk} SPK</span><br>
-    <span style="font-size: 8pt; color: #1e3a8a;">Closed: ${spkCompletionRate}% â€¢ ${spkProgCount} Assignment â€¢ ${spkWaitCount} Waiting</span>
+    <span style="font-size: 8pt; color: #1e3a8a;">Closed: ${spkCompletionRate}% • ${spkProgCount} Assignment • ${spkWaitCount} Waiting</span>
   </td>
   <td colspan="4" style="background-color: #ede9fe; border: 1.5pt solid #8b5cf6; padding: 10px; text-align: center;">
     <span style="font-size: 8.5pt; color: #5b21b6; font-weight: bold;">DATA PROJECT MAINTENANCE</span><br>
     <span style="font-size: 16pt; color: #6d28d9; font-weight: bold;">${branchProjects.length} Project</span><br>
-    <span style="font-size: 8pt; color: #4c1d95;">${prjDoneCount} Closed â€¢ ${prjProgCount} Assignment â€¢ ${prjWaitCount} Waiting â€¢ ${prjOpenCount} Open</span>
+    <span style="font-size: 8pt; color: #4c1d95;">${prjDoneCount} Closed • ${prjProgCount} Assignment • ${prjWaitCount} Waiting • ${prjOpenCount} Open</span>
   </td>
 </tr>
 <tr><td colspan="16" style="height: 14px;"></td></tr>

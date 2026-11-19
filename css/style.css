@@ -1,41 +1,40 @@
-/**
+﻿/**
  * MMS (Maintenance Management System) - MtD Module
  * PT Mitra Mulia Makmur (MMM Plastic)
  * Global Styles & Custom Components
  */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+            color: #1e293b;
+        }
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f4f6f9;
-    color: #1e293b;
-}
+        /* Warna khas header tabel MMS */
+        .mms-banner-yellow {
+            background-color: #ffc107;
+            color: #1f2937;
+        }
 
-/* Warna khas header tabel MMS */
-.mms-banner-yellow {
-    background-color: #ffc107;
-    color: #1f2937;
-}
+        .mms-thead-blue {
+            background-color: #4472c4;
+            color: #ffffff;
+        }
 
-.mms-thead-blue {
-    background-color: #4472c4;
-    color: #ffffff;
-}
+        /* Custom scrollbar untuk tabel responsif */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
 
-/* Custom scrollbar untuk tabel responsif */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
 
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
 
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }

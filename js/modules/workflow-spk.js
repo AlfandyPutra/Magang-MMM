@@ -85,23 +85,23 @@
 
             if (spkActionOpen) {
                 spkActionOpen.textContent = (!isHidden && currentWorkflowStatus === 'OPEN')
-                    ? 'Tutup Rincian â–²'
-                    : `Buka ${openTickets} Tiket Open â–¼`;
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${openTickets} Tiket Open ▼`;
             }
             if (spkActionProg) {
                 spkActionProg.textContent = (!isHidden && currentWorkflowStatus === 'PROSES')
-                    ? 'Tutup Rincian â–²'
-                    : `Buka ${inProgressTickets} Tiket Assignment â–¼`;
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${inProgressTickets} Tiket Assignment ▼`;
             }
             if (spkActionWait) {
                 spkActionWait.textContent = (!isHidden && currentWorkflowStatus === 'OUTSTANDING')
-                    ? 'Tutup Rincian â–²'
-                    : `Buka ${waitingCloseTickets} Tiket Waiting to Close â–¼`;
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${waitingCloseTickets} Tiket Waiting to Close ▼`;
             }
             if (spkActionClose) {
                 spkActionClose.textContent = (!isHidden && currentWorkflowStatus === 'CLOSED')
-                    ? 'Tutup Rincian â–²'
-                    : `Buka ${closedTickets.toLocaleString('id-ID')} Tiket Closed â–¼`;
+                    ? 'Tutup Rincian ▲'
+                    : `Buka ${closedTickets.toLocaleString('id-ID')} Tiket Closed ▼`;
             }
 
             const cardSpkActionText = document.getElementById('cardSpkActionText');

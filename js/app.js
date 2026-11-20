@@ -333,6 +333,95 @@
             }
         }
 
+        // ============================================================================
+        // 5.1.B SILENT AUTO-CYCLE CONTROLLER (ROTATION EVERY 6 SECONDS ON IDLE)
+        // ============================================================================
+        const KIOSK_SETTINGS = {
+            tabs: ['dt', 'cost', 'spk', 'prj'],
+            cycleIntervalMs: 6000,   // Berpindah setiap 6 detik
+            idleResumeMs: 10000      // Jika kursor diam selama 10 detik, auto-slide lanjut lagi
+        };
+
+        let isKioskEnabled = true;           // Status auto-cycle
+        let isKioskUserInteracting = false;   // Sedang dijeda karena user sedang gerak mouse/klik
+        let kioskIdleTimer = null;           // Timer deteksi kursor diam untuk resume
+        let kioskCycleTimer = null;          // Timer pergantian tab setiap 6 detik
+
+        function initKioskAutoCycle() {
+            setupKioskEventListeners();
+            startKioskCycle();
+        }
+
+        function startKioskCycle() {
+            if (!isKioskEnabled) return;
+            stopKioskCycle();
+
+            kioskCycleTimer = setInterval(() => {
+                advanceKioskTab();
+            }, KIOSK_SETTINGS.cycleIntervalMs);
+        }
+
+        function advanceKioskTab() {
+            const currentIndex = KIOSK_SETTINGS.tabs.indexOf(currentActiveDashboardTab);
+            const nextIndex = (currentIndex + 1) % KIOSK_SETTINGS.tabs.length;
+            const nextTab = KIOSK_SETTINGS.tabs[nextIndex];
+            switchDashboardTab(nextTab);
+        }
+
+        function stopKioskCycle() {
+            if (kioskCycleTimer) {
+                clearInterval(kioskCycleTimer);
+                kioskCycleTimer = null;
+            }
+        }
+
+        function pauseKioskOnInteraction() {
+            if (!isKioskEnabled) return;
+
+            // Hentikan timer putaran otomatis
+            stopKioskCycle();
+            isKioskUserInteracting = true;
+
+            // Reset timer idle resume
+            if (kioskIdleTimer) clearTimeout(kioskIdleTimer);
+
+            // Bila kursor diam / tidak ada interaksi selama 10 detik, lanjutkan kembali
+            kioskIdleTimer = setTimeout(() => {
+                isKioskUserInteracting = false;
+                if (isKioskEnabled) {
+                    startKioskCycle();
+                }
+            }, KIOSK_SETTINGS.idleResumeMs);
+        }
+
+        function toggleKioskAutoCycle(forceState) {
+            if (typeof forceState === 'boolean') {
+                isKioskEnabled = forceState;
+            } else {
+                isKioskEnabled = !isKioskEnabled;
+            }
+
+            if (!isKioskEnabled) {
+                stopKioskCycle();
+                if (kioskIdleTimer) clearTimeout(kioskIdleTimer);
+            } else {
+                isKioskUserInteracting = false;
+                startKioskCycle();
+            }
+        }
+
+        function setupKioskEventListeners() {
+            // Pantau pergerakan mouse, klik, scroll, dan sentuhan
+            const events = ['mousemove', 'mousedown', 'keydown', 'wheel', 'touchstart'];
+            events.forEach(evt => {
+                window.addEventListener(evt, () => {
+                    if (isKioskEnabled) {
+                        pauseKioskOnInteraction();
+                    }
+                }, { passive: true });
+            });
+        }
+
         // FUNGSI TOGGLE DETAIL TABEL (COLLAPSIBLE / ACCORDION)
         function toggleDetailTable(type) {
             if (type === 'prj') {
@@ -953,4 +1042,5 @@ document.addEventListener('keydown', function (event) {
 window.onload = function () {
     updateMachineDropdown();
     applyFilters();
+    initKioskAutoCycle();
 };

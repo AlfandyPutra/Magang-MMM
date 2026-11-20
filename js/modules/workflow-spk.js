@@ -15,6 +15,9 @@
         };
 
         function getTicketWorkflowStatus(index) {
+            if (typeof index === 'number' && dailyMaintenanceLogs[index] && dailyMaintenanceLogs[index].ticketStatus) {
+                return dailyMaintenanceLogs[index].ticketStatus;
+            }
             if (workflowStatusIndices.open.has(index)) return 'OPEN';
             if (workflowStatusIndices.proses.has(index)) return 'PROSES';
             if (workflowStatusIndices.outstanding.has(index)) return 'OUTSTANDING';
@@ -34,7 +37,7 @@
             let list = [];
             for (let i = 0; i < dailyMaintenanceLogs.length; i++) {
                 const log = dailyMaintenanceLogs[i];
-                const ticketStatus = getTicketWorkflowStatus(i);
+                const ticketStatus = log.ticketStatus || getTicketWorkflowStatus(i);
                 if (status && ticketStatus !== status) continue;
 
                 // Match filters

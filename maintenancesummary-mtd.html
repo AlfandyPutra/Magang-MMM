@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -144,6 +144,14 @@
                         title="Unduh format data mentah CSV">
                         <span>CSV</span>
                     </button>
+                    <button onclick="scrollToKpiScorecard()"
+                        class="px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition cursor-pointer"
+                        title="Lihat Tabel Target &amp; Realisasi KPI (Balanced Scorecard)">
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Tabel KPI F1-B1</span>
+                    </button>
                 </div>
             </div>
 
@@ -239,8 +247,8 @@
                         <span id="kpiBadge_dt"
                             class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-700">Aktif</span>
                     </div>
-                    <h3 id="kpiDtRepair" class="text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam</h3>
-                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">Rasio DT: 72.1% • PM: 27.9%</p>
+                    <h3 id="kpiDtRepair" class="text-xl sm:text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam</h3>
+                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">PM Servis: 0 Jam • Total: 0 Jam (0% : 0%)</p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('dt')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 mt-2 hover:underline cursor-pointer">
                         <!-- <span id="cardDtActionText">Buka Detail Tabel DT</span>
@@ -405,6 +413,10 @@
                                 <div id="pmBarRatio" class="bg-blue-500 h-2.5 transition-all duration-500"
                                     style="width: 0%"></div>
                             </div>
+                            <div class="flex justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                <span id="dtHoursNominalText">DT: 0.0 Jam</span>
+                                <span id="pmHoursNominalText">PM: 0.0 Jam</span>
+                            </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="bg-white p-2 rounded-lg border border-gray-200 text-center">
@@ -503,89 +515,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ================= KPI STRATEGIS EKSEKUTIF: UTILISASI MESIN (CUSTOMER PERSPECTIVE) ================= -->
-            <div class="mt-4 pt-3.5 border-t border-gray-100">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold">C1</span>
-                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wide">Target &amp; Realisasi KPI:
-                            Utilisasi Mesin (Customer Perspective)</h4>
-                    </div>
-                    <span class="text-[11px] text-gray-400 font-medium">Sasaran Objektif Strategis Perusahaan</span>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Kartu C1.a -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 font-mono">C1.a</span>
-                                    <span class="text-xs font-bold text-gray-800">% Downtime Teknik All</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Maksimal toleransi akumulasi downtime seluruh unit
-                                    mesin</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Sesuai Target
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-emerald-600 font-mono">3.02%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">≤ 3.00%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-emerald-700">0.15</strong></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Kartu C1.d -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-red-300 hover:bg-red-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 font-mono">C1.d</span>
-                                    <span class="text-xs font-bold text-gray-800">Kasus Downtime Mesin Utility
-                                        All</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Insiden kerusakan mesin utility pendukung (chiller,
-                                    kompresor)</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 border border-red-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> Melebihi Target
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-red-600 font-mono">7 Kasus</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">0 Kasus</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-red-700">0.05</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ==================== MODUL 2: SPOTLIGHT BIAYA (COST & RASIO) ==================== -->
@@ -750,127 +680,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ================= KPI STRATEGIS EKSEKUTIF: EFISIENSI BIAYA (FINANCIAL PERSPECTIVE) ================= -->
-            <div class="mt-4 pt-3.5 border-t border-amber-200/70">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-bold">F1</span>
-                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wide">Target &amp; Realisasi KPI:
-                            Efisiensi Biaya Operasional (Financial Perspective)</h4>
-                    </div>
-                    <span class="text-[11px] text-gray-400 font-medium">Sasaran Objektif Strategis Perusahaan</span>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <!-- F1.a -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-red-300 hover:bg-red-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-1.5 mb-2">
-                            <div>
-                                <span
-                                    class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 font-mono block w-fit mb-1">F1.a</span>
-                                <span class="text-xs font-bold text-gray-800 block line-clamp-1">Gaji Teknik / kg</span>
-                                <span class="text-[10px] text-gray-500">Upah per kg produksi all</span>
-                            </div>
-                            <span
-                                class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 shrink-0">Over
-                                Target</span>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold text-gray-400 block">Realisasi</span>
-                                <span class="text-lg font-black text-red-600 font-mono">Rp 363.50</span>
-                            </div>
-                            <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>≤ Rp 220</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 20% • Skor <strong
-                                        class="text-red-700">0.20</strong></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- F1.d -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-red-300 hover:bg-red-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-1.5 mb-2">
-                            <div>
-                                <span
-                                    class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 font-mono block w-fit mb-1">F1.d</span>
-                                <span class="text-xs font-bold text-gray-800 block line-clamp-1">Biaya MTC / kg</span>
-                                <span class="text-[10px] text-gray-500">Pemeliharaan per volume all</span>
-                            </div>
-                            <span
-                                class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 shrink-0">Over
-                                Target</span>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold text-gray-400 block">Realisasi</span>
-                                <span class="text-lg font-black text-red-600 font-mono">Rp 402.57</span>
-                            </div>
-                            <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>≤ Rp 190</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 15% • Skor <strong
-                                        class="text-red-700">0.15</strong></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- F1.e -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-red-300 hover:bg-red-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-1.5 mb-2">
-                            <div>
-                                <span
-                                    class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 font-mono block w-fit mb-1">F1.e</span>
-                                <span class="text-xs font-bold text-gray-800 block line-clamp-1">% Cost Saving</span>
-                                <span class="text-[10px] text-gray-500">Inovasi reduksi engineering</span>
-                            </div>
-                            <span
-                                class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 shrink-0">Di
-                                Bawah</span>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold text-gray-400 block">Realisasi</span>
-                                <span class="text-lg font-black text-red-600 font-mono">5.79%</span>
-                            </div>
-                            <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>≥ 90%</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 15% • Skor <strong
-                                        class="text-red-700">0.15</strong></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- F1.f -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-1.5 mb-2">
-                            <div>
-                                <span
-                                    class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 text-emerald-800 font-mono block w-fit mb-1">F1.f</span>
-                                <span class="text-xs font-bold text-gray-800 block line-clamp-1">Energi (kWh/ton)</span>
-                                <span class="text-[10px] text-gray-500">Konsumsi listrik per ton</span>
-                            </div>
-                            <span
-                                class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 shrink-0">Tercapai</span>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold text-gray-400 block">Realisasi</span>
-                                <span class="text-lg font-black text-emerald-600 font-mono">1,289.6</span>
-                            </div>
-                            <div class="text-right text-[10px]">
-                                <span class="text-gray-500 block">Target: <strong>≤ 1,310</strong></span>
-                                <span class="text-gray-400 font-mono">Bobot 20% • Skor <strong
-                                        class="text-emerald-700">0.80</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ==================== MODUL 3: SPOTLIGHT STATUS SPK & WORKFLOW ==================== -->
@@ -1168,90 +978,7 @@
                     </div>
                 </div>
             </div>
-            <!-- ================= KPI STRATEGIS EKSEKUTIF: KETEPATAN SPK & PERAWATAN (INTERNAL PROCESS) ================= -->
-            <div class="mt-4 pt-3.5 border-t border-gray-100">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold">B1</span>
-                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wide">Target &amp; Realisasi KPI:
-                            Pelaksanaan Perawatan &amp; SPK (Internal Business Process)</h4>
-                    </div>
-                    <span class="text-[11px] text-gray-400 font-medium">Sasaran Objektif Strategis Perusahaan</span>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- B1.d -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 font-mono">B1.d</span>
-                                    <span class="text-xs font-bold text-gray-800">% Pelaksanaan Perawatan Tepat
-                                        Waktu</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Ketepatan jadwal preventive maintenance berkala
-                                    seluruh mesin</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100% Sempurna
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-emerald-600 font-mono">100.00%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-emerald-700">0.20</strong></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- B1.a -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 font-mono">B1.a</span>
-                                    <span class="text-xs font-bold text-gray-800">% Realisasi SPK Repair &amp; Proyek
-                                        Tepat Waktu</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Tingkat keberhasilan penyelesaian tiket kerja &amp;
-                                    repair sesuai SLA</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Tercapai
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-emerald-600 font-mono">99.66%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-emerald-700">0.20</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ==================== MODUL 4: SPOTLIGHT DATA PROJECT ==================== -->
@@ -1524,88 +1251,220 @@
                     </div>
                 </div>
             </div>
-            <!-- ================= KPI STRATEGIS EKSEKUTIF: KECEPATAN & KETEPATAN PROYEK (SASARAN B1) ================= -->
-            <div class="mt-4 pt-3.5 border-t border-gray-100">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-bold">B1</span>
-                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wide">Target &amp; Realisasi KPI:
-                            Kecepatan &amp; Ketepatan Proyek (Internal Process)</h4>
+
+        </section>
+
+        <!-- ====================================================================== -->
+        <!-- EXECUTIVE KPI STRATEGIC SCORECARD TABLE (SASARAN OBJEKTIF F1.a s/d B1.d) -->
+        <!-- ====================================================================== -->
+        <section id="sectionKpiScorecard" class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-4 transition-all">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                        BSC
                     </div>
-                    <span class="text-[11px] text-gray-400 font-medium">Sasaran Objektif Strategis Perusahaan</span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm sm:text-base font-bold text-gray-800">Perspektif Strategik dengan Sasaran Objektif &amp; KPI</h3>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                Evaluasi s/d B1.d
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-0.5">Rekapitulasi target, polarisasi, bobot, dan skor pencapaian KPI resmi PT Mitra Mulia Makmur (Okt 2025 vs Okt 2026)</p>
+                    </div>
                 </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg">
+                        Total Skor: <strong>1.90</strong> / 3.60 (Bobot 90%)
+                    </span>
+                    <button type="button" onclick="toggleKpiScorecardTable()"
+                        class="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-1.5 transition cursor-pointer">
+                        <span id="kpiScorecardToggleText">Tutup Tabel ▲</span>
+                    </button>
+                </div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- B1.a -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-indigo-100 text-indigo-800 font-mono">B1.a</span>
-                                    <span class="text-xs font-bold text-gray-800">% Realisasi SPK &amp; Proyek Tepat
-                                        Waktu</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Ketepatan waktu milestone &amp; serah terima proyek
-                                    upgrade/overhaul</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> On Target
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-emerald-600 font-mono">99.66%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-emerald-700">0.20</strong></span>
-                            </div>
-                        </div>
-                    </div>
+            <div id="kpiScorecardTableBody" class="overflow-x-auto">
+                <table class="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden border-collapse">
+                    <thead class="bg-[#1e3a8a] text-white font-bold text-[11px] uppercase tracking-wider">
+                        <tr>
+                            <th class="py-2.5 px-3 border border-blue-900 text-center w-12">No</th>
+                            <th class="py-2.5 px-3 border border-blue-900 min-w-[240px]">Perspektif Strategik dengan Sasaran Objektif &amp; KPI</th>
+                            <th class="py-2.5 px-2 border border-blue-900 text-center">Periode</th>
+                            <th class="py-2.5 px-2 border border-blue-900 text-center">Verifikasi</th>
+                            <th class="py-2.5 px-3 border border-blue-900 text-right">Realisasi Okt 2025</th>
+                            <th class="py-2.5 px-3 border border-blue-900 text-right">Target</th>
+                            <th class="py-2.5 px-2 border border-blue-900 text-center">Polarisasi</th>
+                            <th class="py-2.5 px-2 border border-blue-900 text-center">UoM</th>
+                            <th class="py-2.5 px-3 border border-blue-900 text-right">Realisasi Okt 2026</th>
+                            <th class="py-2.5 px-3 border border-blue-900 text-center">Pencapaian Okt 2026</th>
+                            <th class="py-2.5 px-2 border border-blue-900 text-center">Bobot (%)</th>
+                            <th class="py-2.5 px-3 border border-blue-900 text-center min-w-[80px]">SKOR AKHIR</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-800">
+                        <!-- PERSPECTIVE 1: FINANCIAL PERSPECTIVE -->
+                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
+                            <td colspan="10" class="py-2 px-3 tracking-wide">FINANCIAL PERSPECTIVE</td>
+                            <td class="py-2 px-2 text-center">70%</td>
+                            <td class="py-2 px-3 text-center bg-blue-800">1.30</td>
+                        </tr>
+                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
+                            <td class="py-1.5 px-3 text-center font-mono">F1</td>
+                            <td colspan="11" class="py-1.5 px-3">Efisiensi biaya operasional</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.a</td>
+                            <td class="py-2 px-3 font-medium">IDR Gaji teknik / kg produksi all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">HRGA</td>
+                            <td class="py-2 px-3 text-right font-mono">216.13</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">220</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
+                            <td class="py-2 px-2 text-center text-gray-600">IDR</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">363.50</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
+                            <td class="py-2 px-2 text-center font-mono">20</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.20</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.d</td>
+                            <td class="py-2 px-3 font-medium">IDR Pemeliharaan / kg produksi all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">FA</td>
+                            <td class="py-2 px-3 text-right font-mono">167.56</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">190</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
+                            <td class="py-2 px-2 text-center text-gray-600">IDR</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">402.57</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
+                            <td class="py-2 px-2 text-center font-mono">15</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.15</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.e</td>
+                            <td class="py-2 px-3 font-medium">% Cost saving &amp; cost reduction engineering</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">Dir</td>
+                            <td class="py-2 px-3 text-right font-mono">1.93</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">90</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
+                            <td class="py-2 px-2 text-center text-gray-600">%</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">5.79</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
+                            <td class="py-2 px-2 text-center font-mono">15</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.15</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.f</td>
+                            <td class="py-2 px-3 font-medium"># kWh / ton produksi all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">FA</td>
+                            <td class="py-2 px-3 text-right font-mono">1,471.71</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">1,310</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
+                            <td class="py-2 px-2 text-center text-gray-600">kWh</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">1,289.63</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
+                            <td class="py-2 px-2 text-center font-mono">20</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.80</td>
+                        </tr>
 
-                    <!-- B1.d -->
-                    <div
-                        class="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span
-                                        class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-indigo-100 text-indigo-800 font-mono">B1.d</span>
-                                    <span class="text-xs font-bold text-gray-800">% Pelaksanaan Overhaul &amp; Perawatan
-                                        Tepat Waktu</span>
-                                </div>
-                                <p class="text-[11px] text-gray-500">Kepatuhan eksekusi preventive tahunan &amp; jadwal
-                                    trial run mesin</p>
-                            </div>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100% Selesai
-                            </span>
-                        </div>
-                        <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-end justify-between">
-                            <div>
-                                <span
-                                    class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Realisasi
-                                    (Okt 2026)</span>
-                                <span class="text-2xl font-black text-emerald-600 font-mono">100.00%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-700 font-medium block">Target: <strong
-                                        class="text-gray-900 font-mono">≥ 95%</strong></span>
-                                <span class="text-[11px] text-gray-400 font-mono">Bobot: 5% • Skor Akhir: <strong
-                                        class="text-emerald-700">0.20</strong></span>
-                            </div>
-                        </div>
+                        <!-- PERSPECTIVE 2: CUSTOMER PERSPECTIVE -->
+                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
+                            <td colspan="10" class="py-2 px-3 tracking-wide">CUSTOMER PERSPECTIVE</td>
+                            <td class="py-2 px-2 text-center">10%</td>
+                            <td class="py-2 px-3 text-center bg-blue-800">0.20</td>
+                        </tr>
+                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
+                            <td class="py-1.5 px-3 text-center font-mono">C1</td>
+                            <td colspan="11" class="py-1.5 px-3">Utilisasi mesin</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">C1.a</td>
+                            <td class="py-2 px-3 font-medium">% Downtime teknik all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
+                            <td class="py-2 px-3 text-right font-mono">1.03</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">3</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
+                            <td class="py-2 px-2 text-center text-gray-600">%</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">3.02</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">3.00</td>
+                            <td class="py-2 px-2 text-center font-mono">5</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.15</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">C1.d</td>
+                            <td class="py-2 px-3 font-medium"># Kasus downtime mesin utility all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
+                            <td class="py-2 px-3 text-right font-mono">4</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">0</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
+                            <td class="py-2 px-2 text-center text-gray-600">kasus</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">7</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
+                            <td class="py-2 px-2 text-center font-mono">5</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.05</td>
+                        </tr>
+
+                        <!-- PERSPECTIVE 3: INTERNAL BUSINESS PROCESS -->
+                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
+                            <td colspan="10" class="py-2 px-3 tracking-wide">INTERNAL BUSINESS PROCESS</td>
+                            <td class="py-2 px-2 text-center">20%</td>
+                            <td class="py-2 px-3 text-center bg-blue-800">0.40</td>
+                        </tr>
+                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
+                            <td class="py-1.5 px-3 text-center font-mono">B1</td>
+                            <td colspan="11" class="py-1.5 px-3">Meningkatkan kecepatan dan ketepatan penyelesaian project</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.a</td>
+                            <td class="py-2 px-3 font-medium">% Realisasi SPK repair dan proyek tepat waktu all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
+                            <td class="py-2 px-3 text-right font-mono">100.00</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">95</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
+                            <td class="py-2 px-2 text-center text-gray-600">%</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">99.66</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
+                            <td class="py-2 px-2 text-center font-mono">5</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.d</td>
+                            <td class="py-2 px-3 font-medium">% Pelaksanaan perawatan tepat waktu all</td>
+                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
+                            <td class="py-2 px-3 text-right font-mono">100.00</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold">95</td>
+                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
+                            <td class="py-2 px-2 text-center text-gray-600">%</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">100.00</td>
+                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
+                            <td class="py-2 px-2 text-center font-mono">5</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-amber-100/90 text-amber-950 font-extrabold text-xs border-t-2 border-amber-300">
+                        <tr>
+                            <td colspan="10" class="py-2.5 px-3 text-right uppercase tracking-wider">Total Evaluasi Sasaran &amp; KPI (s/d B1.d):</td>
+                            <td class="py-2.5 px-2 text-center font-mono text-sm">90%</td>
+                            <td class="py-2.5 px-3 text-center font-mono text-sm bg-amber-400 text-amber-950">1.90</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                    <div class="flex items-center gap-4">
+                        <span class="font-semibold text-gray-700">Keterangan Skala Nilai:</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-600 inline-block"></span> 1.00 = Di Bawah Target / Over Budget</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> 3.00 = Memenuhi Target (Standar)</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> 4.00 = Sangat Baik / Melampaui Target</span>
                     </div>
+                    <span class="italic text-gray-400">Rumus: Skor Akhir = Pencapaian (1.00 s/d 4.00) × Bobot %</span>
                 </div>
             </div>
         </section>

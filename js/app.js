@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MMS (Maintenance Management System) - MtD Module
  * PT Mitra Mulia Makmur (MMM Plastic)
  * Main Application Controller (State, Calculations, Filter Orchestration, Renderers)
@@ -232,12 +232,13 @@
             const dtEl = document.getElementById('kpiDtRepair');
             if (dtEl) dtEl.textContent = `${totals.dtRepair.toFixed(1)} Jam`;
 
+
             const dtSub = document.getElementById('kpiDtSubtitle');
             if (dtSub) {
                 const totalHours = totals.dtRepair + totals.dtPm;
-                const dtRatio = totalHours > 0 ? ((totals.dtRepair / totalHours) * 100).toFixed(1) : '72.1';
-                const pmRatio = totalHours > 0 ? ((totals.dtPm / totalHours) * 100).toFixed(1) : '27.9';
-                dtSub.textContent = `Rasio DT: ${dtRatio}% • PM: ${pmRatio}%`;
+                const dtRatio = totalHours > 0 ? ((totals.dtRepair / totalHours) * 100).toFixed(1) : '68.0';
+                const pmRatio = totalHours > 0 ? ((totals.dtPm / totalHours) * 100).toFixed(1) : '32.0';
+                dtSub.textContent = `PM Servis: ${totals.dtPm.toFixed(1)} Jam • Total: ${totalHours.toFixed(1)} Jam (${Math.round(dtRatio)}% : ${Math.round(pmRatio)}%)`;
             }
 
             const costEl = document.getElementById('kpiTotalCost');
@@ -384,6 +385,29 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        function scrollToKpiScorecard() {
+            const el = document.getElementById('sectionKpiScorecard');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                el.classList.add('ring-2', 'ring-blue-400');
+                setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400'), 2000);
+            }
+        }
+
+        function toggleKpiScorecardTable() {
+            const tableContainer = document.getElementById('kpiScorecardTableBody');
+            const toggleText = document.getElementById('kpiScorecardToggleText');
+            if (!tableContainer) return;
+            const isHidden = tableContainer.classList.contains('hidden');
+            if (isHidden) {
+                tableContainer.classList.remove('hidden');
+                if (toggleText) toggleText.textContent = 'Tutup Tabel ▲';
+            } else {
+                tableContainer.classList.add('hidden');
+                if (toggleText) toggleText.textContent = 'Buka Tabel ▼';
+            }
+        }
+
         // UPDATE EXECUTIVE ANALYTICS SUMMARY
         function updateModularAnalytics(aggregated, totals, startDate, endDate) {
             // 1. Metrik DT
@@ -403,6 +427,11 @@
             const pmBarRatio = document.getElementById('pmBarRatio');
             if (dtBarRatio) dtBarRatio.style.width = `${dtRatio.toFixed(1)}%`;
             if (pmBarRatio) pmBarRatio.style.width = `${pmRatio.toFixed(1)}%`;
+
+            const dtHoursNominalText = document.getElementById('dtHoursNominalText');
+            const pmHoursNominalText = document.getElementById('pmHoursNominalText');
+            if (dtHoursNominalText) dtHoursNominalText.textContent = `DT: ${totals.dtRepair.toFixed(1)} Jam`;
+            if (pmHoursNominalText) pmHoursNominalText.textContent = `PM: ${totals.dtPm.toFixed(1)} Jam`;
 
             // Rata-rata jam DT harian
             const s = new Date(startDate);
@@ -560,10 +589,6 @@
         // ============================================================================
         // 5. VIEW RENDERERS & PAGINATION
         // ============================================================================
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
         function changePageSize(tableKey, value) {
             const key = tableKey.toLowerCase();
             tablePaginationState[key].pageSize = value === 'all' ? Infinity : parseInt(value, 10);

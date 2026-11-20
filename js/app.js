@@ -476,6 +476,12 @@
 
         function scrollToKpiScorecard() {
             const el = document.getElementById('sectionKpiScorecard');
+            const tableContainer = document.getElementById('kpiScorecardTableBody');
+            const toggleText = document.getElementById('kpiScorecardToggleText');
+            if (tableContainer && tableContainer.classList.contains('hidden')) {
+                tableContainer.classList.remove('hidden');
+                if (toggleText) toggleText.textContent = 'Tutup Tabel ▲';
+            }
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth' });
                 el.classList.add('ring-2', 'ring-blue-400');

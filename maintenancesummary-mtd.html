@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -147,8 +147,10 @@
                     <button onclick="scrollToKpiScorecard()"
                         class="px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition cursor-pointer"
                         title="Lihat Tabel Target &amp; Realisasi KPI (Balanced Scorecard)">
-                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>Tabel KPI F1-B1</span>
                     </button>
@@ -247,8 +249,10 @@
                         <span id="kpiBadge_dt"
                             class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-700">Aktif</span>
                     </div>
-                    <h3 id="kpiDtRepair" class="text-xl sm:text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam</h3>
-                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">PM Servis: 0 Jam • Total: 0 Jam (0% : 0%)</p>
+                    <h3 id="kpiDtRepair" class="text-xl sm:text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam
+                    </h3>
+                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">PM Servis: 0 Jam • Total: 0 Jam (0% :
+                        0%)</p>
                     <span onclick="event.stopPropagation(); toggleDetailTable('dt')"
                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 mt-2 hover:underline cursor-pointer">
                         <!-- <span id="cardDtActionText">Buka Detail Tabel DT</span>
@@ -1257,24 +1261,30 @@
         <!-- ====================================================================== -->
         <!-- EXECUTIVE KPI STRATEGIC SCORECARD TABLE (SASARAN OBJEKTIF F1.a s/d B1.d) -->
         <!-- ====================================================================== -->
-        <section id="sectionKpiScorecard" class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-4 transition-all">
+        <section id="sectionKpiScorecard"
+            class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-4 transition-all">
             <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3.5">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                         BSC
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm sm:text-base font-bold text-gray-800">Perspektif Strategik dengan Sasaran Objektif &amp; KPI</h3>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                            <h3 class="text-sm sm:text-base font-bold text-gray-800">Perspektif Strategik dengan Sasaran
+                                Objektif &amp; KPI</h3>
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
                                 Evaluasi s/d B1.d
                             </span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5">Rekapitulasi target, polarisasi, bobot, dan skor pencapaian KPI resmi PT Mitra Mulia Makmur (Okt 2025 vs Okt 2026)</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Rekapitulasi target, polarisasi, bobot, dan skor
+                            pencapaian KPI resmi PT Mitra Mulia Makmur (Okt 2025 vs Okt 2026)</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg">
+                    <span
+                        class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg">
                         Total Skor: <strong>1.90</strong> / 3.60 (Bobot 90%)
                     </span>
                     <button type="button" onclick="toggleKpiScorecardTable()"
@@ -1285,11 +1295,13 @@
             </div>
 
             <div id="kpiScorecardTableBody" class="hidden overflow-x-auto">
-                <table class="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden border-collapse">
+                <table
+                    class="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden border-collapse">
                     <thead class="bg-[#1e3a8a] text-white font-bold text-[11px] uppercase tracking-wider">
                         <tr>
                             <th class="py-2.5 px-3 border border-blue-900 text-center w-12">No</th>
-                            <th class="py-2.5 px-3 border border-blue-900 min-w-[240px]">Perspektif Strategik dengan Sasaran Objektif &amp; KPI</th>
+                            <th class="py-2.5 px-3 border border-blue-900 min-w-[240px]">Perspektif Strategik dengan
+                                Sasaran Objektif &amp; KPI</th>
                             <th class="py-2.5 px-2 border border-blue-900 text-center">Periode</th>
                             <th class="py-2.5 px-2 border border-blue-900 text-center">Verifikasi</th>
                             <th class="py-2.5 px-3 border border-blue-900 text-right">Realisasi Okt 2025</th>
@@ -1367,7 +1379,8 @@
                             <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">1,289.63</td>
                             <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
                             <td class="py-2 px-2 text-center font-mono">20</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.80</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.80
+                            </td>
                         </tr>
 
                         <!-- PERSPECTIVE 2: CUSTOMER PERSPECTIVE -->
@@ -1392,7 +1405,8 @@
                             <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">3.02</td>
                             <td class="py-2 px-3 text-center font-mono font-bold">3.00</td>
                             <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.15</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.15
+                            </td>
                         </tr>
                         <tr class="hover:bg-slate-50 transition">
                             <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">C1.d</td>
@@ -1417,7 +1431,8 @@
                         </tr>
                         <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
                             <td class="py-1.5 px-3 text-center font-mono">B1</td>
-                            <td colspan="11" class="py-1.5 px-3">Meningkatkan kecepatan dan ketepatan penyelesaian project</td>
+                            <td colspan="11" class="py-1.5 px-3">Meningkatkan kecepatan dan ketepatan penyelesaian
+                                project</td>
                         </tr>
                         <tr class="hover:bg-slate-50 transition">
                             <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.a</td>
@@ -1431,7 +1446,8 @@
                             <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">99.66</td>
                             <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
                             <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20
+                            </td>
                         </tr>
                         <tr class="hover:bg-slate-50 transition">
                             <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.d</td>
@@ -1445,24 +1461,33 @@
                             <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">100.00</td>
                             <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
                             <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20</td>
+                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20
+                            </td>
                         </tr>
                     </tbody>
                     <tfoot class="bg-amber-100/90 text-amber-950 font-extrabold text-xs border-t-2 border-amber-300">
                         <tr>
-                            <td colspan="10" class="py-2.5 px-3 text-right uppercase tracking-wider">Total Evaluasi Sasaran &amp; KPI (s/d B1.d):</td>
+                            <td colspan="10" class="py-2.5 px-3 text-right uppercase tracking-wider">Total Evaluasi
+                                Sasaran &amp; KPI (s/d B1.d):</td>
                             <td class="py-2.5 px-2 text-center font-mono text-sm">90%</td>
                             <td class="py-2.5 px-3 text-center font-mono text-sm bg-amber-400 text-amber-950">1.90</td>
                         </tr>
                     </tfoot>
                 </table>
 
-                <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <div
+                    class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                     <div class="flex items-center gap-4">
                         <span class="font-semibold text-gray-700">Keterangan Skala Nilai:</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-600 inline-block"></span> 1.00 = Di Bawah Target / Over Budget</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> 3.00 = Memenuhi Target (Standar)</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> 4.00 = Sangat Baik / Melampaui Target</span>
+                        <span class="inline-flex items-center gap-1"><span
+                                class="w-3 h-3 rounded bg-red-600 inline-block"></span> 1.00 = Di Bawah Target / Over
+                            Budget</span>
+                        <span class="inline-flex items-center gap-1"><span
+                                class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> 3.00 = Memenuhi Target
+                            (Standar)</span>
+                        <span class="inline-flex items-center gap-1"><span
+                                class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> 4.00 = Sangat Baik /
+                            Melampaui Target</span>
                     </div>
                     <span class="italic text-gray-400">Rumus: Skor Akhir = Pencapaian (1.00 s/d 4.00) × Bobot %</span>
                 </div>

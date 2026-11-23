@@ -113,68 +113,99 @@
 
         <!-- Card 1: Title & Filter Panel -->
         <section class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
-                <div>
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+                <div class="min-w-0 pr-2">
                     <div class="flex items-center gap-2.5">
-                        <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Maintenance Summary</h1>
-                        <span class="px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">MtD &
-                            Custom Date</span>
+                        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Maintenance Summary</h1>
+                        <span class="px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">MtD
+                            &amp; Custom Date</span>
                     </div>
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Rekapitulasi Downtime (Jam), Cost Pemeliharaan
-                        (IDR), dan Realisasi SPK berdasarkan rentang tanggal & kategori mesin.</p>
+                        (IDR), dan Realisasi SPK berdasarkan rentang tanggal &amp; kategori mesin.</p>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2">
-                    <button onclick="resetFilters()"
-                        class="h-9 px-3.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg shadow-2xs flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap"
-                        title="Kembalikan rentang tanggal & filter ke default Month-to-Date">
-                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                        <span>Reset Filter</span>
-                    </button>
+                <!-- Action Controls & Period Shortcuts (Side-by-Side, Zero Stacking/Wrap) -->
+                <div class="flex items-center gap-2.5 shrink-0 flex-nowrap self-start xl:self-center">
+                    <!-- PINTASAN PERIODE (DAILY, WEEKLY, MONTHLY, YEARLY - GAYA RESMI DASHBOARD MMM) -->
+                    <div
+                        class="inline-flex p-0.5 bg-gray-100 rounded-lg border border-gray-200 shadow-2xs h-9 items-center">
+                        <button type="button" id="preset-daily" onclick="setPeriodPreset('daily')"
+                            class="preset-btn px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Daily
+                        </button>
+                        <button type="button" id="preset-weekly" onclick="setPeriodPreset('weekly')"
+                            class="preset-btn px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Weekly
+                        </button>
+                        <button type="button" id="preset-monthly" onclick="setPeriodPreset('monthly')"
+                            class="preset-btn px-3 py-1 text-xs font-bold bg-white text-blue-700 shadow-xs rounded-md transition cursor-pointer border border-gray-200/80">
+                            Monthly
+                        </button>
+                        <button type="button" id="preset-yearly" onclick="setPeriodPreset('yearly')"
+                            class="preset-btn px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Yearly
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons (Matched Height h-9 & Aligned) -->
                     <button onclick="exportToExcel()"
-                        class="h-9 px-4 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs flex items-center gap-2 transition cursor-pointer whitespace-nowrap"
-                        title="Unduh laporan lengkap Excel dengan warna rapi, lebar kolom pas & format Rupiah">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        class="h-9 px-3.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap shrink-0 border border-emerald-600"
+                        title="Unduh laporan lengkap Excel (.XLS)">
+                        <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                         </svg>
-                        <span>Export Excel (.XLS)</span>
+                        <span>Export (.XLS)</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Filter Inputs Grid (6 Columns on Desktop) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 pt-3 items-end">
+            <!-- Filter Bar: Kategori Lini Produksi (Segmented Pills Gaya Resmi MMM Reject Dashboard) -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3.5 pb-2.5 border-b border-gray-100">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-gray-700">Kategori / Divisi:</span>
+                    <input type="hidden" id="filterCategory" value="ALL">
+                    <input type="hidden" id="filterMachineCode" value="ALL">
+                    <input type="hidden" id="searchInput" value="">
+                    <div class="inline-flex p-0.5 bg-gray-100 rounded-lg border border-gray-200 shadow-2xs">
+                        <button type="button" onclick="setCategoryPill('ALL')" id="catPill-ALL"
+                            class="cat-pill px-3 py-1.5 text-xs font-bold bg-[#d92546] text-white rounded-md shadow-xs transition cursor-pointer">
+                            Semua
+                        </button>
+                        <button type="button" onclick="setCategoryPill('Injection')" id="catPill-Injection"
+                            class="cat-pill px-3.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Injection
+                        </button>
+                        <button type="button" onclick="setCategoryPill('Printing')" id="catPill-Printing"
+                            class="cat-pill px-3.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Printing
+                        </button>
+                        <button type="button" onclick="setCategoryPill('Blowing')" id="catPill-Blowing"
+                            class="cat-pill px-3.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Blowing
+                        </button>
+                        <button type="button" onclick="setCategoryPill('Utility')" id="catPill-Utility"
+                            class="cat-pill px-3.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                            Utility
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Inputs Grid (3 Columns: Cabang & Tanggal) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 items-end">
                 <!-- Cabang / Plant -->
                 <div>
                     <label for="filterBranch" class="block text-xs font-semibold text-gray-700 mb-1.5">Cabang /
                         Plant</label>
-                    <select id="filterBranch" onchange="updateMachineDropdown(); applyFilters();"
+                    <select id="filterBranch" onchange="applyFilters();"
                         class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
                         <option value="ALL">Semua Cabang (4 Pabrik)</option>
                         <option value="MMM">MMM (Sidoarjo)</option>
                         <option value="MMN">MMN (Nganjuk)</option>
                         <option value="MMS">MMS (Serang)</option>
                         <option value="MMG">MMG (Malang)</option>
-                    </select>
-                </div>
-
-                <!-- Kategori Mesin -->
-                <div>
-                    <label for="filterCategory" class="block text-xs font-semibold text-gray-700 mb-1.5">Kategori
-                        Mesin</label>
-                    <select id="filterCategory" onchange="updateMachineDropdown(); applyFilters();"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
-                        <option value="ALL">Semua Kategori (248 Mesin)</option>
-                        <option value="Injection">Injection</option>
-                        <option value="Printing">Printing</option>
-                        <option value="Utility">Utility</option>
-                        <option value="Robot">Robot</option>
-                        <option value="Auxiliary">Auxiliary</option>
-                        <option value="Lain-lain">Lain-lain</option>
                     </select>
                 </div>
 
@@ -192,35 +223,6 @@
                     <input type="date" id="endDate" value="2026-11-10" min="2026-08-01" max="2026-11-30"
                         onchange="clearActivePreset(); applyFilters();"
                         class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <!-- Filter Kode Mesin Spesifik -->
-                <div>
-                    <label for="filterMachineCode" class="block text-xs font-semibold text-gray-700 mb-1.5">Filter Unit
-                        Mesin</label>
-                    <select id="filterMachineCode" onchange="applyFilters()"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none">
-                        <option value="ALL">Semua Unit Mesin</option>
-                    </select>
-                </div>
-
-                <!-- Pencarian Cepat / Tombol Cari -->
-                <div>
-                    <label for="searchInput" class="block text-xs font-semibold text-gray-700 mb-1.5">Cari Mesin /
-                        Problem</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="searchInput" onkeyup="applyFilters()"
-                            placeholder="Cari kode/sparepart..."
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
-                        <button onclick="applyFilters()" title="Terapkan Filter"
-                            class="bg-[#0088cc] hover:bg-[#0077b3] text-white px-3.5 py-2 rounded-lg flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </button>
-                    </div>
                 </div>
             </div>
         </section>
@@ -240,16 +242,8 @@
                     </div>
                     <h3 id="kpiDtRepair" class="text-xl sm:text-2xl font-black text-red-600 mt-1 tracking-tight">0 Jam
                     </h3>
-                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">PM Servis: 0 Jam • Total: 0 Jam (0% :
-                        0%)</p>
-                    <span onclick="event.stopPropagation(); toggleDetailTable('dt')"
-                        class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 mt-2 hover:underline cursor-pointer">
-                        <!-- <span id="cardDtActionText">Buka Detail Tabel DT</span>
-                        <svg id="cardDtActionIcon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none"
-                            stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg> -->
-                    </span>
+                    <p id="kpiDtSubtitle" class="text-[11px] text-gray-500 mt-0.5">Kerusakan Mesin &amp; Gangguan
+                        Unconditional</p>
                 </div>
                 <div class="p-2.5 bg-red-50 text-red-600 rounded-lg shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -348,6 +342,8 @@
             </div>
         </section>
 
+
+
         <!-- ====================================================================== -->
         <!-- EXECUTIVE SPOTLIGHT PANEL (1 LAYAR - BERGANTI SESUAI KARTU AKTIF) -->
         <!-- ====================================================================== -->
@@ -356,159 +352,432 @@
         <section id="panelView_dt" class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-3.5">
             <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3.5">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold shadow-xs">
                         <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm sm:text-base font-bold text-gray-800">Analitik Downtime (DT) & Rasio Bulanan
-                        </h3>
-                        <p class="text-xs text-gray-500">Evaluasi performa jam gangguan mesin & perbandingan rasio
-                            bulanan</p>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm sm:text-base font-bold text-gray-800">Analitik Downtime &amp; Problem
+                                Breakdown</h3>
+                            <span
+                                class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded period-label">01
+                                Nov 2026 — 10 Nov 2026</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Detail alat sering bermasalah, penyebab gangguan, dan histori
+                            tren lonjakan kerusakan</p>
                     </div>
                 </div>
-                <button type="button" onclick="toggleDetailTable('dt')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-xs transition cursor-pointer">
-                    <span id="btnToggleDtText">Buka Detail Tabel DT ▼</span>
-                </button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <!-- Col 1: Ringkasan Metrik Data DT (5 cols) -->
-                <div
-                    class="lg:col-span-5 bg-slate-50/90 rounded-xl p-3.5 border border-slate-200 flex flex-col justify-between">
-                    <div>
+                <!-- Col 1: Kategori Masalah & Mesin Sering Bermasalah (5 cols) -->
+                <div class="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
+                    <!-- Kategori Penyebab Downtime -->
+                    <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Kinerja
-                                Downtime</span>
-                            <span
-                                class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded period-label">01
-                                Nov 2026 — 10 Nov 2026</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-cyan-600"></span>
+                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider">Kategori Masalah
+                                    DT</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400">Klik baris untuk rincian</span>
                         </div>
-                        <div class="mb-3">
-                            <div class="flex items-baseline gap-2">
-                                <span id="dtSummaryHours" class="text-3xl font-black text-red-600">0.0</span>
-                                <span class="text-sm font-bold text-gray-700">Jam Total DT</span>
-                            </div>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Akumulasi total jam kerusakan pada filter yang
-                                aktif</p>
-                        </div>
-                        <div class="mb-3 bg-white p-2.5 rounded-lg border border-gray-200">
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-red-600">DT (Kerusakan): <span id="dtRatioText">0%</span></span>
-                                <span class="text-blue-600">PM (Preventive): <span id="pmRatioText">0%</span></span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 flex overflow-hidden">
-                                <div id="dtBarRatio" class="bg-red-500 h-2.5 transition-all duration-500"
-                                    style="width: 0%"></div>
-                                <div id="pmBarRatio" class="bg-blue-500 h-2.5 transition-all duration-500"
-                                    style="width: 0%"></div>
-                            </div>
-                            <div class="flex justify-between text-[11px] text-gray-500 mt-1 font-medium">
-                                <span id="dtHoursNominalText">DT: 0.0 Jam</span>
-                                <span id="pmHoursNominalText">PM: 0.0 Jam</span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="bg-white p-2 rounded-lg border border-gray-200 text-center">
-                                <span class="block text-[10px] text-gray-500 font-medium">Rata-rata / Hari</span>
-                                <span id="dtDailyAvg" class="block text-sm font-bold text-gray-800 mt-0.5">0 Jam</span>
-                            </div>
-                            <div class="bg-white p-2 rounded-lg border border-gray-200 text-center">
-                                <span class="block text-[10px] text-gray-500 font-medium">Mesin Rusak</span>
-                                <span id="dtMachinesCount" class="block text-sm font-bold text-gray-800 mt-0.5">0
-                                    Mesin</span>
-                            </div>
-                            <div class="bg-white p-2 rounded-lg border border-gray-200 text-center">
-                                <span class="block text-[10px] text-gray-500 font-medium">Tiket SPK DT</span>
-                                <span id="dtTicketCount" class="block text-sm font-bold text-gray-800 mt-0.5">0
-                                    SPK</span>
-                            </div>
+                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead
+                                    class="bg-slate-100/90 text-gray-600 font-semibold text-[11px] uppercase border-b border-gray-200">
+                                    <tr>
+                                        <th class="py-1.5 px-2.5">Kategori Masalah</th>
+                                        <th class="py-1.5 px-2 text-right">Jam DT</th>
+                                        <th class="py-1.5 px-2 text-right">Share %</th>
+                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dtCategoryTableBody" class="divide-y divide-gray-100 text-gray-700">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="mt-3 pt-2.5 border-t border-slate-200">
-                        <span class="text-xs font-bold text-gray-700 block mb-1.5">Distribusi Jam DT per Cabang:</span>
-                        <div class="space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between">
-                                <span class="w-12 font-semibold text-gray-600">MMM:</span>
-                                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div id="dtBranchBar_MMM"
-                                        class="bg-red-500 h-2 rounded-full transition-all duration-500"
-                                        style="width: 0%"></div>
-                                </div>
-                                <span id="dtBranchVal_MMM" class="w-20 text-right font-medium text-gray-800">0
-                                    Jam</span>
+
+                    <!-- Top Mesin Paling Bermasalah (Worst Machines) -->
+                    <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider">Top Alat Sering
+                                    Bermasalah</span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="w-12 font-semibold text-gray-600">MMG:</span>
-                                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div id="dtBranchBar_MMG"
-                                        class="bg-red-500 h-2 rounded-full transition-all duration-500"
-                                        style="width: 0%"></div>
-                                </div>
-                                <span id="dtBranchVal_MMG" class="w-20 text-right font-medium text-gray-800">0
-                                    Jam</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="w-12 font-semibold text-gray-600">MMS:</span>
-                                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div id="dtBranchBar_MMS"
-                                        class="bg-red-500 h-2 rounded-full transition-all duration-500"
-                                        style="width: 0%"></div>
-                                </div>
-                                <span id="dtBranchVal_MMS" class="w-20 text-right font-medium text-gray-800">0
-                                    Jam</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="w-12 font-semibold text-gray-600">MMN:</span>
-                                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div id="dtBranchBar_MMN"
-                                        class="bg-red-500 h-2 rounded-full transition-all duration-500"
-                                        style="width: 0%"></div>
-                                </div>
-                                <span id="dtBranchVal_MMN" class="w-20 text-right font-medium text-gray-800">0
-                                    Jam</span>
-                            </div>
+                            <span
+                                class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-100">Worst
+                                5</span>
+                        </div>
+                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead
+                                    class="bg-slate-100/90 text-gray-600 font-semibold text-[11px] uppercase border-b border-gray-200">
+                                    <tr>
+                                        <th class="py-1.5 px-2 text-center w-7">No</th>
+                                        <th class="py-1.5 px-2.5">Unit Mesin</th>
+                                        <th class="py-1.5 px-2">Kendala Utama</th>
+                                        <th class="py-1.5 px-2 text-right">Total DT</th>
+                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dtWorstMachinesTableBody" class="divide-y divide-gray-100 text-gray-700">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Col 2: Grafik Rasio DT Bulanan (7 cols) -->
+                <!-- Col 2: DOWNTIME TREND HISTORY Line Chart (7 cols) -->
                 <div
-                    class="lg:col-span-7 bg-white rounded-xl p-3.5 border border-gray-200 flex flex-col justify-between">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <div>
-                            <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Grafik Rasio DT
-                                Bulanan</span>
-                            <span class="text-[11px] text-gray-500">Perbandingan rasio & jam gangguan per bulan</span>
+                    class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col justify-between">
+                    <div>
+                        <!-- Chart Header with Stats: Latest, Avg, Peak -->
+                        <div
+                            class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
+                            <div>
+                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Downtime
+                                    Trend History (Daily)</span>
+                                <span class="text-[11px] text-gray-500">Histori kurva jam kerusakan riil &amp; toleransi
+                                    target</span>
+                            </div>
+                            <!-- Stat Badges (Gaya Resmi MMM Reject Dashboard: Latest, Avg, Peak) -->
+                            <div class="flex items-center gap-2 text-xs">
+                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
+                                    <span
+                                        class="text-[10px] text-gray-400 block font-medium leading-none">Latest:</span>
+                                    <span id="trendStatLatest" class="font-bold text-cyan-700">0.0 Jam</span>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
+                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Avg:</span>
+                                    <span id="trendStatAvg" class="font-bold text-slate-700">0.0 Jam/H</span>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 px-2 py-1 rounded-md text-right">
+                                    <span class="text-[10px] text-red-500 block font-medium leading-none">Peak:</span>
+                                    <div class="flex items-center gap-1 justify-end">
+                                        <span id="trendStatPeak" class="font-bold text-red-600">0.0 Jam</span>
+                                        <span id="trendStatPeakDate"
+                                            class="text-[10px] text-red-500 font-semibold"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="inline-flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 text-xs">
-                            <button type="button" id="btnChartModeRatio" onclick="setDtChartMode('ratio')"
-                                class="px-2 py-0.5 text-xs font-semibold rounded bg-red-600 text-white transition cursor-pointer shadow-xs">Rasio
-                                DT (%)</button>
-                            <button type="button" id="btnChartModeHours" onclick="setDtChartMode('hours')"
-                                class="px-2 py-0.5 text-xs font-medium rounded bg-transparent text-gray-600 hover:text-gray-900 transition cursor-pointer">Jam
-                                DT (Jam)</button>
+
+                        <!-- Legend Items -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2 text-[11px]">
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                    <span class="w-3 h-1 rounded-full bg-cyan-600 inline-block"></span>
+                                    DT (Kerusakan &amp; Error Mesin)
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 font-medium text-red-600">
+                                    <span class="w-3 border-b-2 border-dashed border-red-500 inline-block"></span>
+                                    Target (≤ 35 Jam/H)
+                                </span>
+                            </div>
+                            <span class="text-gray-400 text-[10px] italic">*Hover titik kurva untuk melihat alasan
+                                lonjakan</span>
+                        </div>
+
+                        <!-- Line Chart Canvas -->
+                        <div class="relative w-full h-56 sm:h-60">
+                            <canvas id="dtTrendLineChart"></canvas>
                         </div>
                     </div>
-                    <div class="relative w-full h-52 sm:h-56">
-                        <canvas id="monthlyDtChart"></canvas>
-                    </div>
-                    <div
-                        class="mt-2 pt-2 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500">
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex items-center gap-1"><span
-                                    class="w-2.5 h-2.5 rounded bg-red-300"></span> Bulan Lalu (Histori)</span>
-                            <span class="inline-flex items-center gap-1"><span
-                                    class="w-2.5 h-2.5 rounded bg-red-600"></span> November (MtD Riil)</span>
+
+                    <!-- Highlight Lonjakan Downtime (Spike Highlights) -->
+                    <div class="mt-2.5 pt-2 border-t border-gray-100">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] font-bold text-gray-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                                Highlight Lonjakan Downtime (Spikes):
+                            </span>
+                            <span class="text-[10px] text-gray-400">Pemicu jam tertinggi di atas rata-rata</span>
                         </div>
-                        <span class="text-gray-400 italic">*Data November tersinkron otomatis dengan filter</span>
+                        <div id="spikeHighlightsContainer" class="flex flex-wrap gap-2 text-[11px]">
+                            <!-- Dynamic spike pills rendered in app.js -->
+                        </div>
                     </div>
                 </div>
             </div>
+        </section>
 
+        <!-- ====================================================================== -->
+        <!-- REAL-TIME MACHINE STATUS PER PLANT (MMM, MMN, MMS, MMG) -->
+        <!-- ====================================================================== -->
+        <section id="sectionMachineStatus"
+            class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    <h3 class="text-sm sm:text-base font-bold text-gray-800 tracking-tight">Machine Status</h3>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span id="machineStatusTotalPill"
+                        class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg border border-slate-200 shadow-2xs">
+                        Total: <strong class="text-slate-900 font-bold">180</strong>
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg border border-slate-200 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Last Updated: <span id="machineStatusLastUpdated">23 Nov 2026, 06:11:57 WIB</span></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Grid 4 Cabang Pabrik -->
+            <div id="machineStatusGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <!-- KARTU 1: MMM (Sidoarjo) -->
+                <div id="machineStatusCard_MMM"
+                    class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-blue-400 transition">
+                    <div class="h-1 bg-blue-600 w-full"></div>
+                    <div class="p-3 sm:p-3.5">
+                        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">MMM</span>
+                                <span class="text-[11px] text-gray-400 font-medium">Sidoarjo</span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium">Total: <strong
+                                    class="text-gray-900 font-bold">68</strong></span>
+                        </div>
+                        <table class="w-full text-xs border-collapse">
+                            <thead>
+                                <tr class="text-[11px] font-semibold text-gray-500">
+                                    <th class="text-left font-normal pb-2 w-[34%]"></th>
+                                    <th class="text-center font-bold text-emerald-600 pb-2 w-[22%]">Running</th>
+                                    <th class="text-center font-bold text-red-600 pb-2 w-[22%]">Breakdown</th>
+                                    <th class="text-center font-bold text-amber-600 pb-2 w-[22%]">No Order</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-[11px]">
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Injection</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">21</span>
+                                    </td>
+                                    <td class="py-1.5 px-0.5 text-center"><button type="button"
+                                            onclick="showBreakdownMachinesModal('MMM', 'Injection')"
+                                            class="inline-block w-full py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold cursor-pointer transition shadow-2xs"
+                                            title="Lihat 4 mesin breakdown">4</button></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">27</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Printing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><button type="button"
+                                            onclick="showBreakdownMachinesModal('MMM', 'Printing')"
+                                            class="inline-block w-full py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold cursor-pointer transition shadow-2xs"
+                                            title="Lihat 3 mesin breakdown">3</button></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">13</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Blowing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KARTU 2: MMN (Nganjuk) -->
+                <div id="machineStatusCard_MMN"
+                    class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-purple-400 transition">
+                    <div class="h-1 bg-purple-600 w-full"></div>
+                    <div class="p-3 sm:p-3.5">
+                        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">MMN</span>
+                                <span class="text-[11px] text-gray-400 font-medium">Nganjuk</span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium">Total: <strong
+                                    class="text-gray-900 font-bold">71</strong></span>
+                        </div>
+                        <table class="w-full text-xs border-collapse">
+                            <thead>
+                                <tr class="text-[11px] font-semibold text-gray-500">
+                                    <th class="text-left font-normal pb-2 w-[34%]"></th>
+                                    <th class="text-center font-bold text-emerald-600 pb-2 w-[22%]">Running</th>
+                                    <th class="text-center font-bold text-red-600 pb-2 w-[22%]">Breakdown</th>
+                                    <th class="text-center font-bold text-amber-600 pb-2 w-[22%]">No Order</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-[11px]">
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Injection</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">11</span>
+                                    </td>
+                                    <td class="py-1.5 px-0.5 text-center"><button type="button"
+                                            onclick="showBreakdownMachinesModal('MMN', 'Injection')"
+                                            class="inline-block w-full py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold cursor-pointer transition shadow-2xs"
+                                            title="Lihat 1 mesin breakdown">1</button></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">53</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Printing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Blowing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">6</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KARTU 3: MMS (Serang) -->
+                <div id="machineStatusCard_MMS"
+                    class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-amber-400 transition">
+                    <div class="h-1 bg-amber-500 w-full"></div>
+                    <div class="p-3 sm:p-3.5">
+                        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">MMS</span>
+                                <span class="text-[11px] text-gray-400 font-medium">Serang</span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium">Total: <strong
+                                    class="text-gray-900 font-bold">25</strong></span>
+                        </div>
+                        <table class="w-full text-xs border-collapse">
+                            <thead>
+                                <tr class="text-[11px] font-semibold text-gray-500">
+                                    <th class="text-left font-normal pb-2 w-[34%]"></th>
+                                    <th class="text-center font-bold text-emerald-600 pb-2 w-[22%]">Running</th>
+                                    <th class="text-center font-bold text-red-600 pb-2 w-[22%]">Breakdown</th>
+                                    <th class="text-center font-bold text-amber-600 pb-2 w-[22%]">No Order</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-[11px]">
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Injection</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><button type="button"
+                                            onclick="showBreakdownMachinesModal('MMS', 'Injection')"
+                                            class="inline-block w-full py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold cursor-pointer transition shadow-2xs"
+                                            title="Lihat 4 mesin breakdown">4</button></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">19</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Printing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">2</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Blowing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KARTU 4: MMG (Malang) -->
+                <div id="machineStatusCard_MMG"
+                    class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-emerald-400 transition">
+                    <div class="h-1 bg-emerald-600 w-full"></div>
+                    <div class="p-3 sm:p-3.5">
+                        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">MMG</span>
+                                <span class="text-[11px] text-gray-400 font-medium">Malang</span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium">Total: <strong
+                                    class="text-gray-900 font-bold">16</strong></span>
+                        </div>
+                        <table class="w-full text-xs border-collapse">
+                            <thead>
+                                <tr class="text-[11px] font-semibold text-gray-500">
+                                    <th class="text-left font-normal pb-2 w-[34%]"></th>
+                                    <th class="text-center font-bold text-emerald-600 pb-2 w-[22%]">Running</th>
+                                    <th class="text-center font-bold text-red-600 pb-2 w-[22%]">Breakdown</th>
+                                    <th class="text-center font-bold text-amber-600 pb-2 w-[22%]">No Order</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-[11px]">
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Injection</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><button type="button"
+                                            onclick="showBreakdownMachinesModal('MMG', 'Injection')"
+                                            class="inline-block w-full py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold cursor-pointer transition shadow-2xs"
+                                            title="Lihat 3 mesin breakdown">3</button></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 rounded bg-amber-50/80 text-amber-700 border border-amber-200 font-bold">13</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Printing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td class="py-1.5 text-gray-700 font-medium">Blowing</td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                    <td class="py-1.5 px-0.5 text-center"><span
+                                            class="inline-block w-full py-1 text-gray-400 font-normal">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ==================== MODUL 2: SPOTLIGHT BIAYA (COST & RASIO) ==================== -->
@@ -639,41 +908,241 @@
                     </div>
                 </div>
 
-                <!-- Col 2: Grafik Rasio & Tren Biaya Bulanan (7 cols) -->
+                <!-- Col 2: COST TREND HISTORY Line Chart (7 cols) -->
                 <div
-                    class="lg:col-span-7 bg-white rounded-xl p-3.5 border border-gray-200 flex flex-col justify-between">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <div>
-                            <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Grafik Rasio
-                                Biaya Bulanan</span>
-                            <span class="text-[11px] text-gray-500">Perbandingan rasio biaya perbaikan (DT) vs
-                                preventive (PM) per bulan</span>
+                    class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col justify-between">
+                    <div>
+                        <!-- Chart Header with Stats: Latest, Avg, Peak -->
+                        <div
+                            class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
+                            <div>
+                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Cost
+                                    Trend History (Daily)</span>
+                                <span class="text-[11px] text-gray-500">Histori kurva pengeluaran biaya perbaikan &amp; toleransi anggaran</span>
+                            </div>
+                            <!-- Stat Badges: Latest, Avg, Peak -->
+                            <div class="flex items-center gap-2 text-xs">
+                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
+                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Latest:</span>
+                                    <span id="costTrendStatLatest" class="font-bold text-amber-700">Rp 0</span>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
+                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Avg:</span>
+                                    <span id="costTrendStatAvg" class="font-bold text-slate-700">Rp 0/H</span>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 px-2 py-1 rounded-md text-right">
+                                    <span class="text-[10px] text-red-500 block font-medium leading-none">Peak:</span>
+                                    <div class="flex items-center gap-1 justify-end">
+                                        <span id="costTrendStatPeak" class="font-bold text-red-600">Rp 0</span>
+                                        <span id="costTrendStatPeakDate" class="text-[10px] text-red-500 font-semibold"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="inline-flex rounded-lg border border-gray-200 p-0.5 bg-gray-50 text-xs">
-                            <button type="button" id="btnCostChartModeRatio" onclick="setCostChartMode('ratio')"
-                                class="px-2 py-0.5 text-xs font-semibold rounded bg-amber-600 text-white transition cursor-pointer shadow-xs">Rasio
-                                Biaya (%)</button>
-                            <button type="button" id="btnCostChartModeAmount" onclick="setCostChartMode('amount')"
-                                class="px-2 py-0.5 text-xs font-medium rounded bg-transparent text-gray-600 hover:text-gray-900 transition cursor-pointer">Nominal
-                                (Juta Rp)</button>
+
+                        <!-- Legend Items -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2 text-[11px]">
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                    <span class="w-3 h-1 rounded-full bg-amber-500 inline-block"></span>
+                                    Biaya Maintenance (IDR)
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                    <span class="w-4 border-b-2 border-dashed border-red-500 inline-block"></span>
+                                    Target Toleransi (≤ Rp 12 Jt/H)
+                                </span>
+                            </div>
+                            <span class="text-gray-400 italic text-[10px]">*Hover titik kurva untuk rincian sparepart/mesin</span>
+                        </div>
+
+                        <!-- Line Chart Canvas -->
+                        <div class="relative w-full h-52 sm:h-56">
+                            <canvas id="costTrendLineChart"></canvas>
                         </div>
                     </div>
-                    <div class="relative w-full h-52 sm:h-56">
-                        <canvas id="monthlyCostChart"></canvas>
-                    </div>
-                    <div
-                        class="mt-2 pt-2 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500">
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex items-center gap-1"><span
-                                    class="w-2.5 h-2.5 rounded bg-amber-400"></span> Bulan Lalu (Histori)</span>
-                            <span class="inline-flex items-center gap-1"><span
-                                    class="w-2.5 h-2.5 rounded bg-amber-600"></span> November (MtD Riil)</span>
+
+                    <!-- Highlight Lonjakan Biaya (Cost Spikes) -->
+                    <div class="mt-2.5 pt-2 border-t border-gray-100 flex items-center gap-2 text-xs">
+                        <span class="font-bold text-amber-800 shrink-0">⚠️ Highlight Lonjakan Biaya (Spikes):</span>
+                        <div id="costSpikeHighlightsContainer" class="flex items-center gap-2 overflow-x-auto py-0.5 scrollbar-thin">
+                            <!-- Populated dynamically via JS -->
                         </div>
-                        <span class="text-gray-400 italic">*Data biaya tersinkron otomatis dengan filter</span>
                     </div>
                 </div>
             </div>
 
+            <!-- PLANT COST HIGHLIGHTS & DETAILS (GAYA RESMI GAMBAR 2 ORION MMS) -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                        <h4 class="text-xs sm:text-sm font-bold text-gray-800 tracking-tight">Plant Cost Highlights &amp; Details</h4>
+                    </div>
+                    <span class="text-xs text-gray-500 font-medium hidden sm:inline-block">Rekapitulasi pengeluaran biaya perbaikan &amp; pemeliharaan 4 pabrik</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <!-- Card MMM -->
+                    <div id="costPlantCard_MMM" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-blue-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMM</span>
+                                        <span class="text-[11px] text-gray-500">Sidoarjo</span>
+                                    </div>
+                                    <span id="costPlantShare_MMM" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">0% Share</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Maintenance Cost</span>
+                                    <h4 id="costPlantTotal_MMM" class="text-lg font-black text-gray-900 mt-0.5">Rp 0</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="costPlantDt_MMM">DT: Rp 0</span>
+                                        <span id="costPlantPm_MMM">PM: Rp 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Highest Cost Machine</span>
+                                        <span id="costPlantTopMachine_MMM" class="font-bold text-gray-800 block truncate mt-0.5">-</span>
+                                        <span id="costPlantTopMachineVal_MMM" class="text-[11px] text-amber-700 font-semibold block">Rp 0</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">🔧 Top Sparepart / Action</span>
+                                        <span id="costPlantTopPart_MMM" class="font-medium text-gray-700 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantCostBreakdown('MMM')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMM Cost Breakdown</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMN -->
+                    <div id="costPlantCard_MMN" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-purple-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-purple-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMN</span>
+                                        <span class="text-[11px] text-gray-500">Nganjuk</span>
+                                    </div>
+                                    <span id="costPlantShare_MMN" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">0% Share</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Maintenance Cost</span>
+                                    <h4 id="costPlantTotal_MMN" class="text-lg font-black text-gray-900 mt-0.5">Rp 0</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="costPlantDt_MMN">DT: Rp 0</span>
+                                        <span id="costPlantPm_MMN">PM: Rp 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Highest Cost Machine</span>
+                                        <span id="costPlantTopMachine_MMN" class="font-bold text-gray-800 block truncate mt-0.5">-</span>
+                                        <span id="costPlantTopMachineVal_MMN" class="text-[11px] text-purple-700 font-semibold block">Rp 0</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">🔧 Top Sparepart / Action</span>
+                                        <span id="costPlantTopPart_MMN" class="font-medium text-gray-700 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantCostBreakdown('MMN')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMN Cost Breakdown</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMS -->
+                    <div id="costPlantCard_MMS" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-amber-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-amber-500 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMS</span>
+                                        <span class="text-[11px] text-gray-500">Serang</span>
+                                    </div>
+                                    <span id="costPlantShare_MMS" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">0% Share</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Maintenance Cost</span>
+                                    <h4 id="costPlantTotal_MMS" class="text-lg font-black text-gray-900 mt-0.5">Rp 0</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="costPlantDt_MMS">DT: Rp 0</span>
+                                        <span id="costPlantPm_MMS">PM: Rp 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Highest Cost Machine</span>
+                                        <span id="costPlantTopMachine_MMS" class="font-bold text-gray-800 block truncate mt-0.5">-</span>
+                                        <span id="costPlantTopMachineVal_MMS" class="text-[11px] text-amber-700 font-semibold block">Rp 0</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">🔧 Top Sparepart / Action</span>
+                                        <span id="costPlantTopPart_MMS" class="font-medium text-gray-700 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantCostBreakdown('MMS')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMS Cost Breakdown</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMG -->
+                    <div id="costPlantCard_MMG" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-emerald-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-emerald-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMG</span>
+                                        <span class="text-[11px] text-gray-500">Malang</span>
+                                    </div>
+                                    <span id="costPlantShare_MMG" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0% Share</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Maintenance Cost</span>
+                                    <h4 id="costPlantTotal_MMG" class="text-lg font-black text-gray-900 mt-0.5">Rp 0</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="costPlantDt_MMG">DT: Rp 0</span>
+                                        <span id="costPlantPm_MMG">PM: Rp 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Highest Cost Machine</span>
+                                        <span id="costPlantTopMachine_MMG" class="font-bold text-gray-800 block truncate mt-0.5">-</span>
+                                        <span id="costPlantTopMachineVal_MMG" class="text-[11px] text-emerald-700 font-semibold block">Rp 0</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">🔧 Top Sparepart / Action</span>
+                                        <span id="costPlantTopPart_MMG" class="font-medium text-gray-700 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantCostBreakdown('MMG')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMG Cost Breakdown</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ==================== MODUL 3: SPOTLIGHT STATUS SPK & WORKFLOW ==================== -->
@@ -972,6 +1441,174 @@
                 </div>
             </div>
 
+            <!-- PLANT SPK PERFORMANCE & HIGHLIGHTS (GAYA RESMI GAMBAR 2) -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        <h4 class="text-xs sm:text-sm font-bold text-gray-800 tracking-tight">Plant SPK Performance &amp; Highlights</h4>
+                    </div>
+                    <span class="text-xs text-gray-500 font-medium hidden sm:inline-block">Realisasi penuntasan tiket kerja SPK per cabang pabrik</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <!-- Card MMM -->
+                    <div id="spkPlantCard_MMM" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-blue-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-blue-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMM</span>
+                                        <span class="text-[11px] text-gray-500">Sidoarjo</span>
+                                    </div>
+                                    <span id="spkPlantRate_MMM" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0% Closed</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Tiket SPK</span>
+                                    <h4 id="spkPlantTotal_MMM" class="text-lg font-black text-gray-900 mt-0.5">0 SPK</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="spkPlantClosed_MMM">Closed: 0</span>
+                                        <span id="spkPlantPending_MMM" class="text-amber-600 font-bold">Pending: 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Tiket Butuh Tindakan</span>
+                                        <span id="spkPlantPendingDetail_MMM" class="font-bold text-amber-700 block truncate mt-0.5">0 Open • 0 Assignment</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚙️ Mesin Terbanyak Tiket SPK</span>
+                                        <span id="spkPlantTopMachine_MMM" class="font-medium text-gray-800 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantSpkBreakdown('MMM')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMM SPK Details</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMN -->
+                    <div id="spkPlantCard_MMN" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-purple-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-purple-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMN</span>
+                                        <span class="text-[11px] text-gray-500">Nganjuk</span>
+                                    </div>
+                                    <span id="spkPlantRate_MMN" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">0% Closed</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Tiket SPK</span>
+                                    <h4 id="spkPlantTotal_MMN" class="text-lg font-black text-gray-900 mt-0.5">0 SPK</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="spkPlantClosed_MMN">Closed: 0</span>
+                                        <span id="spkPlantPending_MMN" class="text-amber-600 font-bold">Pending: 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Tiket Butuh Tindakan</span>
+                                        <span id="spkPlantPendingDetail_MMN" class="font-bold text-amber-700 block truncate mt-0.5">0 Open • 0 Assignment</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚙️ Mesin Terbanyak Tiket SPK</span>
+                                        <span id="spkPlantTopMachine_MMN" class="font-medium text-gray-800 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantSpkBreakdown('MMN')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMN SPK Details</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMS -->
+                    <div id="spkPlantCard_MMS" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-amber-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-amber-500 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMS</span>
+                                        <span class="text-[11px] text-gray-500">Serang</span>
+                                    </div>
+                                    <span id="spkPlantRate_MMS" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">0% Closed</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Tiket SPK</span>
+                                    <h4 id="spkPlantTotal_MMS" class="text-lg font-black text-gray-900 mt-0.5">0 SPK</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="spkPlantClosed_MMS">Closed: 0</span>
+                                        <span id="spkPlantPending_MMS" class="text-amber-600 font-bold">Pending: 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Tiket Butuh Tindakan</span>
+                                        <span id="spkPlantPendingDetail_MMS" class="font-bold text-amber-700 block truncate mt-0.5">0 Open • 0 Assignment</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚙️ Mesin Terbanyak Tiket SPK</span>
+                                        <span id="spkPlantTopMachine_MMS" class="font-medium text-gray-800 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantSpkBreakdown('MMS')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMS SPK Details</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card MMG -->
+                    <div id="spkPlantCard_MMG" class="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-emerald-400 hover:shadow-xs transition">
+                        <div class="h-1 bg-emerald-600 w-full"></div>
+                        <div class="p-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-gray-900 text-sm">MMG</span>
+                                        <span class="text-[11px] text-gray-500">Malang</span>
+                                    </div>
+                                    <span id="spkPlantRate_MMG" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0% Closed</span>
+                                </div>
+                                <div class="mt-2.5">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Tiket SPK</span>
+                                    <h4 id="spkPlantTotal_MMG" class="text-lg font-black text-gray-900 mt-0.5">0 SPK</h4>
+                                    <div class="flex items-center justify-between text-[11px] text-gray-500 mt-1 font-medium">
+                                        <span id="spkPlantClosed_MMG">Closed: 0</span>
+                                        <span id="spkPlantPending_MMG" class="text-amber-600 font-bold">Pending: 0</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 space-y-2 text-xs">
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚠️ Tiket Butuh Tindakan</span>
+                                        <span id="spkPlantPendingDetail_MMG" class="font-bold text-amber-700 block truncate mt-0.5">0 Open • 0 Assignment</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">⚙️ Mesin Terbanyak Tiket SPK</span>
+                                        <span id="spkPlantTopMachine_MMG" class="font-medium text-gray-800 block truncate mt-0.5">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPlantSpkBreakdown('MMG')"
+                                class="w-full mt-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center justify-between px-3 transition cursor-pointer shadow-xs">
+                                <span>View MMG SPK Details</span>
+                                <span>&gt;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ==================== MODUL 4: SPOTLIGHT DATA PROJECT ==================== -->
@@ -1247,241 +1884,7 @@
 
         </section>
 
-        <!-- ====================================================================== -->
-        <!-- EXECUTIVE KPI STRATEGIC SCORECARD TABLE (SASARAN OBJEKTIF F1.a s/d B1.d) -->
-        <!-- ====================================================================== -->
-        <section id="sectionKpiScorecard"
-            class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5 mt-4 transition-all">
-            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3.5">
-                <div class="flex items-center gap-2.5">
-                    <div
-                        class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                        BSC
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-sm sm:text-base font-bold text-gray-800">Perspektif Strategik dengan Sasaran
-                                Objektif &amp; KPI</h3>
-                            <span
-                                class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                                Evaluasi s/d B1.d
-                            </span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-0.5">Rekapitulasi target, polarisasi, bobot, dan skor
-                            pencapaian KPI resmi PT Mitra Mulia Makmur (Okt 2025 vs Okt 2026)</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span
-                        class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg">
-                        Total Skor: <strong>1.90</strong> / 3.60 (Bobot 90%)
-                    </span>
-                    <button type="button" onclick="toggleKpiScorecardTable()"
-                        class="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-1.5 transition cursor-pointer">
-                        <span id="kpiScorecardToggleText">Buka Tabel ▼</span>
-                    </button>
-                </div>
-            </div>
 
-            <div id="kpiScorecardTableBody" class="hidden overflow-x-auto">
-                <table
-                    class="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden border-collapse">
-                    <thead class="bg-[#1e3a8a] text-white font-bold text-[11px] uppercase tracking-wider">
-                        <tr>
-                            <th class="py-2.5 px-3 border border-blue-900 text-center w-12">No</th>
-                            <th class="py-2.5 px-3 border border-blue-900 min-w-[240px]">Perspektif Strategik dengan
-                                Sasaran Objektif &amp; KPI</th>
-                            <th class="py-2.5 px-2 border border-blue-900 text-center">Periode</th>
-                            <th class="py-2.5 px-2 border border-blue-900 text-center">Verifikasi</th>
-                            <th class="py-2.5 px-3 border border-blue-900 text-right">Realisasi Okt 2025</th>
-                            <th class="py-2.5 px-3 border border-blue-900 text-right">Target</th>
-                            <th class="py-2.5 px-2 border border-blue-900 text-center">Polarisasi</th>
-                            <th class="py-2.5 px-2 border border-blue-900 text-center">UoM</th>
-                            <th class="py-2.5 px-3 border border-blue-900 text-right">Realisasi Okt 2026</th>
-                            <th class="py-2.5 px-3 border border-blue-900 text-center">Pencapaian Okt 2026</th>
-                            <th class="py-2.5 px-2 border border-blue-900 text-center">Bobot (%)</th>
-                            <th class="py-2.5 px-3 border border-blue-900 text-center min-w-[80px]">SKOR AKHIR</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 text-gray-800">
-                        <!-- PERSPECTIVE 1: FINANCIAL PERSPECTIVE -->
-                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
-                            <td colspan="10" class="py-2 px-3 tracking-wide">FINANCIAL PERSPECTIVE</td>
-                            <td class="py-2 px-2 text-center">70%</td>
-                            <td class="py-2 px-3 text-center bg-blue-800">1.30</td>
-                        </tr>
-                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
-                            <td class="py-1.5 px-3 text-center font-mono">F1</td>
-                            <td colspan="11" class="py-1.5 px-3">Efisiensi biaya operasional</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.a</td>
-                            <td class="py-2 px-3 font-medium">IDR Gaji teknik / kg produksi all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">HRGA</td>
-                            <td class="py-2 px-3 text-right font-mono">216.13</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">220</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
-                            <td class="py-2 px-2 text-center text-gray-600">IDR</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">363.50</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
-                            <td class="py-2 px-2 text-center font-mono">20</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.20</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.d</td>
-                            <td class="py-2 px-3 font-medium">IDR Pemeliharaan / kg produksi all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">FA</td>
-                            <td class="py-2 px-3 text-right font-mono">167.56</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">190</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
-                            <td class="py-2 px-2 text-center text-gray-600">IDR</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">402.57</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
-                            <td class="py-2 px-2 text-center font-mono">15</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.15</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.e</td>
-                            <td class="py-2 px-3 font-medium">% Cost saving &amp; cost reduction engineering</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Tahunan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">Dir</td>
-                            <td class="py-2 px-3 text-right font-mono">1.93</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">90</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
-                            <td class="py-2 px-2 text-center text-gray-600">%</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">5.79</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
-                            <td class="py-2 px-2 text-center font-mono">15</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.15</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">F1.f</td>
-                            <td class="py-2 px-3 font-medium"># kWh / ton produksi all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">FA</td>
-                            <td class="py-2 px-3 text-right font-mono">1,471.71</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">1,310</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
-                            <td class="py-2 px-2 text-center text-gray-600">kWh</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">1,289.63</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
-                            <td class="py-2 px-2 text-center font-mono">20</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.80
-                            </td>
-                        </tr>
-
-                        <!-- PERSPECTIVE 2: CUSTOMER PERSPECTIVE -->
-                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
-                            <td colspan="10" class="py-2 px-3 tracking-wide">CUSTOMER PERSPECTIVE</td>
-                            <td class="py-2 px-2 text-center">10%</td>
-                            <td class="py-2 px-3 text-center bg-blue-800">0.20</td>
-                        </tr>
-                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
-                            <td class="py-1.5 px-3 text-center font-mono">C1</td>
-                            <td colspan="11" class="py-1.5 px-3">Utilisasi mesin</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">C1.a</td>
-                            <td class="py-2 px-3 font-medium">% Downtime teknik all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
-                            <td class="py-2 px-3 text-right font-mono">1.03</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">3</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
-                            <td class="py-2 px-2 text-center text-gray-600">%</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">3.02</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">3.00</td>
-                            <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.15
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">C1.d</td>
-                            <td class="py-2 px-3 font-medium"># Kasus downtime mesin utility all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
-                            <td class="py-2 px-3 text-right font-mono">4</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">0</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Min</td>
-                            <td class="py-2 px-2 text-center text-gray-600">kasus</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-red-600">7</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">1.00</td>
-                            <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-red-600 text-white">0.05</td>
-                        </tr>
-
-                        <!-- PERSPECTIVE 3: INTERNAL BUSINESS PROCESS -->
-                        <tr class="bg-[#2563eb] text-white font-bold text-xs">
-                            <td colspan="10" class="py-2 px-3 tracking-wide">INTERNAL BUSINESS PROCESS</td>
-                            <td class="py-2 px-2 text-center">20%</td>
-                            <td class="py-2 px-3 text-center bg-blue-800">0.40</td>
-                        </tr>
-                        <tr class="bg-blue-50/80 font-bold text-blue-950 text-xs border-y border-blue-200">
-                            <td class="py-1.5 px-3 text-center font-mono">B1</td>
-                            <td colspan="11" class="py-1.5 px-3">Meningkatkan kecepatan dan ketepatan penyelesaian
-                                project</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.a</td>
-                            <td class="py-2 px-3 font-medium">% Realisasi SPK repair dan proyek tepat waktu all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
-                            <td class="py-2 px-3 text-right font-mono">100.00</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">95</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
-                            <td class="py-2 px-2 text-center text-gray-600">%</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">99.66</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
-                            <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-2 px-3 text-center font-mono font-bold text-gray-700">B1.d</td>
-                            <td class="py-2 px-3 font-medium">% Pelaksanaan perawatan tepat waktu all</td>
-                            <td class="py-2 px-2 text-center text-gray-600">Bulanan</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-700">GM</td>
-                            <td class="py-2 px-3 text-right font-mono">100.00</td>
-                            <td class="py-2 px-3 text-right font-mono font-semibold">95</td>
-                            <td class="py-2 px-2 text-center font-semibold text-gray-600">Max</td>
-                            <td class="py-2 px-2 text-center text-gray-600">%</td>
-                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">100.00</td>
-                            <td class="py-2 px-3 text-center font-mono font-bold">4.00</td>
-                            <td class="py-2 px-2 text-center font-mono">5</td>
-                            <td class="py-2 px-3 text-center font-mono font-extrabold bg-emerald-600 text-white">0.20
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot class="bg-amber-100/90 text-amber-950 font-extrabold text-xs border-t-2 border-amber-300">
-                        <tr>
-                            <td colspan="10" class="py-2.5 px-3 text-right uppercase tracking-wider">Total Evaluasi
-                                Sasaran &amp; KPI (s/d B1.d):</td>
-                            <td class="py-2.5 px-2 text-center font-mono text-sm">90%</td>
-                            <td class="py-2.5 px-3 text-center font-mono text-sm bg-amber-400 text-amber-950">1.90</td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <div
-                    class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                    <div class="flex items-center gap-4">
-                        <span class="font-semibold text-gray-700">Keterangan Skala Nilai:</span>
-                        <span class="inline-flex items-center gap-1"><span
-                                class="w-3 h-3 rounded bg-red-600 inline-block"></span> 1.00 = Di Bawah Target / Over
-                            Budget</span>
-                        <span class="inline-flex items-center gap-1"><span
-                                class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> 3.00 = Memenuhi Target
-                            (Standar)</span>
-                        <span class="inline-flex items-center gap-1"><span
-                                class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> 4.00 = Sangat Baik /
-                            Melampaui Target</span>
-                    </div>
-                    <span class="italic text-gray-400">Rumus: Skor Akhir = Pencapaian (1.00 s/d 4.00) × Bobot %</span>
-                </div>
-            </div>
-        </section>
 
         <!-- ====================================================================== -->
         <!-- COLLAPSIBLE DETAIL ACCORDIONS (DEFAULT TERTUTUP - 100% 1 LAYAR NYAMAN) -->
@@ -1491,44 +1894,12 @@
         <div id="dtDetailContainer" class="hidden mt-4 space-y-4">
             <div
                 class="bg-red-50 border border-red-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-red-800">
-                <span class="font-medium">📋 Rincian Lengkap: Menampilkan 5 Mesin Breakdown Tertinggi & Rekap Downtime
-                    Seluruh Unit</span>
-                <button type="button" onclick="toggleDetailTable('dt')"
-                    class="text-red-700 font-bold hover:underline cursor-pointer">Tutup Detail ▲</button>
+                <span class="font-medium">📋 Rincian Log Rekap Downtime Seluruh Unit Mesin
+                    <button type="button" onclick="toggleDetailTable('dt')"
+                        class="text-red-700 font-bold hover:underline cursor-pointer">Tutup Detail ▲</button>
             </div>
 
-            <!-- BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA -->
-            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                    <span class="text-xs font-medium text-gray-500">Rentang Tanggal Aktif: <strong
-                            class="text-gray-800 period-label">01 Nov 2026 — 10 Nov 2026</strong></span>
-                    <span class="text-xs text-blue-600 font-medium">*Otomatis 5 mesin jam downtime tertinggi</span>
-                </div>
-                <div
-                    class="mms-banner-yellow font-bold text-center py-2 px-4 rounded-t-lg text-sm uppercase tracking-wide">
-                    Top 5 Downtime Terbesar & Detail Problem Utama
-                </div>
-                <div class="overflow-x-auto border border-t-0 border-gray-200 rounded-b-lg">
-                    <table class="w-full text-xs sm:text-sm text-left border-collapse">
-                        <thead class="mms-thead-blue">
-                            <tr>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40 text-center w-14">Rank</th>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40 text-center w-20">Cabang</th>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40 whitespace-nowrap">Kode Mesin</th>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40">Nama / Spesifikasi Unit</th>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40">Kategori</th>
-                                <th class="py-2.5 px-3 border-r border-blue-400/40 text-right whitespace-nowrap">
-                                    Downtime (Jam)</th>
-                                <th
-                                    class="py-2.5 px-3 border-r border-blue-400/40 text-right font-bold bg-[#365fa8] whitespace-nowrap">
-                                    Total DT + PM (Jam)</th>
-                                <th class="py-2.5 px-3 min-w-[280px]">Detail Problem Utama</th>
-                            </tr>
-                        </thead>
-                        <tbody id="top5TableBody" class="divide-y divide-gray-200"></tbody>
-                    </table>
-                </div>
-            </div>
+
 
             <!-- BAGIAN 2: TABEL REKAP DOWNTIME MESIN (JAM) -->
             <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4">
@@ -1765,6 +2136,150 @@
             </div>
         </div>
     </footer>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL RINCIAN MESIN BREAKDOWN PER PABRIK & KATEGORI -->
+    <!-- ====================================================================== -->
+    <div id="breakdownMachinesModal" onclick="closeBreakdownMachinesOnBackdrop(event)"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-5 transition-opacity duration-200">
+        <div
+            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Header -->
+            <div
+                class="p-4 sm:p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-red-50/60">
+                <div class="flex items-center gap-2.5">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm shadow-2xs">
+                        ⚠️
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="breakdownModalTitle" class="text-base sm:text-lg font-bold text-gray-800">Daftar
+                                Mesin Breakdown</h3>
+                            <span id="breakdownModalCountBadge"
+                                class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">4
+                                Mesin</span>
+                        </div>
+                        <p id="breakdownModalSubtitle" class="text-xs text-gray-500 mt-0.5">Unit mesin yang sedang dalam
+                            penanganan perbaikan teknisi</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeBreakdownMachinesModal()"
+                    class="w-7 h-7 rounded-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer shadow-xs">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Modal Body Table -->
+            <div class="overflow-y-auto p-4 sm:p-5 flex-1">
+                <div class="overflow-hidden rounded-xl border border-gray-200 shadow-2xs">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead
+                            class="bg-slate-100/90 text-gray-700 font-semibold text-[11px] uppercase border-b border-gray-200">
+                            <tr>
+                                <th class="py-2.5 px-3 text-center w-12">No</th>
+                                <th class="py-2.5 px-3">Kode Mesin</th>
+                                <th class="py-2.5 px-3">Nama Unit Mesin</th>
+                                <th class="py-2.5 px-3">Masalah Utama / Tiket SPK</th>
+                                <th class="py-2.5 px-3 text-right">Downtime MtD</th>
+                                <th class="py-2.5 px-3 text-center w-24">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdownModalTableBody" class="divide-y divide-gray-100 text-gray-800">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <span class="text-xs text-gray-500 italic">Klik tombol 🔍 pada mesin untuk melihat catatan riwayat tiket
+                    perbaikan</span>
+                <button type="button" onclick="closeBreakdownMachinesModal()"
+                    class="px-4 py-1.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold text-xs rounded-lg transition cursor-pointer shadow-xs">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL DRILLDOWN DETAIL DOWNTIME (BREAKDOWN SPK & TINDAKAN) -->
+    <!-- ====================================================================== -->
+    <div id="dtBreakdownModal" onclick="closeDtBreakdownOnBackdrop(event)"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-5 transition-opacity duration-200">
+        <div
+            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Header -->
+            <div
+                class="p-4 sm:p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-cyan-600 inline-block"></span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="dtBreakdownModalTitle" class="text-base sm:text-lg font-bold text-gray-800">Detail
+                                Breakdown Kerusakan</h3>
+                            <span id="dtBreakdownModalHoursBadge"
+                                class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">Total
+                                DT: 0 Jam</span>
+                        </div>
+                        <p id="dtBreakdownModalSubtitle" class="text-xs text-gray-500 mt-0.5">Rincian tiket SPK
+                            kerusakan riil, alarm &amp; error mesin (Murni DT)</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <span id="dtBreakdownItemCount"
+                        class="text-xs text-gray-500 font-medium hidden sm:inline-block">1-10 of 15 Items</span>
+                    <div class="relative">
+                        <input type="text" id="dtBreakdownSearchInput" oninput="filterDtBreakdownTable(this.value)"
+                            placeholder="Cari SPK / problem..."
+                            class="pl-7 pr-2.5 py-1 text-xs border border-gray-300 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-blue-500 w-36 sm:w-48 bg-white" />
+                        <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2 top-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button type="button" onclick="closeDtBreakdownModal()"
+                        class="w-7 h-7 rounded-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer shadow-xs">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Table Content (Zero padding on scroll container so sticky header sticks directly without bleed-through) -->
+            <div class="flex-1 overflow-y-auto relative bg-white">
+                <table class="w-full text-left text-xs border-separate border-spacing-0">
+                    <thead class="sticky top-0 z-20 bg-slate-100 text-gray-700 font-bold uppercase tracking-wider text-[11px] shadow-2xs">
+                        <tr class="bg-slate-100">
+                            <th class="sticky top-0 z-20 py-3 pl-5 pr-3 text-center w-12 bg-slate-100 border-b border-gray-200">No.</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 w-36 whitespace-nowrap bg-slate-100 border-b border-gray-200">No SPK</th>
+                            <th class="sticky top-0 z-20 py-3 px-2.5 text-center w-24 bg-slate-100 border-b border-gray-200">Tanggal</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 w-32 whitespace-nowrap bg-slate-100 border-b border-gray-200">Mesin / Unit</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 min-w-[200px] bg-slate-100 border-b border-gray-200">Problem / Kendala</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 min-w-[200px] bg-slate-100 border-b border-gray-200">Tindakan / Sparepart</th>
+                            <th id="dtBreakdownColHeader" class="sticky top-0 z-20 py-3 px-3 text-right w-28 whitespace-nowrap bg-slate-100 border-b border-gray-200">Downtime (Jam)</th>
+                            <th class="sticky top-0 z-20 py-3 pl-3 pr-5 text-right w-24 whitespace-nowrap bg-slate-100 border-b border-gray-200">% Kontribusi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dtBreakdownTableBody" class="divide-y divide-gray-200 text-gray-800">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+                class="p-3 border-t border-gray-200 bg-slate-50 flex items-center justify-between text-xs text-gray-500">
+                <span id="dtBreakdownSummaryText">Menampilkan seluruh tiket kerusakan terkait</span>
+                <button type="button" onclick="closeDtBreakdownModal()"
+                    class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Detail Mesin (Muncul saat baris mesin diklik) -->
     <div id="machineModal" onclick="closeModalOnBackdrop(event)"

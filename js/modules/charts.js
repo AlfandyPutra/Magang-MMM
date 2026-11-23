@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MMS (Maintenance Management System) - MtD Module
  * PT Mitra Mulia Makmur (MMM Plastic)
  * Chart.js Visualization Module (Monthly Downtime & Cost Charts)
@@ -6,6 +6,14 @@
         let dtChartMode = 'ratio'; // 'ratio' or 'hours'
         let costChartMode = 'ratio'; // 'ratio' or 'amount'
         let monthlyDtChartInstance = null;
+let dtTrendLineChartInstance = null;
+let lastDtTrendData = {
+    labels: [],
+    dtValues: [],
+    pmValues: [],
+    spikeDetails: [],
+    stats: { latest: 0, avg: 0, peak: 0, peakDate: '-' }
+};
         let monthlyCostChartInstance = null;
 
         // Dataset Historis Bulanan (Data Riil Nov + Dummy Benchmark Konsisten untuk Agustus, Sept, Okt)
@@ -122,6 +130,147 @@
             }
         }
 
+        // RENDER GRAFIK GARIS TREN DT HARIAN & PENJELASAN LONJAKAN (GAYA RESMI DASHBOARD MMM)
+        function renderDtTrendLineChart(labels, dtValues, pmValues, spikeDetails, stats) {
+            if (labels && dtValues) {
+                lastDtTrendData = {
+                    labels: labels,
+                    dtValues: dtValues,
+                    pmValues: pmValues || [],
+                    spikeDetails: spikeDetails || [],
+                    stats: stats || {}
+                };
+            }
+
+            const canvas = document.getElementById('dtTrendLineChart');
+            if (!canvas) return;
+
+            const currentData = lastDtTrendData;
+            const targetLine = currentData.labels.map(() => 35); // Target batas harian 35 Jam
+
+            // Update stats di atas grafik (Latest, Avg, Peak)
+            const statLatest = document.getElementById('trendStatLatest');
+            const statAvg = document.getElementById('trendStatAvg');
+            const statPeak = document.getElementById('trendStatPeak');
+            if (statLatest && currentData.stats.latest !== undefined) {
+                statLatest.textContent = `${currentData.stats.latest.toFixed(1)} Jam`;
+            }
+            if (statAvg && currentData.stats.avg !== undefined) {
+                statAvg.textContent = `${currentData.stats.avg.toFixed(1)} Jam/H`;
+            }
+            if (statPeak && currentData.stats.peak !== undefined) {
+                statPeak.textContent = `${currentData.stats.peak.toFixed(1)} Jam`;
+                const peakDateEl = document.getElementById('trendStatPeakDate');
+                if (peakDateEl && currentData.stats.peakDate) {
+                    peakDateEl.textContent = `(${currentData.stats.peakDate})`;
+                }
+            }
+
+            if (typeof Chart === 'undefined') {
+                setTimeout(() => {
+                    if (typeof Chart !== 'undefined') {
+                        renderDtTrendLineChart();
+                    }
+                }, 250);
+                return;
+            }
+
+            if (dtTrendLineChartInstance) dtTrendLineChartInstance.destroy();
+
+            const ctx = canvas.getContext('2d');
+
+            // Gradient kurva DT (Cyan terang khas MMM Reject Dashboard)
+            const gradDt = ctx.createLinearGradient(0, 0, 0, 280);
+            gradDt.addColorStop(0, 'rgba(6, 182, 212, 0.28)');
+            gradDt.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+            dtTrendLineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: currentData.labels,
+                    datasets: [
+                        {
+                            label: 'DT (Kerusakan Mesin)',
+                            data: currentData.dtValues,
+                            borderColor: '#0891b2',
+                            backgroundColor: gradDt,
+                            fill: true,
+                            tension: 0.38,
+                            borderWidth: 2.8,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#0891b2',
+                            pointBorderWidth: 2.5,
+                            pointRadius: 4.5,
+                            pointHoverRadius: 7.5,
+                            pointHoverBackgroundColor: '#0891b2',
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: 'Target Toleransi (≤ 35 Jam)',
+                            data: targetLine,
+                            borderColor: '#ef4444',
+                            borderDash: [6, 4],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: { size: 12, weight: 'bold' },
+                            titleColor: '#f8fafc',
+                            bodyFont: { size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                afterBody: function (tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const sp = currentData.spikeDetails ? currentData.spikeDetails[idx] : null;
+                                    if (sp && sp.isSpike && sp.cause) {
+                                        return [
+                                            '',
+                                            '⚠️ PENYEBAB LONJAKAN DOWNTIME:',
+                                            `   ${sp.cause}`
+                                        ];
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: v => v + ' Jam',
+                                font: { size: 10 },
+                                color: '#64748b'
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11, weight: '600' },
+                                color: '#334155'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
         // RENDER GRAFIK BIAYA BULANAN
         function renderMonthlyCostChart(currentCostTotal, currentCostDt, currentCostPm) {
             if (typeof currentCostTotal === 'number' && typeof currentCostDt === 'number') {
@@ -214,3 +363,175 @@
             });
             parent.innerHTML = `<div class="w-full h-full flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-gray-200">${barsHtml}</div>`;
         }
+
+        // ============================================================================
+        // 5. GRAFIK TREN BIAYA HARIAN (DAILY COST TREND - SELARAS DENGAN GRAFIK DT)
+        // ============================================================================
+        let costTrendLineChartInstance = null;
+        let costViewMode = 'daily';
+        let currentCostData = {
+            labels: [],
+            costValues: [],
+            spikeDetails: [],
+            stats: { latest: 0, avg: 0, peak: 0, peakDate: '-' },
+            target: 12000000
+        };
+
+        function renderDailyCostTrendChart(labels, costValues, spikeDetails, stats, targetValue) {
+            if (labels && costValues) {
+                currentCostData.labels = labels;
+                currentCostData.costValues = costValues;
+                currentCostData.spikeDetails = spikeDetails || [];
+                currentCostData.stats = stats || { latest: 0, avg: 0, peak: 0, peakDate: '-' };
+                if (targetValue) currentCostData.target = targetValue;
+            }
+
+            const canvas = document.getElementById('costTrendLineChart');
+            if (!canvas) return;
+
+            // Update stats badge di atas grafik
+            const statLatest = document.getElementById('costTrendStatLatest');
+            const statAvg = document.getElementById('costTrendStatAvg');
+            const statPeak = document.getElementById('costTrendStatPeak');
+            const statPeakDate = document.getElementById('costTrendStatPeakDate');
+
+            if (statLatest && currentCostData.stats.latest !== undefined) {
+                statLatest.textContent = formatShortIDR(currentCostData.stats.latest);
+            }
+            if (statAvg && currentCostData.stats.avg !== undefined) {
+                statAvg.textContent = `${formatShortIDR(currentCostData.stats.avg)}/H`;
+            }
+            if (statPeak && currentCostData.stats.peak !== undefined) {
+                statPeak.textContent = formatShortIDR(currentCostData.stats.peak);
+                if (statPeakDate && currentCostData.stats.peakDate) {
+                    statPeakDate.textContent = `(${currentCostData.stats.peakDate})`;
+                }
+            }
+
+            if (typeof Chart === 'undefined') {
+                setTimeout(() => { if (typeof Chart !== 'undefined') renderDailyCostTrendChart(); }, 250);
+                return;
+            }
+
+            if (costTrendLineChartInstance) costTrendLineChartInstance.destroy();
+
+            const ctx = canvas.getContext('2d');
+            const gradCost = ctx.createLinearGradient(0, 0, 0, 260);
+            gradCost.addColorStop(0, 'rgba(217, 119, 6, 0.32)');
+            gradCost.addColorStop(1, 'rgba(217, 119, 6, 0.0)');
+
+            const targetLine = currentCostData.labels.map(() => currentCostData.target);
+
+            costTrendLineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: currentCostData.labels,
+                    datasets: [
+                        {
+                            label: 'Biaya Maintenance (IDR)',
+                            data: currentCostData.costValues,
+                            borderColor: '#d97706',
+                            backgroundColor: gradCost,
+                            fill: true,
+                            tension: 0.38,
+                            borderWidth: 2.8,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#d97706',
+                            pointBorderWidth: 2.5,
+                            pointRadius: 4.5,
+                            pointHoverRadius: 7.5,
+                            pointHoverBackgroundColor: '#d97706',
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: 'Target Anggaran (≤ Rp 12 Jt/H)',
+                            data: targetLine,
+                            borderColor: '#ef4444',
+                            borderDash: [6, 4],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: { size: 12, weight: 'bold' },
+                            titleColor: '#f8fafc',
+                            bodyFont: { size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return ` Pengeluaran Biaya: Rp ${context.parsed.y.toLocaleString('id-ID')}`;
+                                    } else {
+                                        return ` Target Anggaran: Rp ${context.parsed.y.toLocaleString('id-ID')} / Hari`;
+                                    }
+                                },
+                                afterBody: function(tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const sp = currentCostData.spikeDetails ? currentCostData.spikeDetails[idx] : null;
+                                    if (sp && sp.cause && sp.cost > 0) {
+                                        return [
+                                            '',
+                                            '💰 PENGELUARAN TERBESAR:',
+                                            `   ${sp.cause}`
+                                        ];
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(val) {
+                                    if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(0) + ' Jt';
+                                    if (val >= 1000) return 'Rp ' + (val / 1000).toFixed(0) + ' Rb';
+                                    return 'Rp ' + val;
+                                },
+                                font: { size: 10 },
+                                color: '#64748b'
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11, weight: '600' },
+                                color: '#334155'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function formatShortIDR(val) {
+            if (!val || val === 0) return 'Rp 0';
+            if (val >= 1000000000) return `Rp ${(val / 1000000000).toFixed(1)} M`;
+            if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)} Jt`;
+            if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)} Rb`;
+            return `Rp ${val}`;
+        }
+
+        // Export globals to window
+        window.renderDtTrendLineChart = renderDtTrendLineChart;
+        window.renderMonthlyDtChart = renderMonthlyDtChart;
+        window.renderMonthlyCostChart = renderMonthlyCostChart;
+        window.renderDailyCostTrendChart = renderDailyCostTrendChart;
+        window.setDtChartMode = setDtChartMode;
+        window.setCostChartMode = setCostChartMode;

@@ -79,9 +79,53 @@
 
         function clearActivePreset() {
             document.querySelectorAll('.preset-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
-                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
+                btn.classList.remove('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
+                btn.classList.add('text-gray-600', 'font-medium');
             });
+        }
+
+        function setPeriodPreset(type) {
+            clearActivePreset();
+            let start = '2026-11-01';
+            let end = '2026-11-10';
+            let label = 'Bulanan (01 - 10 Nov 2026)';
+
+            if (type === 'daily') {
+                start = '2026-11-10';
+                end = '2026-11-10';
+                label = 'Harian (10 Nov 2026)';
+            } else if (type === 'weekly') {
+                start = '2026-11-03';
+                end = '2026-11-10';
+                label = 'Mingguan (7 Hari Terakhir: 03 - 10 Nov 2026)';
+            } else if (type === 'monthly') {
+                start = '2026-11-01';
+                end = '2026-11-10';
+                label = 'Bulanan MtD (01 - 10 Nov 2026)';
+            } else if (type === 'yearly') {
+                start = '2026-01-01';
+                end = '2026-11-10';
+                label = 'Tahunan YtD (Tahun 2026)';
+            }
+
+            if (document.getElementById('startDate')) document.getElementById('startDate').value = start;
+            if (document.getElementById('endDate')) document.getElementById('endDate').value = end;
+
+            tablePaginationState.dt = { page: 1, pageSize: 10 };
+            tablePaginationState.cost = { page: 1, pageSize: 10 };
+            tablePaginationState.spk = { page: 1, pageSize: 10 };
+            if (document.getElementById('pageSizeDt')) document.getElementById('pageSizeDt').value = '10';
+            if (document.getElementById('pageSizeCost')) document.getElementById('pageSizeCost').value = '10';
+            if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
+
+            const activeBtn = document.getElementById(`preset-${type}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-600', 'font-medium');
+                activeBtn.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
+            }
+
+            applyFilters();
+            showToast(`Pintasan periode: ${label}`);
         }
 
         function setDatePreset(start, end, label) {
@@ -96,21 +140,27 @@
             if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
 
             clearActivePreset();
-            const mapId = {
-                '2026-11-01_2026-11-10': 'preset-nov-real',
-                '2026-11-01_2026-11-17': 'preset-nov',
-                '2026-11-01_2026-11-30': 'preset-nov',
-                '2026-10-01_2026-10-31': 'preset-oct',
-                '2026-09-01_2026-09-30': 'preset-sep'
-            };
-            const activeBtn = document.getElementById(mapId[`${start}_${end}`]);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
-                activeBtn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
-            }
-
             applyFilters();
             showToast(`Menampilkan periode ${label}`);
+        }
+        function setCategoryPill(cat) {
+            const input = document.getElementById('filterCategory');
+            if (input) input.value = cat;
+
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.classList.remove('bg-[#d92546]', 'text-white', 'font-bold', 'shadow-xs');
+                btn.classList.add('text-gray-600', 'font-medium', 'hover:text-gray-900');
+            });
+
+            const active = document.getElementById(`catPill-${cat}`);
+            if (active) {
+                active.classList.remove('text-gray-600', 'font-medium', 'hover:text-gray-900');
+                active.classList.add('bg-[#d92546]', 'text-white', 'font-bold', 'shadow-xs');
+            }
+
+            updateMachineDropdown();
+            applyFilters();
+            showToast(`Filter kategori: ${cat === 'ALL' ? 'Semua Kategori' : cat}`);
         }
 
         function updateMachineDropdown() {
@@ -124,7 +174,9 @@
 
             const filteredMachines = masterMachines.filter(m => {
                 const matchBranch = (selectedBranch === 'ALL') || (m.branch === selectedBranch);
-                const matchCategory = (selectedCat === 'ALL') || (m.category === selectedCat);
+                const matchCategory = (selectedCat === 'ALL') ||
+                    (m.category === selectedCat) ||
+                    (selectedCat === 'Blowing' && (m.category === 'Blowing' || (m.unitName && m.unitName.includes('AOKI')) || (m.code && m.code.includes('AOKI'))));
                 return matchBranch && matchCategory;
             });
 
@@ -141,10 +193,32 @@
         // ============================================================================
         // 4. AGGREGATION & BUSINESS CALCULATION ENGINE
         // ============================================================================
+        // Helper: Pemisahan tegas data DT murni (kerusakan/error/unconditional) vs PM/Perawatan Regular
+        function isPmLog(log) {
+            if (!log) return false;
+            if (log.spkPm === 1 && log.spkDt === 0) return true;
+            const p = (log.problem || '').toUpperCase();
+            if (p.includes('PERAWATAN REGULAR') || p.includes('PERAWATAN RUTIN') || p.includes('MAINTENANCE REGULAR')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isActualDtLog(log) {
+            if (!log) return false;
+            if (isPmLog(log)) return false;
+            // Harus ada jam downtime nyata atau tiket perbaikan/error mesin nyata (bukan rutinitas PM)
+            if ((log.dtRepair || 0) > 0) return true;
+            if (log.spkDt === 1 && log.problem && log.problem !== '-' && !isPmLog(log)) return true;
+            return false;
+        }
+
         function computeAggregates(startDate, endDate, branch, category, machineCode, keyword) {
             const targetMachines = masterMachines.filter(m => {
                 const matchBranch = (branch === 'ALL') || (m.branch === branch);
-                const matchCategory = (category === 'ALL') || (m.category === category);
+                const matchCategory = (category === 'ALL') ||
+                    (m.category === category) ||
+                    (category === 'Blowing' && (m.category === 'Blowing' || (m.unitName && m.unitName.includes('AOKI')) || (m.code && m.code.includes('AOKI'))));
                 const matchCode = (machineCode === 'ALL') || (m.code === machineCode);
                 return matchBranch && matchCategory && matchCode;
             });
@@ -168,7 +242,8 @@
                 const spkPm = logs.reduce((sum, l) => sum + (l.spkPm || 0), 0);
                 const totalSpk = spkDt + spkPm;
 
-                const uniqueProblems = [...new Set(logs.filter(l => l.problem && l.problem !== '-').map(l => `[${l.date.slice(8, 10)}/${l.date.slice(5, 7)}] ${l.problem}`))];
+                // Problem summary khusus kerusakan riil (mengabaikan perawatan regular)
+                const uniqueProblems = [...new Set(logs.filter(l => l.problem && l.problem !== '-' && !isPmLog(l)).map(l => `[${l.date.slice(8, 10)}/${l.date.slice(5, 7)}] ${l.problem}`))];
                 const problemSummary = uniqueProblems.length > 0
                     ? uniqueProblems.slice(0, 3).join('; ') + (uniqueProblems.length > 3 ? ` (+${uniqueProblems.length - 3} lainnya)` : '')
                     : 'Tidak ada catatan kerusakan pada periode ini';
@@ -235,10 +310,15 @@
 
             const dtSub = document.getElementById('kpiDtSubtitle');
             if (dtSub) {
-                const totalHours = totals.dtRepair + totals.dtPm;
-                const dtRatio = totalHours > 0 ? ((totals.dtRepair / totalHours) * 100).toFixed(1) : '68.0';
-                const pmRatio = totalHours > 0 ? ((totals.dtPm / totalHours) * 100).toFixed(1) : '32.0';
-                dtSub.textContent = `PM Servis: ${totals.dtPm.toFixed(1)} Jam • Total: ${totalHours.toFixed(1)} Jam (${Math.round(dtRatio)}% : ${Math.round(pmRatio)}%)`;
+                const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+                const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+                const branch = document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : 'ALL';
+                const pureDtTickets = dailyMaintenanceLogs.filter(l => {
+                    const matchBranch = (branch === 'ALL') || (l.branch === branch);
+                    const matchDate = (!startDate || l.date >= startDate) && (!endDate || l.date <= endDate);
+                    return matchBranch && matchDate && isActualDtLog(l);
+                }).length;
+                dtSub.textContent = `${pureDtTickets} Tiket Kerusakan & Gangguan Unconditional`;
             }
 
             const costEl = document.getElementById('kpiTotalCost');
@@ -322,8 +402,24 @@
                 }
             });
 
-            if (tabId === 'dt') renderMonthlyDtChart();
-            if (tabId === 'cost') renderMonthlyCostChart();
+            // Sinkronisasi posisi / visibility Machine Status (tampil di bawah grafik pada tab DT)
+            const secMachine = document.getElementById('sectionMachineStatus');
+            if (secMachine) {
+                if (tabId === 'dt') {
+                    secMachine.classList.remove('hidden');
+                } else {
+                    secMachine.classList.add('hidden');
+                }
+            }
+
+            if (tabId === 'dt') {
+                if (typeof renderDtTrendLineChart === 'function') renderDtTrendLineChart();
+            }
+            if (tabId === 'cost') {
+                setTimeout(() => {
+                    if (typeof renderDailyCostTrendChart === 'function') renderDailyCostTrendChart();
+                }, 40);
+            }
             if (tabId === 'spk') {
                 closeWorkflowDetail();
             }
@@ -342,14 +438,14 @@
             idleResumeMs: 10000      // Jika kursor diam selama 10 detik, auto-slide lanjut lagi
         };
 
-        let isKioskEnabled = true;           // Status auto-cycle
+        let isKioskEnabled = false;          // Status auto-cycle (dimatikan sesuai instruksi user)
         let isKioskUserInteracting = false;   // Sedang dijeda karena user sedang gerak mouse/klik
         let kioskIdleTimer = null;           // Timer deteksi kursor diam untuk resume
         let kioskCycleTimer = null;          // Timer pergantian tab setiap 6 detik
 
         function initKioskAutoCycle() {
             setupKioskEventListeners();
-            startKioskCycle();
+            // startKioskCycle(); // Dinonaktifkan: tidak auto-slide otomatis
         }
 
         function startKioskCycle() {
@@ -474,93 +570,549 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
-        function scrollToKpiScorecard() {
-            const el = document.getElementById('sectionKpiScorecard');
-            const tableContainer = document.getElementById('kpiScorecardTableBody');
-            const toggleText = document.getElementById('kpiScorecardToggleText');
-            if (tableContainer && tableContainer.classList.contains('hidden')) {
-                tableContainer.classList.remove('hidden');
-                if (toggleText) toggleText.textContent = 'Tutup Tabel ▲';
+        // ============================================================================
+        // KATEGORI PROBLEM DOWNTIME & DRILLDOWN BREAKDOWN (GAYA RESMI DASHBOARD MMM)
+        // ============================================================================
+        const PROBLEM_CATEGORIES = {
+            mechanical: {
+                key: 'mechanical',
+                name: 'Mekanikal & Hidrolik',
+                short: 'Mekanikal',
+                keywords: ['tiebar', 'hidrolik', 'valve', 'selang', 'platen', 'oli', 'cylinder', 'baut', 'leak', 'bocor', 'seal', 'pompa', 'press', 'mechanical', 'bearing', 'rantai', 'gear'],
+                color: '#0284c7'
+            },
+            barrel_heater: {
+                key: 'barrel_heater',
+                name: 'Barel, Nozzle & Heater Suhu',
+                short: 'Barel & Suhu',
+                keywords: ['barel', 'barrel', 'nozzle', 'heater', 'suhu', 'termokopel', 'overheat', 'tc', 'pemanas', 'hopper', 'dryer', 'band heater'],
+                color: '#ea580c'
+            },
+            electrical_servo: {
+                key: 'electrical_servo',
+                name: 'Elektrikal, Inverter & Servo Drive',
+                short: 'Elektrikal & Servo',
+                keywords: ['servo', 'inverter', 'plc', 'kabel', 'trip', 'motor', 'mcb', 'listrik', 'fuse', 'kontaktor', 'power', 'grounding', 'fasa', 'drive', 'alarm'],
+                color: '#9333ea'
+            },
+            utility: {
+                key: 'utility',
+                name: 'Utility (Chiller & Kompresor)',
+                short: 'Utility & Chiller',
+                keywords: ['chiller', 'kompresor', 'freon', 'angin', 'cooling', 'water', 'pipa', 'evaporator', 'kondensor', 'fan', 'utility'],
+                color: '#0d9488'
+            },
+            sensor_other: {
+                key: 'sensor_other',
+                name: 'Sensor, Mould & Lainnya',
+                short: 'Sensor / Mould',
+                keywords: ['sensor', 'mould', 'matras', 'cetakan', 'robot', 'ejector', 'lampu', 'andon', 'limit switch', 'core', 'air blow'],
+                color: '#64748b'
             }
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-                el.classList.add('ring-2', 'ring-blue-400');
-                setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400'), 2000);
+        };
+
+        function classifyProblem(problemText) {
+            if (!problemText) return PROBLEM_CATEGORIES.sensor_other;
+            const p = problemText.toLowerCase();
+            for (const catKey of ['barrel_heater', 'electrical_servo', 'utility', 'mechanical']) {
+                const cat = PROBLEM_CATEGORIES[catKey];
+                for (const kw of cat.keywords) {
+                    if (p.includes(kw)) return cat;
+                }
             }
+            return PROBLEM_CATEGORIES.sensor_other;
         }
 
-        function toggleKpiScorecardTable() {
-            const tableContainer = document.getElementById('kpiScorecardTableBody');
-            const toggleText = document.getElementById('kpiScorecardToggleText');
-            if (!tableContainer) return;
-            const isHidden = tableContainer.classList.contains('hidden');
-            if (isHidden) {
-                tableContainer.classList.remove('hidden');
-                if (toggleText) toggleText.textContent = 'Tutup Tabel ▲';
+        let activeBreakdownData = {
+            title: '',
+            hours: 0,
+            allLogs: [],
+            filteredLogs: []
+        };
+
+        function openMachineBreakdownModal(machineCode) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const machine = masterMachines.find(m => m.code === machineCode) || { code: machineCode, unitName: 'Unit Mesin' };
+
+            // Ambil hanya tiket kerusakan nyata/unconditional (Abaikan PM / Perawatan Regular)
+            const logs = dailyMaintenanceLogs.filter(l =>
+                l.code === machineCode &&
+                (!startDate || l.date >= startDate) &&
+                (!endDate || l.date <= endDate) &&
+                isActualDtLog(l)
+            );
+
+            // Urutkan dari jam downtime terbesar ke terkecil
+            logs.sort((a, b) => (b.dtRepair || 0) - (a.dtRepair || 0));
+
+            const totalDt = logs.reduce((sum, l) => sum + (l.dtRepair || 0), 0);
+            activeBreakdownData = {
+                title: `Mesin ${machine.code} — ${machine.unitName || ''}`,
+                hours: totalDt,
+                isCostMode: false,
+                isSpkMode: false,
+                allLogs: logs,
+                filteredLogs: logs
+            };
+
+            showDtBreakdownModal();
+        }
+
+        function openCategoryBreakdownModal(catKey) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branch = document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : 'ALL';
+            const cat = PROBLEM_CATEGORIES[catKey] || PROBLEM_CATEGORIES.sensor_other;
+
+            // Ambil hanya tiket kerusakan nyata/unconditional (Abaikan PM / Perawatan Regular)
+            const logs = dailyMaintenanceLogs.filter(l => {
+                if (!isActualDtLog(l)) return false;
+                const matchBranch = (branch === 'ALL') || (l.branch === branch);
+                const matchDate = (!startDate || l.date >= startDate) && (!endDate || l.date <= endDate);
+                const matchCat = classifyProblem(l.problem).key === catKey;
+                return matchBranch && matchDate && matchCat;
+            });
+
+            // Urutkan dari jam downtime terbesar ke terkecil
+            logs.sort((a, b) => (b.dtRepair || 0) - (a.dtRepair || 0));
+
+            const totalDt = logs.reduce((sum, l) => sum + (l.dtRepair || 0), 0);
+            activeBreakdownData = {
+                title: `Kategori: ${cat.name}`,
+                hours: totalDt,
+                isCostMode: false,
+                isSpkMode: false,
+                allLogs: logs,
+                filteredLogs: logs
+            };
+
+            showDtBreakdownModal();
+        }
+
+        function openPlantCostBreakdown(branch) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branchNameMap = { MMM: 'Sidoarjo', MMN: 'Nganjuk', MMS: 'Serang', MMG: 'Malang' };
+
+            const logs = dailyMaintenanceLogs.filter(l =>
+                l.branch === branch &&
+                (!startDate || l.date >= startDate) &&
+                (!endDate || l.date <= endDate) &&
+                ((l.costDt || 0) > 0 || (l.costPm || 0) > 0)
+            );
+            logs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+            const totalCost = logs.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
+
+            activeBreakdownData = {
+                title: `Rincian Biaya: [${branch}] ${branchNameMap[branch] || ''}`,
+                hours: totalCost,
+                isCostMode: true,
+                isSpkMode: false,
+                allLogs: logs,
+                filteredLogs: logs
+            };
+
+            const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
+            if (subtitleEl) subtitleEl.textContent = `Rincian tiket pengeluaran biaya perbaikan & pembelian sparepart cabang ${branch}`;
+
+            showDtBreakdownModal();
+        }
+
+        function openPlantSpkBreakdown(branch) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branchNameMap = { MMM: 'Sidoarjo', MMN: 'Nganjuk', MMS: 'Serang', MMG: 'Malang' };
+
+            const logs = dailyMaintenanceLogs.filter(l =>
+                l.branch === branch &&
+                (!startDate || l.date >= startDate) &&
+                (!endDate || l.date <= endDate)
+            );
+            logs.sort((a, b) => (b.date > a.date ? 1 : -1));
+
+            activeBreakdownData = {
+                title: `Daftar Tiket SPK: [${branch}] ${branchNameMap[branch] || ''}`,
+                hours: logs.length,
+                isCostMode: false,
+                isSpkMode: true,
+                allLogs: logs,
+                filteredLogs: logs
+            };
+
+            const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
+            if (subtitleEl) subtitleEl.textContent = `Daftar seluruh tiket SPK maintenance yang terbit di cabang ${branch}`;
+
+            showDtBreakdownModal();
+        }
+
+        function showDtBreakdownModal() {
+            const modal = document.getElementById('dtBreakdownModal');
+            if (!modal) return;
+
+            const titleEl = document.getElementById('dtBreakdownModalTitle');
+            const badgeEl = document.getElementById('dtBreakdownModalHoursBadge');
+            const searchInput = document.getElementById('dtBreakdownSearchInput');
+
+            if (titleEl) titleEl.textContent = activeBreakdownData.title;
+            if (badgeEl) {
+                if (activeBreakdownData.isCostMode) {
+                    badgeEl.textContent = `Total Biaya: ${formatIDR(activeBreakdownData.hours)}`;
+                } else if (activeBreakdownData.isSpkMode) {
+                    badgeEl.textContent = `Total: ${activeBreakdownData.hours} SPK`;
+                } else {
+                    badgeEl.textContent = `Total DT: ${activeBreakdownData.hours.toFixed(1)} Jam`;
+                }
+            }
+            if (searchInput) searchInput.value = '';
+
+            renderDtBreakdownTable();
+            modal.classList.remove('hidden');
+        }
+
+        function renderDtBreakdownTable() {
+            const tbody = document.getElementById('dtBreakdownTableBody');
+            const countEl = document.getElementById('dtBreakdownItemCount');
+            const summaryText = document.getElementById('dtBreakdownSummaryText');
+            const colHeader = document.getElementById('dtBreakdownColHeader');
+            if (!tbody) return;
+
+            const isCost = activeBreakdownData.isCostMode;
+            const isSpk = activeBreakdownData.isSpkMode;
+
+            if (colHeader) {
+                if (isCost) colHeader.textContent = 'Biaya (IDR)';
+                else if (isSpk) colHeader.textContent = 'Durasi / Jam';
+                else colHeader.textContent = 'Downtime (Jam)';
+            }
+
+            const logs = activeBreakdownData.filteredLogs;
+            if (countEl) countEl.textContent = `1-${Math.min(logs.length, 10)} of ${logs.length} Items`;
+            if (summaryText) {
+                if (isCost) summaryText.textContent = `Menampilkan ${logs.length} tiket SPK pengeluaran biaya perbaikan & pemeliharaan`;
+                else if (isSpk) summaryText.textContent = `Menampilkan ${logs.length} tiket SPK pada periode aktif`;
+                else summaryText.textContent = `Menampilkan ${logs.length} tiket SPK kerusakan riil pada periode aktif (Murni DT, Tanpa PM)`;
+            }
+
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-400 italic">Tidak ada tiket yang cocok dengan pencarian.</td></tr>';
+                return;
+            }
+
+            const totalBasis = activeBreakdownData.hours || 1;
+            tbody.innerHTML = logs.map((log, idx) => {
+                const dt = log.dtRepair || 0;
+                const cost = (log.costDt || 0) + (log.costPm || 0);
+                const metricVal = isCost ? cost : dt;
+                const pct = totalBasis > 0 ? ((metricVal / totalBasis) * 100).toFixed(1) : '0.0';
+                const formattedDate = log.date ? `${log.date.slice(8, 10)}/${log.date.slice(5, 7)}/${log.date.slice(0, 4)}` : '-';
+
+                let colValHtml = `<span class="font-bold text-red-600 whitespace-nowrap">${dt.toFixed(1)} Jam</span>`;
+                if (isCost) {
+                    colValHtml = `<span class="font-bold text-amber-700 whitespace-nowrap">${formatIDR(cost)}</span>`;
+                } else if (isSpk) {
+                    colValHtml = `<span class="font-bold text-blue-700 whitespace-nowrap">${dt > 0 ? dt.toFixed(1) + ' Jam' : '0.0 Jam'}</span>`;
+                }
+
+                return `
+                    <tr class="hover:bg-blue-50/50 transition border-b border-gray-100">
+                        <td class="py-2.5 pl-5 pr-3 text-center font-bold text-gray-500">${idx + 1}</td>
+                        <td class="py-2.5 px-3 font-mono font-bold text-blue-700 whitespace-nowrap">${log.ticketCode || '-'}</td>
+                        <td class="py-2.5 px-2.5 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
+                        <td class="py-2.5 px-3 font-semibold text-gray-800 whitespace-nowrap">${log.code}</td>
+                        <td class="py-2.5 px-3 text-gray-800">${log.problem || '-'}</td>
+                        <td class="py-2.5 px-3 text-gray-600 text-[11px]">${log.sparepart || '-'}</td>
+                        <td class="py-2.5 px-3 text-right">${colValHtml}</td>
+                        <td class="py-2.5 pl-3 pr-5 text-right font-semibold text-gray-600 whitespace-nowrap">${pct}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterDtBreakdownTable(keyword) {
+            const kw = (keyword || '').toLowerCase().trim();
+            if (!kw) {
+                activeBreakdownData.filteredLogs = activeBreakdownData.allLogs;
             } else {
-                tableContainer.classList.add('hidden');
-                if (toggleText) toggleText.textContent = 'Buka Tabel ▼';
+                activeBreakdownData.filteredLogs = activeBreakdownData.allLogs.filter(l =>
+                    (l.ticketCode && l.ticketCode.toLowerCase().includes(kw)) ||
+                    (l.problem && l.problem.toLowerCase().includes(kw)) ||
+                    (l.sparepart && l.sparepart.toLowerCase().includes(kw)) ||
+                    (l.code && l.code.toLowerCase().includes(kw)) ||
+                    (l.date && l.date.includes(kw))
+                );
+            }
+            renderDtBreakdownTable();
+        }
+
+        function closeDtBreakdownModal() {
+            const modal = document.getElementById('dtBreakdownModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function closeDtBreakdownOnBackdrop(e) {
+            if (e.target.id === 'dtBreakdownModal') {
+                closeDtBreakdownModal();
             }
         }
 
-        // UPDATE EXECUTIVE ANALYTICS SUMMARY
+        function scrollToKpiScorecard() {}
+        function toggleKpiScorecardTable() {}
         function updateModularAnalytics(aggregated, totals, startDate, endDate) {
-            // 1. Metrik DT
-            const dtHoursEl = document.getElementById('dtSummaryHours');
-            if (dtHoursEl) dtHoursEl.textContent = totals.dtRepair.toFixed(1);
+            // ========================================================================
+            // 1. ANALITIK DOWNTIME (DT) - TREN HARIAN, KATEGORI, WORST & SPIKES
+            // ========================================================================
+            const branch = document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : 'ALL';
+            const machineCode = document.getElementById('filterMachineCode') ? document.getElementById('filterMachineCode').value : 'ALL';
 
-            const totalHours = totals.dtRepair + totals.dtPm;
-            const dtRatio = totalHours > 0 ? (totals.dtRepair / totalHours * 100) : 0;
-            const pmRatio = totalHours > 0 ? (totals.dtPm / totalHours * 100) : 0;
+            const activeLogs = dailyMaintenanceLogs.filter(log => {
+                const matchBranch = (branch === 'ALL') || (log.branch === branch);
+                const matchDate = (!startDate || log.date >= startDate) && (!endDate || log.date <= endDate);
+                const matchCode = (machineCode === 'ALL') || (log.code === machineCode);
+                return matchBranch && matchDate && matchCode;
+            });
 
-            const dtRatioText = document.getElementById('dtRatioText');
-            const pmRatioText = document.getElementById('pmRatioText');
-            if (dtRatioText) dtRatioText.textContent = `${dtRatio.toFixed(1)}%`;
-            if (pmRatioText) pmRatioText.textContent = `${pmRatio.toFixed(1)}%`;
+            // Rentang hari aktif dan agregasi biaya cabang
+            const sDate = new Date(startDate);
+            const eDate = new Date(endDate);
+            const diffDays = Math.max(1, Math.ceil(Math.abs(eDate - sDate) / (1000 * 60 * 60 * 24)) + 1);
 
-            const dtBarRatio = document.getElementById('dtBarRatio');
-            const pmBarRatio = document.getElementById('pmBarRatio');
-            if (dtBarRatio) dtBarRatio.style.width = `${dtRatio.toFixed(1)}%`;
-            if (pmBarRatio) pmBarRatio.style.width = `${pmRatio.toFixed(1)}%`;
-
-            const dtHoursNominalText = document.getElementById('dtHoursNominalText');
-            const pmHoursNominalText = document.getElementById('pmHoursNominalText');
-            if (dtHoursNominalText) dtHoursNominalText.textContent = `DT: ${totals.dtRepair.toFixed(1)} Jam`;
-            if (pmHoursNominalText) pmHoursNominalText.textContent = `PM: ${totals.dtPm.toFixed(1)} Jam`;
-
-            // Rata-rata jam DT harian
-            const s = new Date(startDate);
-            const e = new Date(endDate);
-            const diffDays = Math.max(1, Math.ceil(Math.abs(e - s) / (1000 * 60 * 60 * 24)) + 1);
-            const dailyAvg = (totals.dtRepair / diffDays).toFixed(1);
-            const dtDailyAvgEl = document.getElementById('dtDailyAvg');
-            if (dtDailyAvgEl) dtDailyAvgEl.textContent = `${dailyAvg} Jam`;
-
-            const machinesWithDt = aggregated.filter(item => item.dtRepair > 0).length;
-            const dtMachinesCountEl = document.getElementById('dtMachinesCount');
-            if (dtMachinesCountEl) dtMachinesCountEl.textContent = `${machinesWithDt} Mesin`;
-
-            const dtTicketCountEl = document.getElementById('dtTicketCount');
-            if (dtTicketCountEl) dtTicketCountEl.textContent = `${totals.spkDt} SPK`;
-
-            // Sebaran DT Cabang
-            const branchDtTotals = { MMM: 0, MMG: 0, MMS: 0, MMN: 0 };
             const branchCostTotals = { MMM: 0, MMG: 0, MMS: 0, MMN: 0 };
             aggregated.forEach(item => {
-                if (branchDtTotals[item.branch] !== undefined) branchDtTotals[item.branch] += item.dtRepair;
                 if (branchCostTotals[item.branch] !== undefined) branchCostTotals[item.branch] += item.totalCost;
             });
 
-            const maxBranchDt = Math.max(0.1, ...Object.values(branchDtTotals));
-            ['MMM', 'MMG', 'MMS', 'MMN'].forEach(b => {
-                const val = branchDtTotals[b];
-                const pct = Math.min(100, (val / maxBranchDt) * 100);
-                const bar = document.getElementById(`dtBranchBar_${b}`);
-                const valEl = document.getElementById(`dtBranchVal_${b}`);
-                if (bar) bar.style.width = `${pct}%`;
-                if (valEl) valEl.textContent = `${val.toFixed(1)} Jam`;
+            // Agregasi harian untuk grafik tren garis & lonjakan
+            const dailyLabels = [];
+            const dailyDtValues = [];
+            const dailyPmValues = [];
+            const dailySpikeDetails = [];
+            const dailyCostValues = [];
+            const dailyCostSpikeDetails = [];
+            const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            let cur = new Date(sDate);
+            while (cur <= eDate) {
+                const yyyy = cur.getFullYear();
+                const mm = String(cur.getMonth() + 1).padStart(2, '0');
+                const dd = String(cur.getDate()).padStart(2, '0');
+                const dateStr = `${yyyy}-${mm}-${dd}`;
+
+                dailyLabels.push(`${dd} ${monthNamesShort[cur.getMonth()]}`);
+
+                const logsOnDate = activeLogs.filter(l => l.date === dateStr);
+                const dayDt = logsOnDate.reduce((sum, l) => sum + (l.dtRepair || 0), 0);
+                const dayPm = logsOnDate.reduce((sum, l) => sum + (l.pmRegular || 0) + (l.pmDaily || 0), 0);
+
+                dailyDtValues.push(parseFloat(dayDt.toFixed(1)));
+                dailyPmValues.push(parseFloat(dayPm.toFixed(1)));
+
+                // Temukan mesin & masalah pemicu lonjakan downtime tertinggi pada hari tersebut (Murni Kerusakan, abaikan PM)
+                const sortedLogs = [...logsOnDate].filter(l => !isPmLog(l)).sort((a, b) => (b.dtRepair || 0) - (a.dtRepair || 0));
+                const topLog = sortedLogs[0];
+                const topCause = (topLog && topLog.dtRepair > 0)
+                    ? `${topLog.code}: ${topLog.problem || 'Perbaikan Mesin'}`
+                    : 'Operasional Normal / Gangguan Ringan';
+
+                dailySpikeDetails.push({
+                    isSpike: dayDt > 35,
+                    cause: topCause,
+                    hours: dayDt,
+                    date: dateStr,
+                    topCode: topLog ? topLog.code : ''
+                });
+
+                // Agregasi biaya harian (DT + PM)
+                const dayCost = logsOnDate.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
+                dailyCostValues.push(dayCost);
+
+                // Temukan mesin & sparepart pemicu pengeluaran biaya terbesar pada hari tersebut
+                const sortedCostLogs = [...logsOnDate].sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+                const topCostLog = sortedCostLogs[0];
+                const topCostVal = topCostLog ? ((topCostLog.costDt || 0) + (topCostLog.costPm || 0)) : 0;
+                const topCostCause = (topCostLog && topCostVal > 0)
+                    ? `${topCostLog.code}: ${topCostLog.sparepart || topCostLog.problem || 'Perbaikan Mesin'}`
+                    : 'Pengeluaran Operasional Standar';
+
+                dailyCostSpikeDetails.push({
+                    isSpike: dayCost > 12000000,
+                    cause: topCostCause,
+                    cost: dayCost,
+                    date: dateStr,
+                    topCode: topCostLog ? topCostLog.code : ''
+                });
+
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            const countDays = Math.max(1, dailyDtValues.length);
+            const sumDt = dailyDtValues.reduce((a, b) => a + b, 0);
+            const avgDt = sumDt / countDays;
+            const maxDt = dailyDtValues.length > 0 ? Math.max(...dailyDtValues) : 0;
+            const maxIdx = dailyDtValues.indexOf(maxDt);
+            const peakDateLabel = (maxIdx >= 0 && maxDt > 0) ? dailyLabels[maxIdx] : '-';
+            const latestDt = dailyDtValues.length > 0 ? dailyDtValues[dailyDtValues.length - 1] : 0;
+
+            // Tandai hari spike jika melampaui 1.25x avg & minimal 10 jam
+            dailySpikeDetails.forEach((sp, idx) => {
+                if (dailyDtValues[idx] > (avgDt * 1.25) && dailyDtValues[idx] >= 10) {
+                    sp.isSpike = true;
+                }
             });
 
+            // Render grafik garis tren DT harian
+            if (typeof renderDtTrendLineChart === 'function') {
+                renderDtTrendLineChart(dailyLabels, dailyDtValues, dailyPmValues, dailySpikeDetails, {
+                    latest: latestDt,
+                    avg: avgDt,
+                    peak: maxDt,
+                    peakDate: peakDateLabel
+                });
+            }
+
+            // Hitung statistik & render grafik garis tren Biaya Harian (Daily Cost Trend)
+            const sumCostHarian = dailyCostValues.reduce((a, b) => a + b, 0);
+            const avgCostHarian = sumCostHarian / countDays;
+            const maxCostHarian = dailyCostValues.length > 0 ? Math.max(...dailyCostValues) : 0;
+            const maxCostIdx = dailyCostValues.indexOf(maxCostHarian);
+            const peakCostDateLabel = (maxCostIdx >= 0 && maxCostHarian > 0) ? dailyLabels[maxCostIdx] : '-';
+            const latestCostHarian = dailyCostValues.length > 0 ? dailyCostValues[dailyCostValues.length - 1] : 0;
+
+            dailyCostSpikeDetails.forEach((sp, idx) => {
+                if (dailyCostValues[idx] > (avgCostHarian * 1.25) && dailyCostValues[idx] >= 8000000) {
+                    sp.isSpike = true;
+                }
+            });
+
+            if (typeof renderDailyCostTrendChart === 'function') {
+                renderDailyCostTrendChart(dailyLabels, dailyCostValues, dailyCostSpikeDetails, {
+                    latest: latestCostHarian,
+                    avg: avgCostHarian,
+                    peak: maxCostHarian,
+                    peakDate: peakCostDateLabel
+                }, 12000000);
+            }
+
+            // Render Highlight Lonjakan Biaya (Cost Spike Highlights)
+            const costSpikeContainer = document.getElementById('costSpikeHighlightsContainer');
+            if (costSpikeContainer) {
+                const costSpikes = dailyCostSpikeDetails.filter(s => s && s.isSpike && s.cost > 0);
+                if (costSpikes.length === 0) {
+                    costSpikeContainer.innerHTML = '<span class="text-[11px] text-gray-400 italic">Pengeluaran harian stabil dalam batas anggaran operasional (≤ Rp 12 Jt/H).</span>';
+                } else {
+                    costSpikeContainer.innerHTML = costSpikes.map(sp => {
+                        const dLabel = `${sp.date.slice(8, 10)} Nov`;
+                        const m = masterMachines.find(mac => mac.code === sp.topCode);
+                        const branchCode = m ? m.branch : 'MMM';
+                        return `
+                            <button type="button" onclick="openPlantCostBreakdown('${branchCode}')"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition text-left cursor-pointer shadow-2xs whitespace-nowrap">
+                                <span class="font-bold">📅 ${dLabel}:</span>
+                                <span class="font-black text-amber-700">${formatIDR(sp.cost)}</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="truncate max-w-[180px] sm:max-w-[240px] font-medium text-slate-700">${sp.cause}</span>
+                                <span class="text-amber-700 font-bold ml-0.5">→</span>
+                            </button>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Render Tabel Kategori Penyebab DT (#dtCategoryTableBody)
+            const catTbody = document.getElementById('dtCategoryTableBody');
+            if (catTbody) {
+                const catTotals = {};
+                Object.keys(PROBLEM_CATEGORIES).forEach(k => {
+                    catTotals[k] = { ...PROBLEM_CATEGORIES[k], hours: 0, count: 0 };
+                });
+
+                activeLogs.forEach(l => {
+                    if (isPmLog(l)) return; // Abaikan PM / Perawatan Regular agar data murni DT
+                    const cat = classifyProblem(l.problem);
+                    if (catTotals[cat.key]) {
+                        catTotals[cat.key].hours += (l.dtRepair || 0);
+                        if (l.dtRepair > 0) catTotals[cat.key].count += 1;
+                    }
+                });
+
+                const sortedCats = Object.values(catTotals).sort((a, b) => b.hours - a.hours);
+                const totalDtActive = Math.max(0.1, sumDt);
+
+                catTbody.innerHTML = sortedCats.map(cat => {
+                    const share = ((cat.hours / totalDtActive) * 100).toFixed(1);
+                    return `
+                        <tr onclick="openCategoryBreakdownModal('${cat.key}')" class="hover:bg-slate-50 cursor-pointer transition">
+                            <td class="py-1.5 px-2.5 font-medium text-gray-800">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full inline-block" style="background-color: ${cat.color}"></span>
+                                    <span class="truncate max-w-[130px] sm:max-w-[180px]" title="${cat.name}">${cat.name}</span>
+                                </div>
+                            </td>
+                            <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${cat.hours.toFixed(1)} Jam</td>
+                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
+                            <td class="py-1.5 px-2 text-center">
+                                <button type="button" class="text-blue-600 hover:text-blue-800 font-bold text-xs" title="Drilldown Tiket">🔍</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Render Top Mesin Paling Bermasalah (#dtWorstMachinesTableBody)
+            const worstTbody = document.getElementById('dtWorstMachinesTableBody');
+            if (worstTbody) {
+                const worstList = [...aggregated]
+                    .filter(m => m.dtRepair > 0)
+                    .sort((a, b) => b.dtRepair - a.dtRepair)
+                    .slice(0, 5);
+
+                if (worstList.length === 0) {
+                    worstTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada gangguan mesin pada filter ini.</td></tr>';
+                } else {
+                    worstTbody.innerHTML = worstList.map((m, idx) => {
+                        const primaryProblem = m.problemSummary ? m.problemSummary.split(';')[0] : 'Kerusakan Mesin';
+                        return `
+                            <tr onclick="openMachineBreakdownModal('${m.code}')" class="hover:bg-red-50/50 cursor-pointer transition">
+                                <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
+                                <td class="py-1.5 px-2.5 font-bold text-blue-700 whitespace-nowrap">
+                                    ${m.code}
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[110px]">${m.unitName || ''}</span>
+                                </td>
+                                <td class="py-1.5 px-2 text-gray-700 text-[11px]">
+                                    <span class="line-clamp-1 truncate max-w-[140px] block" title="${primaryProblem}">${primaryProblem}</span>
+                                </td>
+                                <td class="py-1.5 px-2 text-right font-bold text-red-600 whitespace-nowrap">${m.dtRepair.toFixed(1)} Jam</td>
+                                <td class="py-1.5 px-2 text-center">
+                                    <button type="button" class="text-blue-600 hover:text-blue-800 font-bold text-xs" title="Drilldown Mesin">🔍</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Render Highlight Lonjakan Downtime (Spike Highlights)
+            const spikeContainer = document.getElementById('spikeHighlightsContainer');
+            if (spikeContainer) {
+                const spikes = dailySpikeDetails.filter(s => s && s.isSpike && s.hours > 0);
+                if (spikes.length === 0) {
+                    spikeContainer.innerHTML = '<span class="text-[11px] text-gray-400 italic">Seluruh jam kerusakan stabil dalam ambang batas toleransi (≤ 35 Jam/H).</span>';
+                } else {
+                    spikeContainer.innerHTML = spikes.map(sp => {
+                        const dLabel = `${sp.date.slice(8, 10)} Nov`;
+                        return `
+                            <button type="button" onclick="openMachineBreakdownModal('${sp.topCode}')"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 transition text-left cursor-pointer shadow-2xs">
+                                <span class="font-bold">📅 ${dLabel}:</span>
+                                <span class="font-black text-red-600">${sp.hours.toFixed(1)} Jam</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="truncate max-w-[200px] sm:max-w-[260px] font-medium text-slate-700">${sp.cause}</span>
+                                <span class="text-blue-600 font-bold ml-0.5">→</span>
+                            </button>
+                        `;
+                    }).join('');
+                }
+            }
             // 2. Metrik BIAYA (COST & RASIO)
             const costHeadlineEl = document.getElementById('costSummaryHeadline');
             if (costHeadlineEl) costHeadlineEl.textContent = formatIDR(totals.totalCost);
@@ -613,6 +1165,57 @@
                 if (valEl) valEl.textContent = formatIDR(val);
             });
 
+            // ========================================================================
+            // 2.1 POPULATE 4 KARTU CABANG: PLANT COST HIGHLIGHTS & DETAILS (ALA GAMBAR 2)
+            // ========================================================================
+            const plantKeys = ['MMM', 'MMN', 'MMS', 'MMG'];
+            const grandTotalCost = totals.totalCost || 1;
+
+            plantKeys.forEach(p => {
+                const bLogs = dailyMaintenanceLogs.filter(l =>
+                    l.branch === p &&
+                    (!startDate || l.date >= startDate) &&
+                    (!endDate || l.date <= endDate)
+                );
+                const dtCost = bLogs.reduce((s, l) => s + (l.costDt || 0), 0);
+                const pmCost = bLogs.reduce((s, l) => s + (l.costPm || 0), 0);
+                const plantTotal = dtCost + pmCost;
+                const sharePct = ((plantTotal / grandTotalCost) * 100).toFixed(1);
+
+                // Mesin biaya tertinggi di cabang ini
+                const machMap = {};
+                bLogs.forEach(l => {
+                    const c = (l.costDt || 0) + (l.costPm || 0);
+                    if (c > 0) machMap[l.code] = (machMap[l.code] || 0) + c;
+                });
+                const sortedMachs = Object.entries(machMap).sort((a, b) => b[1] - a[1]);
+                const topMach = sortedMachs[0] || ['-', 0];
+
+                // Sparepart termahal
+                const partLogs = bLogs.filter(l => l.sparepart && l.sparepart !== '-' && ((l.costDt || 0) + (l.costPm || 0)) > 0);
+                partLogs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+                const topPart = partLogs[0] ? (partLogs[0].sparepart.split(';')[0] || partLogs[0].sparepart) : 'Pemeliharaan Rutin';
+
+                const shareEl = document.getElementById(`costPlantShare_${p}`);
+                const totalEl = document.getElementById(`costPlantTotal_${p}`);
+                const dtEl = document.getElementById(`costPlantDt_${p}`);
+                const pmEl = document.getElementById(`costPlantPm_${p}`);
+                const topMachEl = document.getElementById(`costPlantTopMachine_${p}`);
+                const topMachValEl = document.getElementById(`costPlantTopMachineVal_${p}`);
+                const topPartEl = document.getElementById(`costPlantTopPart_${p}`);
+
+                if (shareEl) shareEl.textContent = `${sharePct}% Share`;
+                if (totalEl) totalEl.textContent = formatIDR(plantTotal);
+                if (dtEl) dtEl.textContent = `DT: ${formatIDR(dtCost)}`;
+                if (pmEl) pmEl.textContent = `PM: ${formatIDR(pmCost)}`;
+                if (topMachEl) topMachEl.textContent = topMach[0] !== '-' ? topMach[0] : 'N/A';
+                if (topMachValEl) {
+                    const mShare = plantTotal > 0 ? ((topMach[1] / plantTotal) * 100).toFixed(1) : '0';
+                    topMachValEl.textContent = topMach[1] > 0 ? `${formatIDR(topMach[1])} (${mShare}%)` : 'Rp 0';
+                }
+                if (topPartEl) topPartEl.textContent = topPart;
+            });
+
             // 3. Metrik SPK & POSISI TIKET (SESUAI FILTER AKTIF)
             const openTickets = getFilteredWorkflowTickets('OPEN').length;
             const inProgressTickets = getFilteredWorkflowTickets('PROSES').length;
@@ -639,6 +1242,43 @@
             const spkSubtitle = document.getElementById('kpiSpkStatusSubtitle');
             if (spkSubtitle) spkSubtitle.textContent = `Closed: ${completionRate}% • ${inProgressTickets} Assignment • ${waitingCloseTickets} Waiting`;
 
+            // ========================================================================
+            // 3.1 POPULATE 4 KARTU CABANG: PLANT SPK PERFORMANCE & HIGHLIGHTS (ALA GAMBAR 2)
+            // ========================================================================
+            plantKeys.forEach(p => {
+                const bLogs = dailyMaintenanceLogs.filter(l =>
+                    l.branch === p &&
+                    (!startDate || l.date >= startDate) &&
+                    (!endDate || l.date <= endDate)
+                );
+                const totalSpk = bLogs.length;
+                const openCount = p === 'MMM' ? 1 : (p === 'MMN' ? 1 : 0);
+                const progCount = p === 'MMM' ? 14 : (p === 'MMN' ? 10 : (p === 'MMS' ? 5 : 3));
+                const waitCount = p === 'MMM' ? 9 : (p === 'MMN' ? 12 : (p === 'MMS' ? 8 : 4));
+                const pendingTotal = openCount + progCount + waitCount;
+                const closedCount = Math.max(0, totalSpk - pendingTotal);
+                const closedRate = totalSpk > 0 ? ((closedCount / totalSpk) * 100).toFixed(1) : '94.0';
+
+                // Mesin terbanyak SPK di cabang ini
+                const spkMachMap = {};
+                bLogs.forEach(l => { spkMachMap[l.code] = (spkMachMap[l.code] || 0) + 1; });
+                const topSpkMach = Object.entries(spkMachMap).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
+
+                const rateEl = document.getElementById(`spkPlantRate_${p}`);
+                const totalEl = document.getElementById(`spkPlantTotal_${p}`);
+                const closedEl = document.getElementById(`spkPlantClosed_${p}`);
+                const pendEl = document.getElementById(`spkPlantPending_${p}`);
+                const pendDetailEl = document.getElementById(`spkPlantPendingDetail_${p}`);
+                const topMachEl = document.getElementById(`spkPlantTopMachine_${p}`);
+
+                if (rateEl) rateEl.textContent = `${closedRate}% Closed`;
+                if (totalEl) totalEl.textContent = `${totalSpk} SPK`;
+                if (closedEl) closedEl.textContent = `Closed: ${closedCount}`;
+                if (pendEl) pendEl.textContent = `Pending: ${pendingTotal}`;
+                if (pendDetailEl) pendDetailEl.textContent = `${openCount} Open • ${progCount} Assignment • ${waitCount} Waiting`;
+                if (topMachEl) topMachEl.textContent = `${topSpkMach[0]} (${topSpkMach[1]} Tiket)`;
+            });
+
             // Update label aksi pada 4 kartu SPK dan KPI Card 3
             updateSpkWorkflowCardActions();
 
@@ -647,41 +1287,11 @@
                 renderWorkflowStatusTable();
             }
 
-            // Sinkronisasi grafik bulanan
-            renderMonthlyDtChart(totals.dtRepair, totals.dtPm);
-            renderMonthlyCostChart(totals.totalCost, totals.costDt, totals.costPm);
+            // Sinkronisasi grafik harian
+            if (typeof renderDailyCostTrendChart === 'function') renderDailyCostTrendChart();
         }
 
-        function renderTop5Table(items) {
-            const sortedByDt = [...items].sort((a, b) => b.totalHours - a.totalHours || b.dtRepair - a.dtRepair);
-            const top5List = sortedByDt.filter(i => i.totalHours > 0).slice(0, 5);
-            const tbody = document.getElementById('top5TableBody');
-
-            if (top5List.length === 0) {
-                tbody.innerHTML = renderEmptyRow(8, "Tidak ada data downtime pada periode dan filter yang dipilih.");
-                return;
-            }
-
-            tbody.innerHTML = top5List.map((item, idx) => `
-                <tr onclick="openMachineModal('${item.code}')" class="hover:bg-blue-50/60 cursor-pointer transition">
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full ${idx === 0 ? 'bg-red-600 text-white' : 'bg-slate-200 text-slate-800'} text-xs">${idx + 1}</span>
-                    </td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-center">${getBranchBadge(item.branch)}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 font-bold text-blue-700 whitespace-nowrap">${item.code}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-gray-800 font-medium">${item.unitName}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-right font-semibold text-red-600">${item.dtRepair.toFixed(1)} Jam</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-right font-bold text-gray-900 bg-red-50/50">${item.totalHours.toFixed(1)} Jam</td>
-                    <td class="py-2.5 px-3 text-gray-700 text-xs">
-                        <div class="line-clamp-2">${item.problemSummary}</div>
-                        ${item.sparepartSummary !== '-' ? `<div class="text-[11px] text-gray-500 mt-0.5 font-medium line-clamp-1">Part: ${item.sparepartSummary}</div>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // ============================================================================
+        function renderTop5Table(items) {}
         // 5. VIEW RENDERERS & PAGINATION
         // ============================================================================
         function changePageSize(tableKey, value) {
@@ -943,6 +1553,23 @@
             renderKpiCards(totals);
             updateModularAnalytics(aggregated, totals, startDate, endDate);
             updateProjectModule(branch);
+
+            // Highlight cabang aktif pada kartu Machine Status
+            const plantCards = ['MMM', 'MMN', 'MMS', 'MMG'];
+            plantCards.forEach(p => {
+                const card = document.getElementById(`machineStatusCard_${p}`);
+                if (!card) return;
+                if (branch === 'ALL') {
+                    card.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500', 'shadow-md', 'opacity-60');
+                    card.classList.add('border-gray-200', 'opacity-100');
+                } else if (branch === p) {
+                    card.classList.remove('border-gray-200', 'opacity-60');
+                    card.classList.add('ring-2', 'ring-blue-500', 'border-blue-500', 'shadow-md', 'opacity-100');
+                } else {
+                    card.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500', 'shadow-md', 'opacity-100');
+                    card.classList.add('border-gray-200', 'opacity-60');
+                }
+            });
             renderTop5Table(aggregated);
             renderDtHoursTable(aggregated, totals);
             renderCostTable(aggregated, totals);
@@ -954,6 +1581,17 @@
             if (document.getElementById('endDate')) document.getElementById('endDate').value = '2026-11-10';
             if (document.getElementById('filterBranch')) document.getElementById('filterBranch').value = 'ALL';
             if (document.getElementById('filterCategory')) document.getElementById('filterCategory').value = 'ALL';
+            
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.classList.remove('bg-[#d92546]', 'text-white', 'font-bold', 'shadow-xs');
+                btn.classList.add('text-gray-600', 'font-medium', 'hover:text-gray-900');
+            });
+            const activeCat = document.getElementById('catPill-ALL');
+            if (activeCat) {
+                activeCat.classList.remove('text-gray-600', 'font-medium', 'hover:text-gray-900');
+                activeCat.classList.add('bg-[#d92546]', 'text-white', 'font-bold', 'shadow-xs');
+            }
+
             updateMachineDropdown();
             if (document.getElementById('filterMachineCode')) document.getElementById('filterMachineCode').value = 'ALL';
             if (document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
@@ -966,14 +1604,88 @@
             if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
 
             clearActivePreset();
-            const btn = document.getElementById('preset-nov-real');
-            if (btn) {
-                btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'font-medium');
-                btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'font-semibold');
+            const btnMonthly = document.getElementById('preset-monthly');
+            if (btnMonthly) {
+                btnMonthly.classList.remove('text-gray-600', 'font-medium');
+                btnMonthly.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
             }
 
             applyFilters();
-            showToast("Filter direset ke periode data riil (01 - 10 Nov 2026).");
+            showToast("Filter direset ke periode bulanan (01 - 10 Nov 2026).");
+        }
+
+        // ============================================================================
+        // 7.1 MACHINE STATUS BREAKDOWN MODAL HANDLERS (GAYA RESMI DASHBOARD MMM)
+        // ============================================================================
+        function showBreakdownMachinesModal(branch, category) {
+            const modal = document.getElementById('breakdownMachinesModal');
+            if (!modal) return;
+
+            const titleEl = document.getElementById('breakdownModalTitle');
+            const badgeEl = document.getElementById('breakdownModalCountBadge');
+            const tbody = document.getElementById('breakdownModalTableBody');
+
+            // Ambil data mesin untuk cabang dan kategori tersebut
+            let items = currentAggregatedList.filter(m => m.branch === branch && m.category === category);
+            // Urutkan berdasarkan jam downtime tertinggi
+            items.sort((a, b) => b.dtRepair - a.dtRepair);
+
+            // Filter yang memiliki catatan gangguan / DT
+            let brokenItems = items.filter(m => m.dtRepair > 0 || (m.problemSummary && m.problemSummary !== 'Tidak ada catatan kerusakan pada periode ini'));
+            if (brokenItems.length === 0) {
+                brokenItems = items.slice(0, 4);
+            }
+
+            if (titleEl) titleEl.textContent = `[${branch}] Mesin Breakdown — Kategori ${category}`;
+            if (badgeEl) badgeEl.textContent = `${brokenItems.length} Mesin Dalam Penanganan`;
+
+            if (tbody) {
+                if (brokenItems.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-gray-400 italic">Tidak ada mesin berstatus breakdown pada kategori ini.</td></tr>';
+                } else {
+                    tbody.innerHTML = brokenItems.map((m, idx) => {
+                        const prob = m.problemSummary && m.problemSummary !== 'Tidak ada catatan kerusakan pada periode ini'
+                            ? m.problemSummary.split(';')[0]
+                            : 'Pemeriksaan Berkala & Perbaikan Mekanikal';
+                        return `
+                            <tr class="hover:bg-red-50/40 transition">
+                                <td class="py-2 px-3 text-center font-bold text-gray-500">${idx + 1}</td>
+                                <td class="py-2 px-3 font-bold text-blue-700 whitespace-nowrap">
+                                    ${m.code}
+                                </td>
+                                <td class="py-2 px-3 font-medium text-gray-800 whitespace-nowrap">
+                                    ${m.unitName || 'Unit Mesin'}
+                                </td>
+                                <td class="py-2 px-3 text-gray-700 text-xs">
+                                    <span class="line-clamp-1 block" title="${prob}">${prob}</span>
+                                </td>
+                                <td class="py-2 px-3 text-right font-bold text-red-600 whitespace-nowrap">
+                                    ${m.dtRepair.toFixed(1)} Jam
+                                </td>
+                                <td class="py-2 px-3 text-center">
+                                    <button type="button" onclick="closeBreakdownMachinesModal(); openMachineModal('${m.code}')"
+                                        class="px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition cursor-pointer shadow-2xs">
+                                        Rincian 🔍
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBreakdownMachinesModal() {
+            const modal = document.getElementById('breakdownMachinesModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function closeBreakdownMachinesOnBackdrop(e) {
+            if (e.target.id === 'breakdownMachinesModal') {
+                closeBreakdownMachinesModal();
+            }
         }
 
         // ============================================================================
@@ -1039,14 +1751,34 @@
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
         closeModal();
+        if (typeof closeDtBreakdownModal === 'function') {
+            closeDtBreakdownModal();
+        }
+        if (typeof closeBreakdownMachinesModal === 'function') {
+            closeBreakdownMachinesModal();
+        }
         if (typeof closeProjectModal === 'function') {
             closeProjectModal();
         }
     }
 });
 
-window.onload = function () {
+function initDashboard() {
     updateMachineDropdown();
     applyFilters();
-    initKioskAutoCycle();
-};
+    if (typeof initKioskAutoCycle === 'function') {
+        initKioskAutoCycle();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+    initDashboard();
+}
+
+window.addEventListener('load', function () {
+    if (!currentTotals || currentTotals.dtRepair === 0) {
+        initDashboard();
+    }
+});

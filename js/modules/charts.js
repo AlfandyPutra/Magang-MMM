@@ -207,7 +207,7 @@ let lastDtTrendData = {
                             pointHoverBorderWidth: 2
                         },
                         {
-                            label: 'Target Toleransi (≤ 35 Jam)',
+                            label: 'Target Toleransi KPI (≤ 35 Jam/H)',
                             data: targetLine,
                             borderColor: '#ef4444',
                             borderDash: [6, 4],
@@ -249,6 +249,13 @@ let lastDtTrendData = {
                             padding: 10,
                             cornerRadius: 8,
                             callbacks: {
+                                label: function (context) {
+                                    if (context.datasetIndex === 0) {
+                                        return ` DT Kerusakan: ${context.parsed.y} Jam`;
+                                    } else {
+                                        return ` Target Toleransi KPI: ${context.parsed.y} Jam / Hari (Batas Maksimal)`;
+                                    }
+                                },
                                 afterBody: function (tooltipItems) {
                                     const idx = tooltipItems[0].dataIndex;
                                     const sp = currentData.spikeDetails ? currentData.spikeDetails[idx] : null;
@@ -460,7 +467,7 @@ let lastDtTrendData = {
                             pointHoverBorderWidth: 2
                         },
                         {
-                            label: 'Target Anggaran (≤ Rp 12 Jt/H)',
+                            label: 'Target Anggaran KPI (≤ Rp 12 Jt/H)',
                             data: targetLine,
                             borderColor: '#ef4444',
                             borderDash: [6, 4],
@@ -506,7 +513,7 @@ let lastDtTrendData = {
                                     if (context.datasetIndex === 0) {
                                         return ` Pengeluaran Biaya: Rp ${context.parsed.y.toLocaleString('id-ID')}`;
                                     } else {
-                                        return ` Target Anggaran: Rp ${context.parsed.y.toLocaleString('id-ID')} / Hari`;
+                                        return ` Target Anggaran KPI: Rp ${context.parsed.y.toLocaleString('id-ID')} / Hari (Batas Toleransi Maksimal)`;
                                     }
                                 },
                                 afterBody: function(tooltipItems) {

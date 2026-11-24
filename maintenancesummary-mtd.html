@@ -195,7 +195,8 @@
                                 <!-- Populated dynamically -->
                             </div>
                             <div class="flex items-center justify-between pt-2 mt-2 border-t border-gray-100 text-[10px]">
-                                <span class="text-gray-400 font-medium">Format: <strong>DD-MM-YYYY</strong></span>
+                                <button type="button" onclick="selectCalendarDate('2026-11-01')"
+                                    class="text-gray-500 hover:text-gray-700 font-bold hover:underline cursor-pointer">Awal Bulan (01 Nov)</button>
                                 <button type="button" onclick="selectCalendarDate('2026-11-10')"
                                     class="text-blue-600 hover:text-blue-800 font-bold hover:underline cursor-pointer">Hari Ini (10 Nov)</button>
                             </div>
@@ -407,10 +408,9 @@
                         <div
                             class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
                             <div>
-                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Downtime
-                                    Trend History (Daily)</span>
-                                <span class="text-[11px] text-gray-500">Histori kurva jam kerusakan riil &amp; toleransi
-                                    target</span>
+                                <span id="dtTrendTitle" class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Downtime
+                                    Trend History (Monthly)</span>
+                                <span id="dtTrendSubtitle" class="text-[11px] text-gray-500">Histori kurva jam kerusakan riil &amp; target toleransi KPI</span>
                             </div>
                             <!-- Stat Badges (Gaya Resmi MMM Reject Dashboard: Latest, Avg, Peak) -->
                             <div class="flex items-center gap-2 text-xs">
@@ -441,9 +441,9 @@
                                     <span class="w-3 h-1 rounded-full bg-cyan-600 inline-block"></span>
                                     DT (Kerusakan &amp; Error Mesin)
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 font-medium text-red-600">
+                                <span class="inline-flex items-center gap-1.5 font-bold text-red-600">
                                     <span class="w-3 border-b-2 border-dashed border-red-500 inline-block"></span>
-                                    Target (≤ 35 Jam/H)
+                                    Target Toleransi KPI (≤ 35 Jam/H)
                                 </span>
                             </div>
                             <span class="text-gray-400 text-[10px] italic">*Klik / hover titik kurva untuk melihat rincian lonjakan &amp; mesin penyebab</span>
@@ -824,9 +824,9 @@
                         <div
                             class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
                             <div>
-                                <span class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Cost
-                                    Trend History (Daily)</span>
-                                <span class="text-[11px] text-gray-500">Histori kurva pengeluaran biaya perbaikan &amp; toleransi anggaran</span>
+                                <span id="costTrendTitle" class="text-xs font-bold text-gray-800 uppercase tracking-wider block">Cost
+                                    Trend History (Monthly)</span>
+                                <span id="costTrendSubtitle" class="text-[11px] text-gray-500">Histori kurva pengeluaran biaya perbaikan &amp; target toleransi anggaran KPI</span>
                             </div>
                             <!-- Stat Badges: Latest, Avg, Peak -->
                             <div class="flex items-center gap-2 text-xs">
@@ -855,9 +855,9 @@
                                     <span class="w-3 h-1 rounded-full bg-amber-500 inline-block"></span>
                                     Biaya Maintenance (IDR)
                                 </span>
-                                <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                <span class="inline-flex items-center gap-1.5 font-bold text-red-600">
                                     <span class="w-4 border-b-2 border-dashed border-red-500 inline-block"></span>
-                                    Target Toleransi (≤ Rp 12 Jt/H)
+                                    Target Anggaran KPI (≤ Rp 12 Jt/H)
                                 </span>
                             </div>
                             <span class="text-gray-400 italic text-[10px]">*Klik / hover titik kurva untuk rincian mesin &amp; pengeluaran terbesar</span>
@@ -2097,7 +2097,7 @@
     <div id="breakdownMachinesModal" onclick="closeBreakdownMachinesOnBackdrop(event)"
         class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-5 transition-opacity duration-200">
         <div
-            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-6xl max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <!-- Modal Header -->
             <div
                 class="p-4 sm:p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-red-50/60">
@@ -2268,8 +2268,8 @@
                     </div>
 
                     <!-- Sisi Kanan: 7 cols (Grafik Tren Harian Khusus Pabrik Ini) -->
-                    <div class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col justify-between shadow-2xs">
-                        <div>
+                    <div class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col shadow-2xs">
+                        <div class="flex-1 flex flex-col min-h-0">
                             <!-- Header Grafik & Badges Stat -->
                             <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
                                 <div>
@@ -2302,25 +2302,17 @@
                                         <span class="w-3 h-1 rounded-full bg-amber-500 inline-block"></span>
                                         Biaya Maintenance Pabrik
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                    <span class="inline-flex items-center gap-1.5 font-bold text-red-600">
                                         <span class="w-4 border-b-2 border-dashed border-red-500 inline-block"></span>
                                         Target Toleransi Pabrik
                                     </span>
                                 </div>
-                                <span class="text-gray-400 italic text-[10px]">*Hover titik kurva untuk rincian DT vs PM</span>
+                                <span class="text-gray-400 italic text-[10px]">*Klik / hover titik kurva untuk melihat rincian lonjakan &amp; mesin penyebab</span>
                             </div>
 
                             <!-- Canvas Grafik Garis Khusus Plant -->
-                            <div class="relative w-full h-56 sm:h-64">
+                            <div class="relative w-full flex-1 min-h-[360px] sm:min-h-[420px]">
                                 <canvas id="plantCostModalTrendChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Highlight Lonjakan Biaya di Pabrik Ini -->
-                        <div class="mt-2.5 pt-2 border-t border-gray-100 flex items-center gap-2 text-xs">
-                            <span class="font-bold text-amber-800 shrink-0">⚠️ Lonjakan Biaya Pabrik:</span>
-                            <div id="plantModalSpikesContainer" class="flex items-center gap-2 overflow-x-auto py-0.5 scrollbar-thin">
-                                <!-- Dynamic pills -->
                             </div>
                         </div>
                     </div>
@@ -2399,9 +2391,9 @@
     <!-- MODAL DRILLDOWN DETAIL DOWNTIME (BREAKDOWN SPK & TINDAKAN) -->
     <!-- ====================================================================== -->
     <div id="dtBreakdownModal" onclick="closeDtBreakdownOnBackdrop(event)"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-5 transition-opacity duration-200">
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-2.5 sm:p-4 2xl:p-6 transition-opacity duration-200">
         <div
-            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-7xl 2xl:max-w-[1440px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <!-- Modal Header -->
             <div
                 class="p-4 sm:p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
@@ -2457,17 +2449,17 @@
 
             <!-- Modal Table Content (Zero padding on scroll container so sticky header sticks directly without bleed-through) -->
             <div class="flex-1 overflow-y-auto relative bg-white">
-                <table class="w-full text-left text-xs border-separate border-spacing-0">
+                <table class="w-full text-left text-xs border-separate border-spacing-0 table-auto">
                     <thead class="sticky top-0 z-20 bg-slate-100 text-gray-700 font-bold uppercase tracking-wider text-[11px] shadow-2xs">
                         <tr class="bg-slate-100">
-                            <th class="sticky top-0 z-20 py-3 pl-5 pr-3 text-center w-12 bg-slate-100 border-b border-gray-200">No.</th>
-                            <th class="sticky top-0 z-20 py-3 px-3 w-36 whitespace-nowrap bg-slate-100 border-b border-gray-200">No SPK</th>
-                            <th class="sticky top-0 z-20 py-3 px-2.5 text-center w-24 bg-slate-100 border-b border-gray-200">Tanggal</th>
+                            <th class="sticky top-0 z-20 py-3 pl-4 pr-2 text-center w-12 bg-slate-100 border-b border-gray-200">No.</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 w-40 whitespace-nowrap bg-slate-100 border-b border-gray-200">No SPK</th>
+                            <th class="sticky top-0 z-20 py-3 px-2 text-center w-24 whitespace-nowrap bg-slate-100 border-b border-gray-200">Tanggal</th>
                             <th class="sticky top-0 z-20 py-3 px-3 w-32 whitespace-nowrap bg-slate-100 border-b border-gray-200">Mesin / Unit</th>
                             <th class="sticky top-0 z-20 py-3 px-3 min-w-[200px] bg-slate-100 border-b border-gray-200">Problem / Kendala</th>
-                            <th class="sticky top-0 z-20 py-3 px-3 min-w-[200px] bg-slate-100 border-b border-gray-200">Tindakan / Sparepart</th>
-                            <th id="dtBreakdownColHeader" class="sticky top-0 z-20 py-3 px-3 text-right w-28 whitespace-nowrap bg-slate-100 border-b border-gray-200">Downtime (Jam)</th>
-                            <th class="sticky top-0 z-20 py-3 pl-3 pr-5 text-right w-24 whitespace-nowrap bg-slate-100 border-b border-gray-200">% Kontribusi</th>
+                            <th class="sticky top-0 z-20 py-3 px-3 min-w-[220px] bg-slate-100 border-b border-gray-200">Tindakan / Sparepart</th>
+                            <th id="dtBreakdownColHeader" class="sticky top-0 z-20 py-3 px-3 text-right w-32 whitespace-nowrap bg-slate-100 border-b border-gray-200">Downtime (Jam)</th>
+                            <th class="sticky top-0 z-20 py-3 pl-2 pr-5 text-right w-24 whitespace-nowrap bg-slate-100 border-b border-gray-200">% Kontribusi</th>
                         </tr>
                     </thead>
                     <tbody id="dtBreakdownTableBody" class="divide-y divide-gray-200 text-gray-800">

@@ -101,6 +101,7 @@
                 startDate = endDate;
                 label = `Harian (${formatDateIndo(endDate)})`;
             } else if (preset === 'weekly') {
+                // Mengurangi 6 hari ke belakang (7 hari terakhir hingga tanggal terpilih)
                 const d = new Date(year, month - 1, day);
                 d.setDate(d.getDate() - 6);
                 const y = d.getFullYear();
@@ -813,6 +814,9 @@
                 filteredLogs: logs
             };
 
+            const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
+            if (subtitleEl) subtitleEl.textContent = `Rincian seluruh tiket kerusakan & riwayat perbaikan mesin ${machine.code} (Murni DT)`;
+
             showDtBreakdownModal();
         }
 
@@ -843,6 +847,9 @@
                 allLogs: logs,
                 filteredLogs: logs
             };
+
+            const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
+            if (subtitleEl) subtitleEl.textContent = `Rincian tiket SPK kerusakan riil kategori ${cat.name} (Murni DT)`;
 
             showDtBreakdownModal();
         }
@@ -1010,7 +1017,8 @@
 
             // 5. Right Column: Plant Trend History Chart
             const trendHeader = document.getElementById('plantModalTrendHeader');
-            if (trendHeader) trendHeader.textContent = `COST TREND HISTORY (DAILY) — ${branch} (${branchNameMap[branch] || ''})`;
+            const presetUpper = (currentActivePreset || 'monthly').toUpperCase();
+            if (trendHeader) trendHeader.textContent = `COST TREND HISTORY (${presetUpper}) — ${branch} (${branchNameMap[branch] || ''})`;
 
             // Hitung data harian khusus pabrik ini
             const sDate = startDate ? new Date(startDate) : new Date('2026-11-01');
@@ -1496,17 +1504,17 @@
 
                 return `
                     <tr class="hover:bg-blue-50/50 transition border-b border-gray-100">
-                        <td class="py-2.5 pl-5 pr-3 text-center font-bold text-gray-500">${idx + 1}</td>
+                        <td class="py-2.5 pl-4 pr-2 text-center font-bold text-gray-500">${idx + 1}</td>
                         <td class="py-2.5 px-3 whitespace-nowrap">
                             <span class="font-mono font-bold text-blue-700 block">${log.ticketCode || '-'}</span>
                             ${typeBadge}
                         </td>
-                        <td class="py-2.5 px-2.5 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
+                        <td class="py-2.5 px-2 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
                         <td class="py-2.5 px-3 font-semibold text-gray-800 whitespace-nowrap">${log.code}</td>
-                        <td class="py-2.5 px-3 text-gray-800">${log.problem || '-'}</td>
-                        <td class="py-2.5 px-3 text-gray-600 text-[11px]">${log.sparepart || '-'}</td>
-                        <td class="py-2.5 px-3 text-right">${colValHtml}</td>
-                        <td class="py-2.5 pl-3 pr-5 text-right font-semibold text-gray-600 whitespace-nowrap">${pct}%</td>
+                        <td class="py-2.5 px-3 text-gray-800 leading-relaxed">${log.problem || '-'}</td>
+                        <td class="py-2.5 px-3 text-gray-600 text-[11px] leading-relaxed">${log.sparepart || '-'}</td>
+                        <td class="py-2.5 px-3 text-right whitespace-nowrap">${colValHtml}</td>
+                        <td class="py-2.5 pl-2 pr-5 text-right font-bold text-gray-700 whitespace-nowrap">${pct}%</td>
                     </tr>
                 `;
             }).join('');
@@ -1668,6 +1676,34 @@
                     sp.isSpike = true;
                 }
             });
+
+            // Dinamiskan Judul dan Subtitle Grafik Mengikuti Periode (Gaya Resmi Dashboard MMM)
+            const presetLabels = {
+                daily: 'DAILY',
+                weekly: 'WEEKLY',
+                monthly: 'MONTHLY',
+                yearly: 'YEARLY'
+            };
+            const currentPresetText = presetLabels[currentActivePreset] || 'MONTHLY';
+            const sDay = sDate.getDate();
+            const sMonth = monthNamesShort[sDate.getMonth()];
+            const sYear = sDate.getFullYear();
+            const eDay = eDate.getDate();
+            const eMonth = monthNamesShort[eDate.getMonth()];
+            const eYear = eDate.getFullYear();
+            const rangeStr = (sYear === eYear && sMonth === eMonth)
+                ? `${sDay} - ${eDay} ${eMonth} ${eYear}`
+                : `${sDay} ${sMonth} - ${eDay} ${eMonth} ${eYear}`;
+
+            const dtTitleEl = document.getElementById('dtTrendTitle');
+            const dtSubtitleEl = document.getElementById('dtTrendSubtitle');
+            if (dtTitleEl) dtTitleEl.textContent = `DOWNTIME TREND HISTORY (${currentPresetText})`;
+            if (dtSubtitleEl) dtSubtitleEl.textContent = `Histori kurva jam kerusakan riil & target toleransi KPI (${rangeStr})`;
+
+            const costTitleEl = document.getElementById('costTrendTitle');
+            const costSubtitleEl = document.getElementById('costTrendSubtitle');
+            if (costTitleEl) costTitleEl.textContent = `COST TREND HISTORY (${currentPresetText})`;
+            if (costSubtitleEl) costSubtitleEl.textContent = `Histori kurva pengeluaran biaya perbaikan & toleransi anggaran KPI (${rangeStr})`;
 
             // Render grafik garis tren DT harian
             if (typeof renderDtTrendLineChart === 'function') {

@@ -271,11 +271,10 @@
             if (document.getElementById('pageSizeCost')) document.getElementById('pageSizeCost').value = '10';
             if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
 
-            const activeBtn = document.getElementById(`preset-${type}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-gray-600', 'font-medium');
-                activeBtn.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
-            }
+            document.querySelectorAll(`.preset-btn[data-preset="${type}"]`).forEach(btn => {
+                btn.classList.remove('text-gray-600', 'font-medium');
+                btn.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
+            });
 
             applyFilters();
             showToast(`Pintasan periode: ${label}`);
@@ -949,14 +948,11 @@
                             <td class="py-1.5 px-2.5 font-medium text-gray-800">
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color: ${cat.color}"></span>
-                                    <span class="truncate max-w-[120px]" title="${cat.name}">${cat.name}</span>
+                                    <span class="truncate max-w-[150px]" title="${cat.name}">${cat.name}</span>
                                 </div>
                             </td>
                             <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${formatIDR(cat.cost)}</td>
-                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${sh}%</td>
-                            <td class="py-1.5 px-2 text-center">
-                                <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Lihat Tiket Kategori Ini">🔍</button>
-                            </td>
+                            <td class="py-1.5 pr-3 text-right font-semibold text-gray-600 whitespace-nowrap">${sh}%</td>
                         </tr>
                     `;
                 }).join('');
@@ -986,7 +982,7 @@
                 });
                 const top5Machines = Object.values(machineTotals).sort((a, b) => b.totalCost - a.totalCost).slice(0, 5);
                 if (top5Machines.length === 0) {
-                    topTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada data mesin.</td></tr>';
+                    topTbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-400 italic">Tidak ada data mesin.</td></tr>';
                 } else {
                     topTbody.innerHTML = top5Machines.map((m, idx) => {
                         const dtShare = m.totalCost > 0 ? (m.costDt / m.totalCost * 100) : 0;
@@ -999,15 +995,12 @@
                                 <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
                                 <td class="py-1.5 px-2 font-bold text-gray-800 whitespace-nowrap">
                                     ${m.code}
-                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[90px]">${m.unitName}</span>
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[110px]">${m.unitName}</span>
                                 </td>
-                                <td class="py-1.5 px-2 text-gray-600 text-[11px] truncate max-w-[120px]" title="${m.topPart}">${m.topPart}</td>
-                                <td class="py-1.5 px-2 text-right whitespace-nowrap">
+                                <td class="py-1.5 px-2 text-gray-600 text-[11px] truncate max-w-[150px]" title="${m.topPart}">${m.topPart}</td>
+                                <td class="py-1.5 pr-3 text-right whitespace-nowrap">
                                     <span class="font-bold text-amber-700">${formatIDR(m.totalCost)}</span>
                                     ${tagHtml}
-                                </td>
-                                <td class="py-1.5 px-2 text-center">
-                                    <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Lihat Tiket Mesin Ini">🔍</button>
                                 </td>
                             </tr>
                         `;
@@ -1790,14 +1783,11 @@
                             <td class="py-1.5 px-2.5 font-medium text-gray-800">
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full inline-block" style="background-color: ${cat.color}"></span>
-                                    <span class="truncate max-w-[130px] sm:max-w-[180px]" title="${cat.name}">${cat.name}</span>
+                                    <span class="truncate max-w-[180px] sm:max-w-[220px]" title="${cat.name}">${cat.name}</span>
                                 </div>
                             </td>
                             <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${cat.hours.toFixed(1)} Jam</td>
-                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
-                            <td class="py-1.5 px-2 text-center">
-                                <button type="button" class="text-blue-600 hover:text-blue-800 font-bold text-xs" title="Drilldown Tiket">🔍</button>
-                            </td>
+                            <td class="py-1.5 pr-3 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
                         </tr>
                     `;
                 }).join('');
@@ -1812,7 +1802,7 @@
                     .slice(0, 5);
 
                 if (worstList.length === 0) {
-                    worstTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada gangguan mesin pada filter ini.</td></tr>';
+                    worstTbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-400 italic">Tidak ada gangguan mesin pada filter ini.</td></tr>';
                 } else {
                     worstTbody.innerHTML = worstList.map((m, idx) => {
                         const primaryProblem = m.problemSummary ? m.problemSummary.split(';')[0] : 'Kerusakan Mesin';
@@ -1821,15 +1811,12 @@
                                 <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
                                 <td class="py-1.5 px-2.5 font-bold text-blue-700 whitespace-nowrap">
                                     ${m.code}
-                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[110px]">${m.unitName || ''}</span>
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[140px]">${m.unitName || ''}</span>
                                 </td>
                                 <td class="py-1.5 px-2 text-gray-700 text-[11px]">
-                                    <span class="line-clamp-1 truncate max-w-[140px] block" title="${primaryProblem}">${primaryProblem}</span>
+                                    <span class="line-clamp-1 truncate max-w-[180px] block" title="${primaryProblem}">${primaryProblem}</span>
                                 </td>
-                                <td class="py-1.5 px-2 text-right font-bold text-red-600 whitespace-nowrap">${m.dtRepair.toFixed(1)} Jam</td>
-                                <td class="py-1.5 px-2 text-center">
-                                    <button type="button" class="text-blue-600 hover:text-blue-800 font-bold text-xs" title="Drilldown Mesin">🔍</button>
-                                </td>
+                                <td class="py-1.5 pr-3 text-right font-bold text-red-600 whitespace-nowrap">${m.dtRepair.toFixed(1)} Jam</td>
                             </tr>
                         `;
                     }).join('');
@@ -1905,14 +1892,11 @@
                             <td class="py-1.5 px-2.5 font-medium text-gray-800">
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color: ${cat.color}"></span>
-                                    <span class="truncate max-w-[130px] sm:max-w-[180px]" title="${cat.name}">${cat.name}</span>
+                                    <span class="truncate max-w-[180px] sm:max-w-[220px]" title="${cat.name}">${cat.name}</span>
                                 </div>
                             </td>
                             <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${formatIDR(cat.cost)}</td>
-                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
-                            <td class="py-1.5 px-2 text-center">
-                                <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Drilldown Biaya Kategori">🔍</button>
-                            </td>
+                            <td class="py-1.5 pr-3 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
                         </tr>
                     `;
                 }).join('');
@@ -1927,7 +1911,7 @@
                     .slice(0, 5);
 
                 if (topCostList.length === 0) {
-                    costTopTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada pengeluaran biaya pada filter ini.</td></tr>';
+                    costTopTbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-400 italic">Tidak ada pengeluaran biaya pada filter ini.</td></tr>';
                 } else {
                     costTopTbody.innerHTML = topCostList.map((m, idx) => {
                         const mLogs = activeLogs.filter(l => l.code === m.code && ((l.costDt || 0) + (l.costPm || 0)) > 0);
@@ -1947,17 +1931,14 @@
                                 <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
                                 <td class="py-1.5 px-2.5 font-bold text-amber-800 whitespace-nowrap">
                                     ${m.code}
-                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[110px]">${m.unitName || ''}</span>
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[140px]">${m.unitName || ''}</span>
                                 </td>
                                 <td class="py-1.5 px-2 text-gray-700 text-[11px]">
-                                    <span class="line-clamp-1 truncate max-w-[140px] block" title="${topPart}">${topPart}</span>
+                                    <span class="line-clamp-1 truncate max-w-[180px] block" title="${topPart}">${topPart}</span>
                                 </td>
-                                <td class="py-1.5 px-2 text-right whitespace-nowrap">
+                                <td class="py-1.5 pr-3 text-right whitespace-nowrap">
                                     <span class="font-bold text-amber-700">${formatIDR(m.totalCost)}</span>
                                     ${costTypeBadge}
-                                </td>
-                                <td class="py-1.5 px-2 text-center">
-                                    <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Drilldown Biaya Mesin">🔍</button>
                                 </td>
                             </tr>
                         `;
@@ -2457,11 +2438,10 @@
             if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
 
             clearActivePreset();
-            const btnMonthly = document.getElementById('preset-monthly');
-            if (btnMonthly) {
-                btnMonthly.classList.remove('text-gray-600', 'font-medium');
-                btnMonthly.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
-            }
+            document.querySelectorAll('.preset-btn[data-preset="monthly"]').forEach(btn => {
+                btn.classList.remove('text-gray-600', 'font-medium');
+                btn.classList.add('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
+            });
 
             applyFilters();
             showToast("Filter direset ke periode bulanan (01 - 10 Nov 2026).");

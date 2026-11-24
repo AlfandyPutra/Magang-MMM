@@ -110,29 +110,9 @@
                     </div>
                 </div>
 
-                <!-- Sisi Kanan: Kontrol Filter Lengkap 1 Baris (Pintasan Periode, Divisi, Single Date, Plant, Export) -->
+                <!-- Sisi Kanan: Kontrol Filter Lengkap 1 Baris (Divisi, Single Date, Plant, Export) -->
                 <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-                    <!-- 1. Pintasan Periode (Daily, Weekly, Monthly, Yearly) -->
-                    <div class="inline-flex p-0.5 bg-white/90 rounded-lg border border-gray-200 shadow-2xs h-8 items-center">
-                        <button type="button" id="preset-daily" onclick="setPeriodPreset('daily')"
-                            class="preset-btn px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
-                            Daily
-                        </button>
-                        <button type="button" id="preset-weekly" onclick="setPeriodPreset('weekly')"
-                            class="preset-btn px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
-                            Weekly
-                        </button>
-                        <button type="button" id="preset-monthly" onclick="setPeriodPreset('monthly')"
-                            class="preset-btn px-2.5 py-1 text-xs font-bold bg-white text-blue-700 shadow-xs rounded-md transition cursor-pointer border border-gray-200/80">
-                            Monthly
-                        </button>
-                        <button type="button" id="preset-yearly" onclick="setPeriodPreset('yearly')"
-                            class="preset-btn px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
-                            Yearly
-                        </button>
-                    </div>
-
-                    <!-- 2. Segmented Pills Kategori / Divisi (Persis di samping Tanggal & Plant seperti Gambar 1) -->
+                    <!-- 1. Segmented Pills Kategori / Divisi (Persis di samping Tanggal & Plant seperti Gambar 1) -->
                     <div class="inline-flex p-0.5 bg-white rounded-lg border border-gray-200 shadow-2xs h-8 items-center">
                         <button type="button" onclick="setCategoryPill('ALL')" id="catPill-ALL"
                             class="cat-pill px-2.5 sm:px-3 py-1 text-xs font-bold bg-[#d92546] text-white rounded-md shadow-xs transition cursor-pointer">
@@ -357,8 +337,7 @@
                                     <tr>
                                         <th class="py-1.5 px-2.5">Kategori Masalah</th>
                                         <th class="py-1.5 px-2 text-right">Jam DT</th>
-                                        <th class="py-1.5 px-2 text-right">Share %</th>
-                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                        <th class="py-1.5 pr-3 text-right">Share %</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dtCategoryTableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -388,8 +367,7 @@
                                         <th class="py-1.5 px-2 text-center w-7">No</th>
                                         <th class="py-1.5 px-2.5">Unit Mesin</th>
                                         <th class="py-1.5 px-2">Kendala Utama</th>
-                                        <th class="py-1.5 px-2 text-right">Total DT</th>
-                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                        <th class="py-1.5 pr-3 text-right">Total DT</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dtWorstMachinesTableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -404,7 +382,7 @@
                 <div
                     class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col">
                     <div class="flex-1 flex flex-col min-h-0">
-                        <!-- Chart Header with Stats: Latest, Avg, Peak -->
+                        <!-- Chart Header with Preset & Stats: Latest, Avg, Peak -->
                         <div
                             class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
                             <div>
@@ -412,23 +390,44 @@
                                     Trend History (Monthly)</span>
                                 <span id="dtTrendSubtitle" class="text-[11px] text-gray-500">Histori kurva jam kerusakan riil &amp; target toleransi KPI</span>
                             </div>
-                            <!-- Stat Badges (Gaya Resmi MMM Reject Dashboard: Latest, Avg, Peak) -->
-                            <div class="flex items-center gap-2 text-xs">
-                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
-                                    <span
-                                        class="text-[10px] text-gray-400 block font-medium leading-none">Latest:</span>
-                                    <span id="trendStatLatest" class="font-bold text-cyan-700">0.0 Jam</span>
+                            <!-- Sisi Kanan: Pintasan Periode (Atas) & Stat Badges (Bawah) -->
+                            <div class="flex flex-col items-end gap-1.5">
+                                <!-- Pintasan Periode (Daily, Weekly, Monthly, Yearly) -->
+                                <div class="inline-flex p-0.5 bg-gray-100/90 rounded-lg border border-gray-200/90 shadow-2xs h-7 items-center">
+                                    <button type="button" data-preset="daily" onclick="setPeriodPreset('daily')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Daily
+                                    </button>
+                                    <button type="button" data-preset="weekly" onclick="setPeriodPreset('weekly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Weekly
+                                    </button>
+                                    <button type="button" data-preset="monthly" onclick="setPeriodPreset('monthly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-bold bg-white text-blue-700 shadow-xs rounded-md transition cursor-pointer border border-gray-200/80">
+                                        Monthly
+                                    </button>
+                                    <button type="button" data-preset="yearly" onclick="setPeriodPreset('yearly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Yearly
+                                    </button>
                                 </div>
-                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
-                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Avg:</span>
-                                    <span id="trendStatAvg" class="font-bold text-slate-700">0.0 Jam/H</span>
-                                </div>
-                                <div class="bg-red-50 border border-red-200 px-2 py-1 rounded-md text-right">
-                                    <span class="text-[10px] text-red-500 block font-medium leading-none">Peak:</span>
-                                    <div class="flex items-center gap-1 justify-end">
-                                        <span id="trendStatPeak" class="font-bold text-red-600">0.0 Jam</span>
-                                        <span id="trendStatPeakDate"
-                                            class="text-[10px] text-red-500 font-semibold"></span>
+                                <!-- Stat Badges (Gaya Resmi MMM Reject Dashboard: Latest, Avg, Peak) -->
+                                <div class="flex items-center gap-1.5 sm:gap-2 text-xs">
+                                    <div class="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-gray-400 block font-medium leading-none">Latest:</span>
+                                        <span id="trendStatLatest" class="font-bold text-cyan-700 text-xs">0.0 Jam</span>
+                                    </div>
+                                    <div class="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-gray-400 block font-medium leading-none">Avg:</span>
+                                        <span id="trendStatAvg" class="font-bold text-slate-700 text-xs">0.0 Jam/H</span>
+                                    </div>
+                                    <div class="bg-red-50 border border-red-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-red-500 block font-medium leading-none">Peak:</span>
+                                        <div class="flex items-center gap-1 justify-end">
+                                            <span id="trendStatPeak" class="font-bold text-red-600 text-xs">0.0 Jam</span>
+                                            <span id="trendStatPeakDate"
+                                                class="text-[9px] text-red-500 font-semibold"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -777,8 +776,7 @@
                                     <tr>
                                         <th class="py-1.5 px-2.5">Kategori Biaya</th>
                                         <th class="py-1.5 px-2 text-right">Total Biaya</th>
-                                        <th class="py-1.5 px-2 text-right">Share %</th>
-                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                        <th class="py-1.5 pr-3 text-right">Share %</th>
                                     </tr>
                                 </thead>
                                 <tbody id="costCategoryTableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -804,8 +802,7 @@
                                         <th class="py-1.5 px-2 text-center w-7">No</th>
                                         <th class="py-1.5 px-2.5">Unit Mesin</th>
                                         <th class="py-1.5 px-2">Sparepart / Tindakan</th>
-                                        <th class="py-1.5 px-2 text-right">Total Biaya</th>
-                                        <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                        <th class="py-1.5 pr-3 text-right">Total Biaya</th>
                                     </tr>
                                 </thead>
                                 <tbody id="costTopMachinesTableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -820,7 +817,7 @@
                 <div
                     class="lg:col-span-7 bg-white rounded-xl p-3.5 sm:p-4 border border-gray-200 flex flex-col">
                     <div class="flex-1 flex flex-col min-h-0">
-                        <!-- Chart Header with Stats: Latest, Avg, Peak -->
+                        <!-- Chart Header with Preset & Stats: Latest, Avg, Peak -->
                         <div
                             class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100 mb-2.5">
                             <div>
@@ -828,21 +825,43 @@
                                     Trend History (Monthly)</span>
                                 <span id="costTrendSubtitle" class="text-[11px] text-gray-500">Histori kurva pengeluaran biaya perbaikan &amp; target toleransi anggaran KPI</span>
                             </div>
-                            <!-- Stat Badges: Latest, Avg, Peak -->
-                            <div class="flex items-center gap-2 text-xs">
-                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
-                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Latest:</span>
-                                    <span id="costTrendStatLatest" class="font-bold text-amber-700">Rp 0</span>
+                            <!-- Sisi Kanan: Pintasan Periode (Atas) & Stat Badges (Bawah) -->
+                            <div class="flex flex-col items-end gap-1.5">
+                                <!-- Pintasan Periode (Daily, Weekly, Monthly, Yearly) -->
+                                <div class="inline-flex p-0.5 bg-gray-100/90 rounded-lg border border-gray-200/90 shadow-2xs h-7 items-center">
+                                    <button type="button" data-preset="daily" onclick="setPeriodPreset('daily')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Daily
+                                    </button>
+                                    <button type="button" data-preset="weekly" onclick="setPeriodPreset('weekly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Weekly
+                                    </button>
+                                    <button type="button" data-preset="monthly" onclick="setPeriodPreset('monthly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-bold bg-white text-blue-700 shadow-xs rounded-md transition cursor-pointer border border-gray-200/80">
+                                        Monthly
+                                    </button>
+                                    <button type="button" data-preset="yearly" onclick="setPeriodPreset('yearly')"
+                                        class="preset-btn px-2.5 py-0.5 text-[11px] font-medium text-gray-600 hover:text-gray-900 rounded-md transition cursor-pointer">
+                                        Yearly
+                                    </button>
                                 </div>
-                                <div class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-md text-right">
-                                    <span class="text-[10px] text-gray-400 block font-medium leading-none">Avg:</span>
-                                    <span id="costTrendStatAvg" class="font-bold text-slate-700">Rp 0/H</span>
-                                </div>
-                                <div class="bg-red-50 border border-red-200 px-2 py-1 rounded-md text-right">
-                                    <span class="text-[10px] text-red-500 block font-medium leading-none">Peak:</span>
-                                    <div class="flex items-center gap-1 justify-end">
-                                        <span id="costTrendStatPeak" class="font-bold text-red-600">Rp 0</span>
-                                        <span id="costTrendStatPeakDate" class="text-[10px] text-red-500 font-semibold"></span>
+                                <!-- Stat Badges: Latest, Avg, Peak -->
+                                <div class="flex items-center gap-1.5 sm:gap-2 text-xs">
+                                    <div class="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-gray-400 block font-medium leading-none">Latest:</span>
+                                        <span id="costTrendStatLatest" class="font-bold text-amber-700 text-xs">Rp 0</span>
+                                    </div>
+                                    <div class="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-gray-400 block font-medium leading-none">Avg:</span>
+                                        <span id="costTrendStatAvg" class="font-bold text-slate-700 text-xs">Rp 0/H</span>
+                                    </div>
+                                    <div class="bg-red-50 border border-red-200 px-2 py-0.5 rounded-md text-right">
+                                        <span class="text-[9px] text-red-500 block font-medium leading-none">Peak:</span>
+                                        <div class="flex items-center gap-1 justify-end">
+                                            <span id="costTrendStatPeak" class="font-bold text-red-600 text-xs">Rp 0</span>
+                                            <span id="costTrendStatPeakDate" class="text-[9px] text-red-500 font-semibold"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2228,8 +2247,7 @@
                                         <tr>
                                             <th class="py-1.5 px-2.5">Kategori</th>
                                             <th class="py-1.5 px-2 text-right">Biaya (IDR)</th>
-                                            <th class="py-1.5 px-2 text-right">Share %</th>
-                                            <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                            <th class="py-1.5 pr-3 text-right">Share %</th>
                                         </tr>
                                     </thead>
                                     <tbody id="plantModalCategoryTableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -2255,8 +2273,7 @@
                                             <th class="py-1.5 px-2 text-center w-7">No</th>
                                             <th class="py-1.5 px-2">Mesin</th>
                                             <th class="py-1.5 px-2">Sparepart / Kendala</th>
-                                            <th class="py-1.5 px-2 text-right">Total Biaya</th>
-                                            <th class="py-1.5 px-2 text-center w-8">Aksi</th>
+                                            <th class="py-1.5 pr-3 text-right">Total Biaya</th>
                                         </tr>
                                     </thead>
                                     <tbody id="plantModalTopMachinesTableBody" class="divide-y divide-gray-100 text-gray-700">

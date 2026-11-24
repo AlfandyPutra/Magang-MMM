@@ -220,6 +220,21 @@ let lastDtTrendData = {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements && elements.length > 0) {
+                            const idx = elements[0].index;
+                            const sp = currentData.spikeDetails ? currentData.spikeDetails[idx] : null;
+                            if (sp && sp.topCode && typeof openMachineBreakdownModal === 'function') {
+                                openMachineBreakdownModal(sp.topCode);
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        const target = event && event.native ? event.native.target : null;
+                        if (target) {
+                            target.style.cursor = chartElement && chartElement.length > 0 ? 'pointer' : 'default';
+                        }
+                    },
                     interaction: {
                         mode: 'index',
                         intersect: false
@@ -458,6 +473,21 @@ let lastDtTrendData = {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements && elements.length > 0) {
+                            const idx = elements[0].index;
+                            const sp = currentCostData.spikeDetails ? currentCostData.spikeDetails[idx] : null;
+                            if (sp && sp.topCode && typeof openMachineBreakdownModal === 'function') {
+                                openMachineBreakdownModal(sp.topCode);
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        const target = event && event.native ? event.native.target : null;
+                        if (target) {
+                            target.style.cursor = chartElement && chartElement.length > 0 ? 'pointer' : 'default';
+                        }
+                    },
                     interaction: {
                         mode: 'index',
                         intersect: false
@@ -482,12 +512,16 @@ let lastDtTrendData = {
                                 afterBody: function(tooltipItems) {
                                     const idx = tooltipItems[0].dataIndex;
                                     const sp = currentCostData.spikeDetails ? currentCostData.spikeDetails[idx] : null;
-                                    if (sp && sp.cause && sp.cost > 0) {
-                                        return [
+                                    if (sp) {
+                                        const lines = [
                                             '',
-                                            '💰 PENGELUARAN TERBESAR:',
-                                            `   ${sp.cause}`
+                                            `  • DT (Kerusakan): Rp ${Math.round(sp.costDt || 0).toLocaleString('id-ID')}`,
+                                            `  • PM (Perawatan): Rp ${Math.round(sp.costPm || 0).toLocaleString('id-ID')}`
                                         ];
+                                        if (sp.cause && sp.cost > 0) {
+                                            lines.push('', '💰 PENGELUARAN TERBESAR:', `   ${sp.cause}`);
+                                        }
+                                        return lines;
                                     }
                                     return [];
                                 }
@@ -528,10 +562,152 @@ let lastDtTrendData = {
             return `Rp ${val}`;
         }
 
+        // ============================================================================
+        // 6. GRAFIK TREN BIAYA CABANG PABRIK (MODAL DRILLDOWN ALA GAMBAR 1 MMM)
+        // ============================================================================
+        let plantCostModalChartInstance = null;
+
+        function renderPlantCostModalTrendChart(labels, values, spikeDetails, targetVal) {
+            const canvas = document.getElementById('plantCostModalTrendChart');
+            if (!canvas) return;
+
+            if (plantCostModalChartInstance) {
+                plantCostModalChartInstance.destroy();
+                plantCostModalChartInstance = null;
+            }
+
+            if (typeof Chart === 'undefined') return;
+
+            const ctx = canvas.getContext('2d');
+            const gradPlant = ctx.createLinearGradient(0, 0, 0, 260);
+            gradPlant.addColorStop(0, 'rgba(217, 119, 6, 0.32)');
+            gradPlant.addColorStop(1, 'rgba(217, 119, 6, 0.0)');
+
+            const target = targetVal || 6000000;
+            const targetLine = labels.map(() => target);
+
+            plantCostModalChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Biaya Maintenance Pabrik',
+                            data: values,
+                            borderColor: '#d97706',
+                            backgroundColor: gradPlant,
+                            fill: true,
+                            tension: 0.38,
+                            borderWidth: 2.8,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#d97706',
+                            pointBorderWidth: 2.5,
+                            pointRadius: 4.5,
+                            pointHoverRadius: 7.5,
+                            pointHoverBackgroundColor: '#d97706',
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: `Target Toleransi (≤ ${formatShortIDR(target)}/H)`,
+                            data: targetLine,
+                            borderColor: '#ef4444',
+                            borderDash: [6, 4],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements && elements.length > 0) {
+                            const idx = elements[0].index;
+                            const sp = spikeDetails ? spikeDetails[idx] : null;
+                            if (sp && sp.topCode && typeof openMachineBreakdownModal === 'function') {
+                                openMachineBreakdownModal(sp.topCode);
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        const target = event && event.native ? event.native.target : null;
+                        if (target) {
+                            target.style.cursor = chartElement && chartElement.length > 0 ? 'pointer' : 'default';
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: { size: 12, weight: 'bold' },
+                            titleColor: '#f8fafc',
+                            bodyFont: { size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return ` Pengeluaran Biaya: Rp ${context.parsed.y.toLocaleString('id-ID')}`;
+                                    } else {
+                                        return ` Target Toleransi: Rp ${context.parsed.y.toLocaleString('id-ID')} / Hari`;
+                                    }
+                                },
+                                afterBody: function(tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const sp = spikeDetails ? spikeDetails[idx] : null;
+                                    if (sp) {
+                                        const lines = [
+                                            '',
+                                            `  • DT (Kerusakan): Rp ${Math.round(sp.costDt || 0).toLocaleString('id-ID')}`,
+                                            `  • PM (Perawatan): Rp ${Math.round(sp.costPm || 0).toLocaleString('id-ID')}`
+                                        ];
+                                        if (sp.cause && sp.cost > 0) {
+                                            lines.push('', '💰 PENGELUARAN TERBESAR:', `   ${sp.cause}`);
+                                        }
+                                        return lines;
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(val) {
+                                    if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(0) + ' Jt';
+                                    if (val >= 1000) return 'Rp ' + (val / 1000).toFixed(0) + ' Rb';
+                                    return 'Rp ' + val;
+                                },
+                                font: { size: 10 },
+                                color: '#64748b'
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11, weight: '600' },
+                                color: '#334155'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
         // Export globals to window
         window.renderDtTrendLineChart = renderDtTrendLineChart;
         window.renderMonthlyDtChart = renderMonthlyDtChart;
         window.renderMonthlyCostChart = renderMonthlyCostChart;
         window.renderDailyCostTrendChart = renderDailyCostTrendChart;
+        window.renderPlantCostModalTrendChart = renderPlantCostModalTrendChart;
         window.setDtChartMode = setDtChartMode;
         window.setCostChartMode = setCostChartMode;

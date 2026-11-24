@@ -77,6 +77,8 @@
             }, 3000);
         }
 
+        let currentActivePreset = 'monthly';
+
         function clearActivePreset() {
             document.querySelectorAll('.preset-btn').forEach(btn => {
                 btn.classList.remove('bg-white', 'text-blue-700', 'font-bold', 'shadow-xs', 'border', 'border-gray-200/80');
@@ -84,32 +86,182 @@
             });
         }
 
-        function setPeriodPreset(type) {
-            clearActivePreset();
-            let start = '2026-11-01';
-            let end = '2026-11-10';
-            let label = 'Bulanan (01 - 10 Nov 2026)';
+        // Hitung rentang [startDate, endDate] secara dinamis berdasarkan 1 tanggal acuan terpilih
+        function calculateDateRangeFromSelected(baseDateStr, preset) {
+            if (!baseDateStr) baseDateStr = '2026-11-10';
+            const parts = baseDateStr.split('-');
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10);
+            const day = parseInt(parts[2], 10);
+            const endDate = baseDateStr;
+            let startDate = baseDateStr;
+            let label = '';
 
-            if (type === 'daily') {
-                start = '2026-11-10';
-                end = '2026-11-10';
-                label = 'Harian (10 Nov 2026)';
-            } else if (type === 'weekly') {
-                start = '2026-11-03';
-                end = '2026-11-10';
-                label = 'Mingguan (7 Hari Terakhir: 03 - 10 Nov 2026)';
-            } else if (type === 'monthly') {
-                start = '2026-11-01';
-                end = '2026-11-10';
-                label = 'Bulanan MtD (01 - 10 Nov 2026)';
-            } else if (type === 'yearly') {
-                start = '2026-01-01';
-                end = '2026-11-10';
-                label = 'Tahunan YtD (Tahun 2026)';
+            if (preset === 'daily') {
+                startDate = endDate;
+                label = `Harian (${formatDateIndo(endDate)})`;
+            } else if (preset === 'weekly') {
+                const d = new Date(year, month - 1, day);
+                d.setDate(d.getDate() - 6);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const dt = String(d.getDate()).padStart(2, '0');
+                startDate = `${y}-${m}-${dt}`;
+                label = `Mingguan (7 Hari: ${formatDateIndo(startDate)} — ${formatDateIndo(endDate)})`;
+            } else if (preset === 'yearly') {
+                startDate = `${year}-01-01`;
+                label = `Tahunan YtD (${formatDateIndo(startDate)} — ${formatDateIndo(endDate)})`;
+            } else { // monthly (default)
+                const m = String(month).padStart(2, '0');
+                startDate = `${year}-${m}-01`;
+                label = `Bulanan MtD (${formatDateIndo(startDate)} — ${formatDateIndo(endDate)})`;
             }
 
-            if (document.getElementById('startDate')) document.getElementById('startDate').value = start;
-            if (document.getElementById('endDate')) document.getElementById('endDate').value = end;
+            return { startDate, endDate, label };
+        }
+
+        // ============================================================================
+        // CUSTOM DATEPICKER CONTROLLER (FORMAT RESMI DD-MM-YYYY: HARI-BULAN-TAHUN)
+        // ============================================================================
+        let calendarViewYear = 2026;
+        let calendarViewMonth = 10; // 0-indexed: 10 is November
+
+        const monthNamesIndo = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        function toggleDatePickerPopup() {
+            const popup = document.getElementById('datePickerPopup');
+            if (!popup) return;
+            const isHidden = popup.classList.contains('hidden');
+            if (isHidden) {
+                const curVal = document.getElementById('filterDate')?.value || '2026-11-10';
+                const parts = curVal.split('-');
+                if (parts.length === 3) {
+                    calendarViewYear = parseInt(parts[0], 10);
+                    calendarViewMonth = parseInt(parts[1], 10) - 1;
+                }
+                renderCustomCalendar();
+                popup.classList.remove('hidden');
+            } else {
+                popup.classList.add('hidden');
+            }
+        }
+
+        function hideDatePickerPopup() {
+            const popup = document.getElementById('datePickerPopup');
+            if (popup) popup.classList.add('hidden');
+        }
+
+        function navigateCalendarMonth(step) {
+            calendarViewMonth += step;
+            if (calendarViewMonth < 0) {
+                calendarViewMonth = 11;
+                calendarViewYear--;
+            } else if (calendarViewMonth > 11) {
+                calendarViewMonth = 0;
+                calendarViewYear++;
+            }
+            renderCustomCalendar();
+        }
+
+        function renderCustomCalendar() {
+            const headerText = document.getElementById('calendarMonthYearText');
+            const grid = document.getElementById('calendarDaysGrid');
+            if (!headerText || !grid) return;
+
+            headerText.textContent = `${monthNamesIndo[calendarViewMonth]} ${calendarViewYear}`;
+
+            const curVal = document.getElementById('filterDate')?.value || '2026-11-10';
+
+            const firstDayOfWeek = new Date(calendarViewYear, calendarViewMonth, 1).getDay();
+            const daysInMonth = new Date(calendarViewYear, calendarViewMonth + 1, 0).getDate();
+
+            let html = '';
+
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                html += `<div class="p-1.5 text-transparent select-none">-</div>`;
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const mm = String(calendarViewMonth + 1).padStart(2, '0');
+                const dd = String(d).padStart(2, '0');
+                const isoStr = `${calendarViewYear}-${mm}-${dd}`;
+                const isSelected = isoStr === curVal;
+
+                // Batas rentang tanggal database yang valid (01 Ags 2026 - 30 Nov 2026)
+                const isOutOfRange = isoStr < '2026-08-01' || isoStr > '2026-11-30';
+
+                if (isOutOfRange) {
+                    html += `<div class="p-1.5 text-gray-300 cursor-not-allowed text-[11px] select-none">${d}</div>`;
+                } else if (isSelected) {
+                    html += `<button type="button" onclick="selectCalendarDate('${isoStr}')"
+                        class="p-1.5 bg-blue-600 text-white font-bold rounded-lg shadow-2xs text-[11px] cursor-pointer hover:bg-blue-700 transition">${d}</button>`;
+                } else {
+                    html += `<button type="button" onclick="selectCalendarDate('${isoStr}')"
+                        class="p-1.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-semibold rounded-lg text-[11px] cursor-pointer transition">${d}</button>`;
+                }
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function selectCalendarDate(isoStr) {
+            const filterDateEl = document.getElementById('filterDate');
+            const filterDisplayEl = document.getElementById('filterDateDisplay');
+            if (!filterDateEl || !filterDisplayEl) return;
+
+            filterDateEl.value = isoStr;
+            const parts = isoStr.split('-');
+            if (parts.length === 3) {
+                // Format DD-MM-YYYY (Hari-Bulan-Tahun) persis seperti Dashboard MMM
+                filterDisplayEl.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+
+            hideDatePickerPopup();
+            onSingleDateChanged();
+        }
+
+        // Tutup popup saat klik di luar
+        document.addEventListener('click', function (e) {
+            const container = document.getElementById('datePickerContainer');
+            const popup = document.getElementById('datePickerPopup');
+            if (container && popup && !container.contains(e.target)) {
+                popup.classList.add('hidden');
+            }
+        });
+
+        // Handler perubahan tanggal tunggal pada input #filterDate
+        function onSingleDateChanged() {
+            const filterDateEl = document.getElementById('filterDate');
+            const baseDate = filterDateEl ? filterDateEl.value : '2026-11-10';
+            const { startDate, endDate, label } = calculateDateRangeFromSelected(baseDate, currentActivePreset);
+
+            if (document.getElementById('startDate')) document.getElementById('startDate').value = startDate;
+            if (document.getElementById('endDate')) document.getElementById('endDate').value = endDate;
+
+            tablePaginationState.dt = { page: 1, pageSize: 10 };
+            tablePaginationState.cost = { page: 1, pageSize: 10 };
+            tablePaginationState.spk = { page: 1, pageSize: 10 };
+            if (document.getElementById('pageSizeDt')) document.getElementById('pageSizeDt').value = '10';
+            if (document.getElementById('pageSizeCost')) document.getElementById('pageSizeCost').value = '10';
+            if (document.getElementById('pageSizeSpk')) document.getElementById('pageSizeSpk').value = '10';
+
+            applyFilters();
+            showToast(`Filter tanggal diubah: ${label}`);
+        }
+
+        function setPeriodPreset(type) {
+            currentActivePreset = type;
+            clearActivePreset();
+
+            const filterDateEl = document.getElementById('filterDate');
+            const baseDate = filterDateEl ? filterDateEl.value : '2026-11-10';
+            const { startDate, endDate, label } = calculateDateRangeFromSelected(baseDate, type);
+
+            if (document.getElementById('startDate')) document.getElementById('startDate').value = startDate;
+            if (document.getElementById('endDate')) document.getElementById('endDate').value = endDate;
 
             tablePaginationState.dt = { page: 1, pageSize: 10 };
             tablePaginationState.cost = { page: 1, pageSize: 10 };
@@ -344,6 +496,16 @@
                     ? `${doneCount} Closed • ${progCount} Assignment • ${outCount} Waiting`
                     : `Proyek Cabang ${selectedBranch}: ${branchProjects.length} Terdaftar • ${doneCount} Closed`;
             }
+
+            // Update panelView_prj header badges
+            const prjHeaderTotal = document.getElementById('prjHeaderTotalVal');
+            const prjHeaderCompleted = document.getElementById('prjHeaderCompletedVal');
+            const prjHeaderActive = document.getElementById('prjHeaderActiveVal');
+            if (prjHeaderTotal) prjHeaderTotal.textContent = `${branchProjects.length} Proyek`;
+            const donePrjCount = branchProjects.filter(p => p.status === 'SELESAI').length;
+            const activeProjectsCount = branchProjects.length - donePrjCount;
+            if (prjHeaderCompleted) prjHeaderCompleted.textContent = `${donePrjCount} Selesai`;
+            if (prjHeaderActive) prjHeaderActive.textContent = `${activeProjectsCount} Berjalan`;
             const isPrjOpen = !document.getElementById('prjWorkflowDetailContainer')?.classList.contains('hidden');
             const cardPrjActionText = document.getElementById('cardPrjActionText');
             const cardPrjActionIcon = document.getElementById('cardPrjActionIcon');
@@ -363,41 +525,36 @@
         // ============================================================================
         let currentActiveDashboardTab = 'dt'; // 'dt', 'cost', 'spk', 'prj'
 
-        // FUNGSI GANTI FOKUS MODUL (TAB DASHBOARD EKSEKUTIF)
+        // FUNGSI GANTI FOKUS MODUL (SLIM TAB BAR RESMI PERUSAHAAN MMM)
         function switchDashboardTab(tabId) {
             currentActiveDashboardTab = tabId;
             const tabs = ['dt', 'cost', 'spk', 'prj'];
 
             tabs.forEach(t => {
-                const card = document.getElementById(`kpiCard_${t}`);
-                const badge = document.getElementById(`kpiBadge_${t}`);
+                const tabBtn = document.getElementById(`tabNav_${t}`);
                 const panel = document.getElementById(`panelView_${t}`);
 
                 if (t === tabId) {
-                    if (card) {
-                        card.classList.remove('border-gray-200');
-                        card.classList.add('border-2', 'shadow-md', 'ring-2');
-                        if (t === 'dt') card.classList.add('border-red-500', 'ring-red-100');
-                        if (t === 'cost') card.classList.add('border-amber-500', 'ring-amber-100');
-                        if (t === 'spk') card.classList.add('border-blue-500', 'ring-blue-100');
-                        if (t === 'prj') card.classList.add('border-indigo-500', 'ring-indigo-100');
-                        if (t === 'kpi') card.classList.add('border-teal-500', 'ring-teal-100');
+                    if (tabBtn) {
+                        tabBtn.classList.remove('border-transparent', 'text-gray-500');
+                        tabBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
+                        const icon = tabBtn.querySelector('svg');
+                        if (icon) {
+                            icon.classList.remove('text-gray-400', 'group-hover:text-amber-600', 'group-hover:text-blue-600', 'group-hover:text-indigo-600');
+                            icon.classList.add('text-blue-600');
+                        }
                     }
-                    if (badge) badge.classList.remove('hidden');
                     if (panel) panel.classList.remove('hidden');
                 } else {
-                    if (card) {
-                        card.classList.remove(
-                            'border-2', 'shadow-md', 'ring-2',
-                            'border-red-500', 'ring-red-100',
-                            'border-amber-500', 'ring-amber-100',
-                            'border-blue-500', 'ring-blue-100',
-                            'border-indigo-500', 'ring-indigo-100',
-                            'border-teal-500', 'ring-teal-100'
-                        );
-                        card.classList.add('border-gray-200');
+                    if (tabBtn) {
+                        tabBtn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
+                        tabBtn.classList.add('border-transparent', 'text-gray-500', 'font-medium');
+                        const icon = tabBtn.querySelector('svg');
+                        if (icon) {
+                            icon.classList.remove('text-blue-600');
+                            icon.classList.add('text-gray-400');
+                        }
                     }
-                    if (badge) badge.classList.add('hidden');
                     if (panel) panel.classList.add('hidden');
                 }
             });
@@ -690,22 +847,451 @@
             showDtBreakdownModal();
         }
 
+        let currentPlantModalBranch = 'MMM';
+        let currentPlantModalLogs = [];
+        let plantModalTicketFilterType = 'ALL';
+
         function openPlantCostBreakdown(branch) {
+            currentPlantModalBranch = branch;
             const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
             const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
             const branchNameMap = { MMM: 'Sidoarjo', MMN: 'Nganjuk', MMS: 'Serang', MMG: 'Malang' };
+            const branchColorMap = {
+                MMM: 'bg-blue-600',
+                MMN: 'bg-purple-600',
+                MMS: 'bg-amber-500',
+                MMG: 'bg-emerald-600'
+            };
 
-            const logs = dailyMaintenanceLogs.filter(l =>
-                l.branch === branch &&
+            const allActiveLogs = dailyMaintenanceLogs.filter(l =>
                 (!startDate || l.date >= startDate) &&
                 (!endDate || l.date <= endDate) &&
                 ((l.costDt || 0) > 0 || (l.costPm || 0) > 0)
             );
+            const grandTotalCost = allActiveLogs.reduce((s, l) => s + (l.costDt || 0) + (l.costPm || 0), 0) || 1;
+
+            const logs = allActiveLogs.filter(l => l.branch === branch);
+            logs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+
+            currentPlantModalLogs = logs;
+
+            const dtCost = logs.reduce((s, l) => s + (l.costDt || 0), 0);
+            const pmCost = logs.reduce((s, l) => s + (l.costPm || 0), 0);
+            const totalCost = dtCost + pmCost;
+            const sharePct = ((totalCost / grandTotalCost) * 100).toFixed(1);
+            const dtPct = totalCost > 0 ? (dtCost / totalCost * 100) : 0;
+            const pmPct = totalCost > 0 ? (pmCost / totalCost * 100) : 0;
+
+            // 1. Header Modal
+            const badgeEl = document.getElementById('plantModalBranchBadge');
+            if (badgeEl) {
+                badgeEl.textContent = branch;
+                badgeEl.className = `px-2.5 py-1 rounded-lg text-xs sm:text-sm font-black text-white shadow-xs ${branchColorMap[branch] || 'bg-blue-600'}`;
+            }
+            const titleEl = document.getElementById('plantModalTitle');
+            if (titleEl) titleEl.textContent = `Cost & Maintenance Breakdown — ${branch} (${branchNameMap[branch] || ''})`;
+            const shareBadge = document.getElementById('plantModalShareBadge');
+            if (shareBadge) shareBadge.textContent = `${sharePct}% Share`;
+            const totalVal = document.getElementById('plantModalTotalVal');
+            if (totalVal) totalVal.textContent = formatIDR(totalCost);
+
+            // 2. Card 1: Rasio DT vs PM
+            const periodLabelEl = document.getElementById('plantModalPeriodBadge');
+            if (periodLabelEl) {
+                const sLabel = startDate ? formatDateIndo(startDate) : '01 Nov 2026';
+                const eLabel = endDate ? formatDateIndo(endDate) : '10 Nov 2026';
+                periodLabelEl.textContent = `${sLabel} — ${eLabel}`;
+            }
+            const dtPctEl = document.getElementById('plantModalDtPct');
+            const pmPctEl = document.getElementById('plantModalPmPct');
+            if (dtPctEl) dtPctEl.textContent = `${dtPct.toFixed(1)}%`;
+            if (pmPctEl) pmPctEl.textContent = `${pmPct.toFixed(1)}%`;
+            const dtBar = document.getElementById('plantModalDtBar');
+            const pmBar = document.getElementById('plantModalPmBar');
+            if (dtBar) dtBar.style.width = `${dtPct}%`;
+            if (pmBar) pmBar.style.width = `${pmPct}%`;
+            const dtValEl = document.getElementById('plantModalDtVal');
+            const pmValEl = document.getElementById('plantModalPmVal');
+            if (dtValEl) dtValEl.textContent = `DT: ${formatIDR(dtCost)}`;
+            if (pmValEl) pmValEl.textContent = `PM: ${formatIDR(pmCost)}`;
+
+            plantModalSpecificFilter = null;
+
+            // 3. Card 2: Kategori Biaya di Pabrik Ini (#plantModalCategoryTableBody)
+            const catTbody = document.getElementById('plantModalCategoryTableBody');
+            if (catTbody) {
+                const catTotals = {};
+                Object.keys(PROBLEM_CATEGORIES).forEach(k => {
+                    catTotals[k] = { ...PROBLEM_CATEGORIES[k], cost: 0, count: 0 };
+                });
+                logs.forEach(l => {
+                    const c = (l.costDt || 0) + (l.costPm || 0);
+                    if (c <= 0) return;
+                    const cat = classifyProblem(l.problem);
+                    if (catTotals[cat.key]) {
+                        catTotals[cat.key].cost += c;
+                        catTotals[cat.key].count += 1;
+                    }
+                });
+                const sortedCats = Object.values(catTotals).sort((a, b) => b.cost - a.cost);
+                const plantCostBasis = Math.max(1, totalCost);
+                catTbody.innerHTML = sortedCats.map(cat => {
+                    const sh = ((cat.cost / plantCostBasis) * 100).toFixed(1);
+                    return `
+                        <tr onclick="filterPlantModalByCategory('${cat.key}')" class="hover:bg-amber-100/70 cursor-pointer transition">
+                            <td class="py-1.5 px-2.5 font-medium text-gray-800">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color: ${cat.color}"></span>
+                                    <span class="truncate max-w-[120px]" title="${cat.name}">${cat.name}</span>
+                                </div>
+                            </td>
+                            <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${formatIDR(cat.cost)}</td>
+                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${sh}%</td>
+                            <td class="py-1.5 px-2 text-center">
+                                <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Lihat Tiket Kategori Ini">🔍</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 4. Card 3: Top 5 Mesin Paling Boros di Pabrik Ini (#plantModalTopMachinesTableBody)
+            const topTbody = document.getElementById('plantModalTopMachinesTableBody');
+            if (topTbody) {
+                const machineTotals = {};
+                logs.forEach(l => {
+                    const c = (l.costDt || 0) + (l.costPm || 0);
+                    if (c <= 0) return;
+                    if (!machineTotals[l.code]) {
+                        const mObj = masterMachines.find(m => m.code === l.code) || { code: l.code, name: l.code, unitName: '' };
+                        machineTotals[l.code] = {
+                            code: l.code,
+                            unitName: mObj.unitName || mObj.name || '',
+                            totalCost: 0,
+                            costDt: 0,
+                            costPm: 0,
+                            topPart: l.sparepart || l.problem || '-'
+                        };
+                    }
+                    machineTotals[l.code].totalCost += c;
+                    machineTotals[l.code].costDt += (l.costDt || 0);
+                    machineTotals[l.code].costPm += (l.costPm || 0);
+                });
+                const top5Machines = Object.values(machineTotals).sort((a, b) => b.totalCost - a.totalCost).slice(0, 5);
+                if (top5Machines.length === 0) {
+                    topTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada data mesin.</td></tr>';
+                } else {
+                    topTbody.innerHTML = top5Machines.map((m, idx) => {
+                        const dtShare = m.totalCost > 0 ? (m.costDt / m.totalCost * 100) : 0;
+                        const tagHtml = dtShare >= 75
+                            ? '<span class="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.2 rounded border border-amber-200 block mt-0.5">DT Dominan</span>'
+                            : (dtShare <= 25 ? '<span class="text-[9px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded border border-blue-200 block mt-0.5">PM Dominan</span>'
+                            : '<span class="text-[9px] font-semibold text-slate-500 bg-slate-50 px-1 py-0.2 rounded border border-slate-200 block mt-0.5">DT & PM</span>');
+                        return `
+                            <tr onclick="filterPlantModalByMachine('${m.code}')" class="hover:bg-amber-100/70 cursor-pointer transition">
+                                <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
+                                <td class="py-1.5 px-2 font-bold text-gray-800 whitespace-nowrap">
+                                    ${m.code}
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[90px]">${m.unitName}</span>
+                                </td>
+                                <td class="py-1.5 px-2 text-gray-600 text-[11px] truncate max-w-[120px]" title="${m.topPart}">${m.topPart}</td>
+                                <td class="py-1.5 px-2 text-right whitespace-nowrap">
+                                    <span class="font-bold text-amber-700">${formatIDR(m.totalCost)}</span>
+                                    ${tagHtml}
+                                </td>
+                                <td class="py-1.5 px-2 text-center">
+                                    <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Lihat Tiket Mesin Ini">🔍</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // 5. Right Column: Plant Trend History Chart
+            const trendHeader = document.getElementById('plantModalTrendHeader');
+            if (trendHeader) trendHeader.textContent = `COST TREND HISTORY (DAILY) — ${branch} (${branchNameMap[branch] || ''})`;
+
+            // Hitung data harian khusus pabrik ini
+            const sDate = startDate ? new Date(startDate) : new Date('2026-11-01');
+            const eDate = endDate ? new Date(endDate) : new Date('2026-11-10');
+            const pLabels = [];
+            const pValues = [];
+            const pSpikes = [];
+            const cur = new Date(sDate);
+            const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            while (cur <= eDate) {
+                const yyyy = cur.getFullYear();
+                const mm = String(cur.getMonth() + 1).padStart(2, '0');
+                const dd = String(cur.getDate()).padStart(2, '0');
+                const dStr = `${yyyy}-${mm}-${dd}`;
+                pLabels.push(`${dd} ${mNames[cur.getMonth()]}`);
+
+                const bLogsOnDate = logs.filter(l => l.date === dStr);
+                const dCost = bLogsOnDate.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
+                const dCostDt = bLogsOnDate.reduce((sum, l) => sum + (l.costDt || 0), 0);
+                const dCostPm = bLogsOnDate.reduce((sum, l) => sum + (l.costPm || 0), 0);
+                pValues.push(dCost);
+
+                const topBLog = [...bLogsOnDate].sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)))[0];
+                const topBCause = topBLog
+                    ? `${topBLog.code}: ${topBLog.sparepart || topBLog.problem || 'Perbaikan Mesin'}`
+                    : 'Operasional Standar';
+
+                pSpikes.push({
+                    cost: dCost,
+                    costDt: dCostDt,
+                    costPm: dCostPm,
+                    cause: topBCause,
+                    topCode: topBLog ? topBLog.code : '',
+                    date: dStr
+                });
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            const pCountDays = Math.max(1, pValues.length);
+            const pSum = pValues.reduce((a, b) => a + b, 0);
+            const pAvg = pSum / pCountDays;
+            const pPeak = pValues.length > 0 ? Math.max(...pValues) : 0;
+            const pPeakIdx = pValues.indexOf(pPeak);
+            const pPeakDate = (pPeakIdx >= 0 && pPeak > 0) ? pLabels[pPeakIdx] : '-';
+            const pLatest = pValues.length > 0 ? pValues[pValues.length - 1] : 0;
+
+            const stLatest = document.getElementById('plantModalStatLatest');
+            const stAvg = document.getElementById('plantModalStatAvg');
+            const stPeak = document.getElementById('plantModalStatPeak');
+            const stPeakDate = document.getElementById('plantModalStatPeakDate');
+            if (stLatest) stLatest.textContent = formatIDR(pLatest);
+            if (stAvg) stAvg.textContent = `${formatIDR(pAvg)}/H`;
+            if (stPeak) stPeak.textContent = formatIDR(pPeak);
+            if (stPeakDate) stPeakDate.textContent = `(${pPeakDate})`;
+
+            // Spikes Container
+            const spikesContainer = document.getElementById('plantModalSpikesContainer');
+            if (spikesContainer) {
+                const targetThreshold = (branch === 'MMM') ? 6000000 : 2500000;
+                const activeSpikes = pSpikes.filter(s => s.cost > targetThreshold);
+                if (activeSpikes.length === 0) {
+                    spikesContainer.innerHTML = '<span class="text-[11px] text-gray-400 italic">Pengeluaran harian cabang ini terkendali dalam batas toleransi.</span>';
+                } else {
+                    spikesContainer.innerHTML = activeSpikes.map(sp => {
+                        const dL = `${sp.date.slice(8, 10)} Nov`;
+                        return `
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 text-left whitespace-nowrap shadow-2xs">
+                                <span class="font-bold">📅 ${dL}:</span>
+                                <span class="font-black text-amber-700">${formatIDR(sp.cost)}</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="truncate max-w-[170px] font-medium text-slate-700">${sp.cause}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Render Chart
+            setTimeout(() => {
+                const plantTarget = (branch === 'MMM') ? 6000000 : 2500000;
+                if (typeof renderPlantCostModalTrendChart === 'function') {
+                    renderPlantCostModalTrendChart(pLabels, pValues, pSpikes, plantTarget);
+                }
+            }, 60);
+
+            // 6. Accordion Tiket SPK
+            const ticketCountEl = document.getElementById('plantModalTicketCount');
+            if (ticketCountEl) ticketCountEl.textContent = logs.length;
+            plantModalTicketFilterType = 'ALL';
+            renderPlantModalTicketsTable(logs);
+
+            // Open Modal
+            const modal = document.getElementById('plantCostBreakdownModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closePlantCostBreakdownModal() {
+            const modal = document.getElementById('plantCostBreakdownModal');
+            if (modal) modal.classList.add('hidden');
+            if (typeof plantCostModalChartInstance !== 'undefined' && plantCostModalChartInstance) {
+                plantCostModalChartInstance.destroy();
+                plantCostModalChartInstance = null;
+            }
+        }
+
+        function closePlantCostModalOnBackdrop(e) {
+            if (e.target.id === 'plantCostBreakdownModal') {
+                closePlantCostBreakdownModal();
+            }
+        }
+
+        function togglePlantModalTicketsTable() {
+            const container = document.getElementById('plantModalTicketsContainer');
+            const textEl = document.getElementById('plantModalToggleTicketsText');
+            if (!container) return;
+            const isHidden = container.classList.contains('hidden');
+            if (isHidden) {
+                container.classList.remove('hidden');
+                if (textEl) textEl.textContent = 'Tutup Daftar Tiket ▲';
+            } else {
+                container.classList.add('hidden');
+                if (textEl) textEl.textContent = 'Buka Daftar Tiket ▼';
+            }
+        }
+
+        let plantModalSpecificFilter = null;
+
+        function filterPlantModalByCategory(catKey) {
+            const cat = PROBLEM_CATEGORIES[catKey] || PROBLEM_CATEGORIES.sensor_other;
+            plantModalSpecificFilter = { type: 'cat', key: catKey, label: `Kategori ${cat.name}` };
+            openPlantTicketsAccordionWithFilter();
+        }
+
+        function filterPlantModalByMachine(machineCode) {
+            const mObj = masterMachines.find(m => m.code === machineCode) || { code: machineCode, unitName: '' };
+            plantModalSpecificFilter = { type: 'machine', code: machineCode, label: `Mesin ${machineCode} (${mObj.unitName || ''})` };
+            openPlantTicketsAccordionWithFilter();
+        }
+
+        function clearPlantModalSpecificFilter() {
+            plantModalSpecificFilter = null;
+            applyPlantModalTicketsFilter();
+        }
+
+        function openPlantTicketsAccordionWithFilter() {
+            const container = document.getElementById('plantModalTicketsContainer');
+            const textEl = document.getElementById('plantModalToggleTicketsText');
+            if (container && container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                if (textEl) textEl.textContent = 'Tutup Daftar Tiket ▲';
+            }
+            applyPlantModalTicketsFilter();
+            setTimeout(() => {
+                if (container) container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 60);
+        }
+
+        function setPlantTicketFilter(type) {
+            plantModalTicketFilterType = type;
+            ['ALL', 'DT', 'PM'].forEach(t => {
+                const btn = document.getElementById(`btnFilterPlantTicket_${t}`);
+                if (!btn) return;
+                if (t === type) {
+                    btn.className = 'px-2.5 py-1 rounded-md transition text-slate-900 bg-white shadow-2xs font-bold cursor-pointer';
+                } else {
+                    btn.className = 'px-2.5 py-1 rounded-md transition text-slate-600 hover:text-slate-900 font-semibold cursor-pointer';
+                }
+            });
+            applyPlantModalTicketsFilter();
+        }
+
+        function filterPlantModalTickets(keyword) {
+            applyPlantModalTicketsFilter();
+        }
+
+        function applyPlantModalTicketsFilter() {
+            const banner = document.getElementById('plantModalActiveFilterBanner');
+            const filterText = document.getElementById('plantModalActiveFilterText');
+            const filterCount = document.getElementById('plantModalActiveFilterCount');
+            const searchInput = document.getElementById('plantModalTicketSearchInput');
+            const kw = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+            let logs = currentPlantModalLogs;
+
+            // Filter spesifik (Kategori atau Mesin)
+            if (plantModalSpecificFilter) {
+                if (plantModalSpecificFilter.type === 'cat') {
+                    logs = logs.filter(l => classifyProblem(l.problem).key === plantModalSpecificFilter.key);
+                } else if (plantModalSpecificFilter.type === 'machine') {
+                    logs = logs.filter(l => l.code === plantModalSpecificFilter.code);
+                }
+                if (banner) {
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                }
+                if (filterText) filterText.textContent = plantModalSpecificFilter.label;
+                if (filterCount) filterCount.textContent = `${logs.length} Tiket`;
+            } else {
+                if (banner) {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                }
+            }
+
+            // Filter tipe (ALL / DT / PM)
+            if (plantModalTicketFilterType === 'DT') {
+                logs = logs.filter(l => !isPmLog(l));
+            } else if (plantModalTicketFilterType === 'PM') {
+                logs = logs.filter(l => isPmLog(l));
+            }
+
+            // Filter keyword
+            if (kw) {
+                logs = logs.filter(l =>
+                    (l.ticketCode && l.ticketCode.toLowerCase().includes(kw)) ||
+                    (l.problem && l.problem.toLowerCase().includes(kw)) ||
+                    (l.sparepart && l.sparepart.toLowerCase().includes(kw)) ||
+                    (l.code && l.code.toLowerCase().includes(kw)) ||
+                    (l.date && l.date.includes(kw))
+                );
+            }
+
+            renderPlantModalTicketsTable(logs);
+        }
+
+        function renderPlantModalTicketsTable(logs) {
+            const tbody = document.getElementById('plantModalTicketsTableBody');
+            if (!tbody) return;
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-gray-400 italic">Tidak ada tiket yang cocok.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = logs.map((log, idx) => {
+                const isPm = isPmLog(log);
+                const cost = (log.costDt || 0) + (log.costPm || 0);
+                const typeBadge = isPm
+                    ? '<span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200 mt-0.5">PM • Perawatan</span>'
+                    : '<span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 mt-0.5">DT • Kerusakan</span>';
+                const costValHtml = isPm
+                    ? `<span class="font-bold text-blue-700 whitespace-nowrap">${formatIDR(cost)}</span>`
+                    : `<span class="font-bold text-amber-700 whitespace-nowrap">${formatIDR(cost)}</span>`;
+                const formattedDate = log.date ? `${log.date.slice(8, 10)}/${log.date.slice(5, 7)}/${log.date.slice(0, 4)}` : '-';
+
+                return `
+                    <tr class="hover:bg-blue-50/50 transition border-b border-gray-100">
+                        <td class="py-2 pl-3 pr-2 text-center font-bold text-gray-400">${idx + 1}</td>
+                        <td class="py-2 px-2.5 whitespace-nowrap">
+                            <span class="font-mono font-bold text-blue-700 block">${log.ticketCode || '-'}</span>
+                            ${typeBadge}
+                        </td>
+                        <td class="py-2 px-2 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
+                        <td class="py-2 px-2 font-semibold text-gray-800 whitespace-nowrap">${log.code}</td>
+                        <td class="py-2 px-2 text-gray-800 line-clamp-1 block truncate max-w-[180px]" title="${log.problem || '-'}">${log.problem || '-'}</td>
+                        <td class="py-2 px-2 text-gray-600 text-[11px] truncate max-w-[180px]" title="${log.sparepart || '-'}">${log.sparepart || '-'}</td>
+                        <td class="py-2 px-2 text-right">${costValHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openCostCategoryBreakdown(catKey) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branch = document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : 'ALL';
+            const cat = PROBLEM_CATEGORIES[catKey] || PROBLEM_CATEGORIES.sensor_other;
+
+            const logs = dailyMaintenanceLogs.filter(l => {
+                const cost = (l.costDt || 0) + (l.costPm || 0);
+                if (cost <= 0) return false;
+                const matchBranch = (branch === 'ALL') || (l.branch === branch);
+                const matchDate = (!startDate || l.date >= startDate) && (!endDate || l.date <= endDate);
+                const matchCat = classifyProblem(l.problem).key === catKey;
+                return matchBranch && matchDate && matchCat;
+            });
+
             logs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
             const totalCost = logs.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
 
             activeBreakdownData = {
-                title: `Rincian Biaya: [${branch}] ${branchNameMap[branch] || ''}`,
+                title: `Kategori Biaya: ${cat.name}`,
                 hours: totalCost,
                 isCostMode: true,
                 isSpkMode: false,
@@ -714,7 +1300,39 @@
             };
 
             const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
-            if (subtitleEl) subtitleEl.textContent = `Rincian tiket pengeluaran biaya perbaikan & pembelian sparepart cabang ${branch}`;
+            if (subtitleEl) subtitleEl.textContent = `Rincian tiket pengeluaran biaya perbaikan & pembelian sparepart kategori ${cat.name}`;
+
+            showDtBreakdownModal();
+        }
+
+        function openMachineCostBreakdown(machineCode) {
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branch = document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : 'ALL';
+            const machine = masterMachines.find(m => m.code === machineCode) || { code: machineCode, unitName: '' };
+
+            const logs = dailyMaintenanceLogs.filter(l => {
+                const cost = (l.costDt || 0) + (l.costPm || 0);
+                if (cost <= 0) return false;
+                const matchBranch = (branch === 'ALL') || (l.branch === branch);
+                const matchDate = (!startDate || l.date >= startDate) && (!endDate || l.date <= endDate);
+                return matchBranch && matchDate && l.code === machineCode;
+            });
+
+            logs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+            const totalCost = logs.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
+
+            activeBreakdownData = {
+                title: `Rincian Biaya Mesin: ${machine.code} — ${machine.unitName || ''}`,
+                hours: totalCost,
+                isCostMode: true,
+                isSpkMode: false,
+                allLogs: logs,
+                filteredLogs: logs
+            };
+
+            const subtitleEl = document.getElementById('dtBreakdownModalSubtitle');
+            if (subtitleEl) subtitleEl.textContent = `Rincian seluruh pengeluaran biaya perbaikan & sparepart mesin ${machine.code}`;
 
             showDtBreakdownModal();
         }
@@ -746,13 +1364,36 @@
             showDtBreakdownModal();
         }
 
+        let activeCostBreakdownType = 'ALL';
+
+        function setCostBreakdownTypeFilter(type) {
+            activeCostBreakdownType = type;
+            updateCostBreakdownFilterButtons();
+            const searchInput = document.getElementById('dtBreakdownSearchInput');
+            filterDtBreakdownTable(searchInput ? searchInput.value : '');
+        }
+
+        function updateCostBreakdownFilterButtons() {
+            ['ALL', 'DT', 'PM'].forEach(t => {
+                const btn = document.getElementById(`btnFilterCostType_${t}`);
+                if (!btn) return;
+                if (t === activeCostBreakdownType) {
+                    btn.className = 'px-2.5 py-1 rounded-md transition text-slate-900 bg-white shadow-2xs font-bold cursor-pointer';
+                } else {
+                    btn.className = 'px-2.5 py-1 rounded-md transition text-slate-600 hover:text-slate-900 font-semibold cursor-pointer';
+                }
+            });
+        }
+
         function showDtBreakdownModal() {
             const modal = document.getElementById('dtBreakdownModal');
             if (!modal) return;
 
+            activeCostBreakdownType = 'ALL';
             const titleEl = document.getElementById('dtBreakdownModalTitle');
             const badgeEl = document.getElementById('dtBreakdownModalHoursBadge');
             const searchInput = document.getElementById('dtBreakdownSearchInput');
+            const filterGroup = document.getElementById('costBreakdownTypeFilterGroup');
 
             if (titleEl) titleEl.textContent = activeBreakdownData.title;
             if (badgeEl) {
@@ -764,8 +1405,30 @@
                     badgeEl.textContent = `Total DT: ${activeBreakdownData.hours.toFixed(1)} Jam`;
                 }
             }
+
+            if (filterGroup) {
+                if (activeBreakdownData.isCostMode || activeBreakdownData.isSpkMode) {
+                    filterGroup.classList.remove('hidden');
+                    filterGroup.classList.add('flex');
+                    const allCount = activeBreakdownData.allLogs.length;
+                    const dtCount = activeBreakdownData.allLogs.filter(l => !isPmLog(l)).length;
+                    const pmCount = activeBreakdownData.allLogs.filter(l => isPmLog(l)).length;
+                    const cntAll = document.getElementById('costTypeCount_ALL');
+                    const cntDt = document.getElementById('costTypeCount_DT');
+                    const cntPm = document.getElementById('costTypeCount_PM');
+                    if (cntAll) cntAll.textContent = allCount;
+                    if (cntDt) cntDt.textContent = dtCount;
+                    if (cntPm) cntPm.textContent = pmCount;
+                    updateCostBreakdownFilterButtons();
+                } else {
+                    filterGroup.classList.add('hidden');
+                    filterGroup.classList.remove('flex');
+                }
+            }
+
             if (searchInput) searchInput.value = '';
 
+            activeBreakdownData.filteredLogs = activeBreakdownData.allLogs;
             renderDtBreakdownTable();
             modal.classList.remove('hidden');
         }
@@ -789,13 +1452,20 @@
             const logs = activeBreakdownData.filteredLogs;
             if (countEl) countEl.textContent = `1-${Math.min(logs.length, 10)} of ${logs.length} Items`;
             if (summaryText) {
-                if (isCost) summaryText.textContent = `Menampilkan ${logs.length} tiket SPK pengeluaran biaya perbaikan & pemeliharaan`;
-                else if (isSpk) summaryText.textContent = `Menampilkan ${logs.length} tiket SPK pada periode aktif`;
-                else summaryText.textContent = `Menampilkan ${logs.length} tiket SPK kerusakan riil pada periode aktif (Murni DT, Tanpa PM)`;
+                if (isCost) {
+                    let typeNote = 'gabungan';
+                    if (activeCostBreakdownType === 'DT') typeNote = 'murni kerusakan (DT)';
+                    else if (activeCostBreakdownType === 'PM') typeNote = 'perawatan rutin (PM)';
+                    summaryText.textContent = `Menampilkan ${logs.length} tiket SPK biaya ${typeNote}`;
+                } else if (isSpk) {
+                    summaryText.textContent = `Menampilkan ${logs.length} tiket SPK pada periode aktif`;
+                } else {
+                    summaryText.textContent = `Menampilkan ${logs.length} tiket SPK kerusakan riil pada periode aktif (Murni DT, Tanpa PM)`;
+                }
             }
 
             if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-400 italic">Tidak ada tiket yang cocok dengan pencarian.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-400 italic">Tidak ada tiket yang cocok dengan pencarian / filter tipe.</td></tr>';
                 return;
             }
 
@@ -806,18 +1476,31 @@
                 const metricVal = isCost ? cost : dt;
                 const pct = totalBasis > 0 ? ((metricVal / totalBasis) * 100).toFixed(1) : '0.0';
                 const formattedDate = log.date ? `${log.date.slice(8, 10)}/${log.date.slice(5, 7)}/${log.date.slice(0, 4)}` : '-';
+                const isPm = isPmLog(log);
 
                 let colValHtml = `<span class="font-bold text-red-600 whitespace-nowrap">${dt.toFixed(1)} Jam</span>`;
-                if (isCost) {
-                    colValHtml = `<span class="font-bold text-amber-700 whitespace-nowrap">${formatIDR(cost)}</span>`;
-                } else if (isSpk) {
-                    colValHtml = `<span class="font-bold text-blue-700 whitespace-nowrap">${dt > 0 ? dt.toFixed(1) + ' Jam' : '0.0 Jam'}</span>`;
+                let typeBadge = '';
+                if (isCost || isSpk) {
+                    if (isPm) {
+                        colValHtml = isCost
+                            ? `<span class="font-bold text-blue-700 whitespace-nowrap">${formatIDR(cost)}</span>`
+                            : `<span class="font-bold text-blue-700 whitespace-nowrap">${dt > 0 ? dt.toFixed(1) + ' Jam' : '0.0 Jam (PM)'}</span>`;
+                        typeBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 mt-1">PM • Perawatan</span>`;
+                    } else {
+                        colValHtml = isCost
+                            ? `<span class="font-bold text-amber-700 whitespace-nowrap">${formatIDR(cost)}</span>`
+                            : `<span class="font-bold text-red-600 whitespace-nowrap">${dt > 0 ? dt.toFixed(1) + ' Jam' : '0.0 Jam (DT)'}</span>`;
+                        typeBadge = `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 mt-1">DT • Kerusakan</span>`;
+                    }
                 }
 
                 return `
                     <tr class="hover:bg-blue-50/50 transition border-b border-gray-100">
                         <td class="py-2.5 pl-5 pr-3 text-center font-bold text-gray-500">${idx + 1}</td>
-                        <td class="py-2.5 px-3 font-mono font-bold text-blue-700 whitespace-nowrap">${log.ticketCode || '-'}</td>
+                        <td class="py-2.5 px-3 whitespace-nowrap">
+                            <span class="font-mono font-bold text-blue-700 block">${log.ticketCode || '-'}</span>
+                            ${typeBadge}
+                        </td>
                         <td class="py-2.5 px-2.5 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
                         <td class="py-2.5 px-3 font-semibold text-gray-800 whitespace-nowrap">${log.code}</td>
                         <td class="py-2.5 px-3 text-gray-800">${log.problem || '-'}</td>
@@ -831,10 +1514,20 @@
 
         function filterDtBreakdownTable(keyword) {
             const kw = (keyword || '').toLowerCase().trim();
+            let baseLogs = activeBreakdownData.allLogs;
+
+            if ((activeBreakdownData.isCostMode || activeBreakdownData.isSpkMode) && activeCostBreakdownType !== 'ALL') {
+                if (activeCostBreakdownType === 'DT') {
+                    baseLogs = baseLogs.filter(l => !isPmLog(l));
+                } else if (activeCostBreakdownType === 'PM') {
+                    baseLogs = baseLogs.filter(l => isPmLog(l));
+                }
+            }
+
             if (!kw) {
-                activeBreakdownData.filteredLogs = activeBreakdownData.allLogs;
+                activeBreakdownData.filteredLogs = baseLogs;
             } else {
-                activeBreakdownData.filteredLogs = activeBreakdownData.allLogs.filter(l =>
+                activeBreakdownData.filteredLogs = baseLogs.filter(l =>
                     (l.ticketCode && l.ticketCode.toLowerCase().includes(kw)) ||
                     (l.problem && l.problem.toLowerCase().includes(kw)) ||
                     (l.sparepart && l.sparepart.toLowerCase().includes(kw)) ||
@@ -842,6 +1535,18 @@
                     (l.date && l.date.includes(kw))
                 );
             }
+
+            // Update badge total nominal di header modal jika sedang mode cost
+            const badgeEl = document.getElementById('dtBreakdownModalHoursBadge');
+            if (badgeEl && activeBreakdownData.isCostMode) {
+                const sumCost = activeBreakdownData.filteredLogs.reduce((s, l) => s + (l.costDt || 0) + (l.costPm || 0), 0);
+                activeBreakdownData.hours = sumCost;
+                let prefix = 'Total Biaya';
+                if (activeCostBreakdownType === 'DT') prefix = 'Biaya DT (Kerusakan)';
+                else if (activeCostBreakdownType === 'PM') prefix = 'Biaya PM (Perawatan)';
+                badgeEl.textContent = `${prefix}: ${formatIDR(sumCost)}`;
+            }
+
             renderDtBreakdownTable();
         }
 
@@ -924,6 +1629,8 @@
 
                 // Agregasi biaya harian (DT + PM)
                 const dayCost = logsOnDate.reduce((sum, l) => sum + (l.costDt || 0) + (l.costPm || 0), 0);
+                const dayCostDt = logsOnDate.reduce((sum, l) => sum + (l.costDt || 0), 0);
+                const dayCostPm = logsOnDate.reduce((sum, l) => sum + (l.costPm || 0), 0);
                 dailyCostValues.push(dayCost);
 
                 // Temukan mesin & sparepart pemicu pengeluaran biaya terbesar pada hari tersebut
@@ -938,6 +1645,8 @@
                     isSpike: dayCost > 12000000,
                     cause: topCostCause,
                     cost: dayCost,
+                    costDt: dayCostDt,
+                    costPm: dayCostPm,
                     date: dateStr,
                     topCode: topCostLog ? topCostLog.code : ''
                 });
@@ -1114,14 +1823,111 @@
                 }
             }
             // 2. Metrik BIAYA (COST & RASIO)
-            const costHeadlineEl = document.getElementById('costSummaryHeadline');
-            if (costHeadlineEl) costHeadlineEl.textContent = formatIDR(totals.totalCost);
-
             const costDtRatio = totals.totalCost > 0 ? (totals.costDt / totals.totalCost * 100) : 0;
             const costPmRatio = totals.totalCost > 0 ? (totals.costPm / totals.totalCost * 100) : 0;
 
             const costSubtitle = document.getElementById('kpiCostRatioSubtitle');
             if (costSubtitle) costSubtitle.textContent = `Rasio DT: ${costDtRatio.toFixed(1)}% • PM: ${costPmRatio.toFixed(1)}%`;
+
+            // Update Header Panel Badges (Total Biaya & Rasio)
+            const costHeaderTotalVal = document.getElementById('costHeaderTotalVal');
+            if (costHeaderTotalVal) costHeaderTotalVal.textContent = formatIDR(totals.totalCost);
+
+            const costHeaderDtPct = document.getElementById('costHeaderDtPct');
+            const costHeaderPmPct = document.getElementById('costHeaderPmPct');
+            if (costHeaderDtPct) costHeaderDtPct.textContent = `DT: ${costDtRatio.toFixed(1)}%`;
+            if (costHeaderPmPct) costHeaderPmPct.textContent = `PM: ${costPmRatio.toFixed(1)}%`;
+
+            const costHeadlineEl = document.getElementById('costSummaryHeadline');
+            if (costHeadlineEl) costHeadlineEl.textContent = formatIDR(totals.totalCost);
+
+            // Render Tabel Kategori Pengeluaran Biaya (#costCategoryTableBody)
+            const costCatTbody = document.getElementById('costCategoryTableBody');
+            if (costCatTbody) {
+                const catTotals = {};
+                Object.keys(PROBLEM_CATEGORIES).forEach(k => {
+                    catTotals[k] = { ...PROBLEM_CATEGORIES[k], cost: 0, count: 0 };
+                });
+
+                activeLogs.forEach(l => {
+                    const cost = (l.costDt || 0) + (l.costPm || 0);
+                    if (cost <= 0) return;
+                    const cat = classifyProblem(l.problem);
+                    if (catTotals[cat.key]) {
+                        catTotals[cat.key].cost += cost;
+                        catTotals[cat.key].count += 1;
+                    }
+                });
+
+                const sortedCats = Object.values(catTotals).sort((a, b) => b.cost - a.cost);
+                const totalCostActive = Math.max(1, totals.totalCost);
+
+                costCatTbody.innerHTML = sortedCats.map(cat => {
+                    const share = ((cat.cost / totalCostActive) * 100).toFixed(1);
+                    return `
+                        <tr onclick="openCostCategoryBreakdown('${cat.key}')" class="hover:bg-amber-50/60 cursor-pointer transition">
+                            <td class="py-1.5 px-2.5 font-medium text-gray-800">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full inline-block shrink-0" style="background-color: ${cat.color}"></span>
+                                    <span class="truncate max-w-[130px] sm:max-w-[180px]" title="${cat.name}">${cat.name}</span>
+                                </div>
+                            </td>
+                            <td class="py-1.5 px-2 text-right font-bold text-gray-900 whitespace-nowrap">${formatIDR(cat.cost)}</td>
+                            <td class="py-1.5 px-2 text-right font-semibold text-gray-600 whitespace-nowrap">${share}%</td>
+                            <td class="py-1.5 px-2 text-center">
+                                <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Drilldown Biaya Kategori">🔍</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Render Top Mesin Penyerap Biaya (#costTopMachinesTableBody)
+            const costTopTbody = document.getElementById('costTopMachinesTableBody');
+            if (costTopTbody) {
+                const topCostList = [...aggregated]
+                    .filter(m => m.totalCost > 0)
+                    .sort((a, b) => b.totalCost - a.totalCost)
+                    .slice(0, 5);
+
+                if (topCostList.length === 0) {
+                    costTopTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-400 italic">Tidak ada pengeluaran biaya pada filter ini.</td></tr>';
+                } else {
+                    costTopTbody.innerHTML = topCostList.map((m, idx) => {
+                        const mLogs = activeLogs.filter(l => l.code === m.code && ((l.costDt || 0) + (l.costPm || 0)) > 0);
+                        mLogs.sort((a, b) => ((b.costDt || 0) + (b.costPm || 0)) - ((a.costDt || 0) + (a.costPm || 0)));
+                        const topPart = mLogs.length > 0 && mLogs[0].sparepart ? mLogs[0].sparepart : (m.problemSummary ? m.problemSummary.split(';')[0] : 'Perbaikan Komponen');
+                        const dtShare = m.totalCost > 0 ? ((m.costDt || 0) / m.totalCost * 100) : 0;
+                        let costTypeBadge = '';
+                        if (dtShare >= 75) {
+                            costTypeBadge = '<span class="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.2 rounded border border-amber-200 block mt-0.5">DT Dominan</span>';
+                        } else if (dtShare <= 25) {
+                            costTypeBadge = '<span class="text-[9px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded border border-blue-200 block mt-0.5">PM Dominan</span>';
+                        } else {
+                            costTypeBadge = '<span class="text-[9px] font-semibold text-slate-500 bg-slate-50 px-1 py-0.2 rounded border border-slate-200 block mt-0.5">DT & PM</span>';
+                        }
+                        return `
+                            <tr onclick="openMachineCostBreakdown('${m.code}')" class="hover:bg-amber-50/60 cursor-pointer transition">
+                                <td class="py-1.5 px-2 text-center font-bold text-gray-400">${idx + 1}</td>
+                                <td class="py-1.5 px-2.5 font-bold text-amber-800 whitespace-nowrap">
+                                    ${m.code}
+                                    <span class="text-[10px] font-normal text-gray-500 block truncate max-w-[110px]">${m.unitName || ''}</span>
+                                </td>
+                                <td class="py-1.5 px-2 text-gray-700 text-[11px]">
+                                    <span class="line-clamp-1 truncate max-w-[140px] block" title="${topPart}">${topPart}</span>
+                                </td>
+                                <td class="py-1.5 px-2 text-right whitespace-nowrap">
+                                    <span class="font-bold text-amber-700">${formatIDR(m.totalCost)}</span>
+                                    ${costTypeBadge}
+                                </td>
+                                <td class="py-1.5 px-2 text-center">
+                                    <button type="button" class="text-amber-700 hover:text-amber-900 font-bold text-xs" title="Drilldown Biaya Mesin">🔍</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
 
             const costDtBarText = document.getElementById('costDtBarText');
             const costPmBarText = document.getElementById('costPmBarText');
@@ -1241,6 +2047,14 @@
 
             const spkSubtitle = document.getElementById('kpiSpkStatusSubtitle');
             if (spkSubtitle) spkSubtitle.textContent = `Closed: ${completionRate}% • ${inProgressTickets} Assignment • ${waitingCloseTickets} Waiting`;
+
+            // Update panelView_spk header badges
+            const spkHeaderTotal = document.getElementById('spkHeaderTotalVal');
+            const spkHeaderClosed = document.getElementById('spkHeaderClosedVal');
+            const spkHeaderPending = document.getElementById('spkHeaderPendingVal');
+            if (spkHeaderTotal) spkHeaderTotal.textContent = `${totalTickets} SPK`;
+            if (spkHeaderClosed) spkHeaderClosed.textContent = `${completionRate}% Closed`;
+            if (spkHeaderPending) spkHeaderPending.textContent = `${openTickets + inProgressTickets + waitingCloseTickets} Pending`;
 
             // ========================================================================
             // 3.1 POPULATE 4 KARTU CABANG: PLANT SPK PERFORMANCE & HIGHLIGHTS (ALA GAMBAR 2)
@@ -1577,6 +2391,9 @@
         }
 
         function resetFilters() {
+            currentActivePreset = 'monthly';
+            if (document.getElementById('filterDate')) document.getElementById('filterDate').value = '2026-11-10';
+            if (document.getElementById('filterDateDisplay')) document.getElementById('filterDateDisplay').value = '10-11-2026';
             if (document.getElementById('startDate')) document.getElementById('startDate').value = '2026-11-01';
             if (document.getElementById('endDate')) document.getElementById('endDate').value = '2026-11-10';
             if (document.getElementById('filterBranch')) document.getElementById('filterBranch').value = 'ALL';

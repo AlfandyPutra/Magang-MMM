@@ -1,18 +1,31 @@
-﻿/**
+/**
  * MMS (Maintenance Management System) - MtD Module
  * PT Mitra Mulia Makmur (MMM Plastic)
  * SPK Workflow Tracking Module (4-Stage Pipeline: OPEN, PROSES, OUTSTANDING, CLOSED)
+ * Pemisahan Tegas Tiket Kerusakan (DT) vs Perawatan Berkala (PM / Regular)
  */
         // WORKFLOW SPK STATUS FUNCTIONS (INTERAKTIF KLIK KARTU WORKFLOW)
         // ============================================================================
         let currentWorkflowStatus = null; // null | 'OPEN' | 'PROSES' | 'OUTSTANDING' | 'CLOSED'
         let workflowSearchKeyword = '';
+        let currentWorkflowTypeFilter = 'ALL'; // 'ALL' | 'DT' | 'PM'
 
         const workflowStatusIndices = {
             open: new Set([0, 126]),
             proses: new Set([1, 2, 3, 4, 127, 128, 129, 130, 7, 8, 9, 10, 11, 12, 13, 14, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66]),
             outstanding: new Set([5, 133, 134, 135, 131, 132, 246, 247, 15, 16, 17, 18, 19, 20, 21, 22, 23, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82])
         };
+
+        function checkIsPmTicket(log) {
+            if (typeof isPmLog === 'function') return isPmLog(log);
+            if (!log) return false;
+            if (log.spkPm === 1 && log.spkDt === 0) return true;
+            const p = (log.problem || '').toUpperCase();
+            if (p.includes('PREVENTIVE') || p.includes('PERAWATAN RUTIN') || p.includes('PERIODIK') || p.includes('PEMBERSIHAN') || p.includes('PENGECEKAN BERKALA') || p.includes('GREASING') || p.includes('LUBRIKASI')) {
+                return true;
+            }
+            return false;
+        }
 
         function getTicketWorkflowStatus(index) {
             if (typeof index === 'number' && dailyMaintenanceLogs[index] && dailyMaintenanceLogs[index].ticketStatus) {
@@ -24,12 +37,35 @@
             return 'CLOSED';
         }
 
-        function getFilteredWorkflowTickets(status) {
+        function setWorkflowTypeFilter(type) {
+            currentWorkflowTypeFilter = type;
+            if (tablePaginationState && tablePaginationState.workflow) {
+                tablePaginationState.workflow.page = 1;
+            }
+            updateWorkflowTypeFilterButtons();
+            renderWorkflowStatusTable();
+        }
+
+        function updateWorkflowTypeFilterButtons() {
+            ['ALL', 'DT', 'PM'].forEach(t => {
+                const btn = document.getElementById(`btnWorkflowType_${t}`);
+                if (!btn) return;
+                if (t === currentWorkflowTypeFilter) {
+                    btn.className = 'px-2.5 py-1 rounded-md font-bold transition bg-white text-gray-900 shadow-2xs cursor-pointer';
+                } else {
+                    btn.className = 'px-2.5 py-1 rounded-md font-semibold text-gray-600 hover:text-gray-900 transition cursor-pointer';
+                }
+            });
+        }
+
+        function getFilteredWorkflowTickets(status, typeFilter) {
             const branch = (document.getElementById('filterBranch'))?.value || 'ALL';
             const startDate = (document.getElementById('startDate') || document.getElementById('filterStartDate'))?.value || '';
             const endDate = (document.getElementById('endDate') || document.getElementById('filterEndDate'))?.value || '';
             const category = (document.getElementById('filterCategory'))?.value || 'ALL';
             const machineCode = (document.getElementById('filterMachineCode') || document.getElementById('filterMachine'))?.value || 'ALL';
+
+            const targetType = typeFilter !== undefined ? typeFilter : currentWorkflowTypeFilter;
 
             const machineMap = {};
             masterMachines.forEach(m => { machineMap[m.code] = m; });
@@ -49,9 +85,14 @@
                 const machine = machineMap[log.code] || { unitName: log.code, category: 'General', branch: log.branch };
                 if (category !== 'ALL' && machine.category !== category) continue;
 
+                const isPm = checkIsPmTicket(log);
+                if (targetType === 'DT' && isPm) continue;
+                if (targetType === 'PM' && !isPm) continue;
+
                 list.push({
                     ...log,
                     ticketStatus,
+                    isPm,
                     unitName: machine.unitName || log.code,
                     category: machine.category || 'General'
                 });
@@ -76,11 +117,31 @@
             const container = document.getElementById('spkWorkflowDetailContainer');
             const isHidden = !container || container.classList.contains('hidden');
 
-            const openTickets = getFilteredWorkflowTickets('OPEN').length;
-            const inProgressTickets = getFilteredWorkflowTickets('PROSES').length;
-            const waitingCloseTickets = getFilteredWorkflowTickets('OUTSTANDING').length;
-            const closedTickets = getFilteredWorkflowTickets('CLOSED').length;
+            const openTicketsAll = getFilteredWorkflowTickets('OPEN', 'ALL');
+            const inProgressTicketsAll = getFilteredWorkflowTickets('PROSES', 'ALL');
+            const waitingCloseTicketsAll = getFilteredWorkflowTickets('OUTSTANDING', 'ALL');
+            const closedTicketsAll = getFilteredWorkflowTickets('CLOSED', 'ALL');
 
+            // 1. Update DT vs PM badge indicator pada 4 kartu alur SPK
+            const statusMap = {
+                OPEN: openTicketsAll,
+                PROSES: inProgressTicketsAll,
+                OUTSTANDING: waitingCloseTicketsAll,
+                CLOSED: closedTicketsAll
+            };
+
+            ['OPEN', 'PROSES', 'OUTSTANDING', 'CLOSED'].forEach(s => {
+                const tickets = statusMap[s] || [];
+                const dtCount = tickets.filter(t => !t.isPm).length;
+                const pmCount = tickets.filter(t => t.isPm).length;
+
+                const dtEl = document.getElementById(`spkCardDt_${s}`);
+                const pmEl = document.getElementById(`spkCardPm_${s}`);
+                if (dtEl) dtEl.textContent = `DT: ${dtCount}`;
+                if (pmEl) pmEl.textContent = `PM: ${pmCount}`;
+            });
+
+            // 2. Update action button text pada 4 kartu
             const spkActionOpen = document.getElementById('spkAction_OPEN');
             const spkActionProg = document.getElementById('spkAction_PROSES');
             const spkActionWait = document.getElementById('spkAction_OUTSTANDING');
@@ -89,22 +150,36 @@
             if (spkActionOpen) {
                 spkActionOpen.textContent = (!isHidden && currentWorkflowStatus === 'OPEN')
                     ? 'Tutup Rincian ▲'
-                    : `Buka ${openTickets} Tiket Open ▼`;
+                    : `Buka ${openTicketsAll.length} Tiket Open ▼`;
             }
             if (spkActionProg) {
                 spkActionProg.textContent = (!isHidden && currentWorkflowStatus === 'PROSES')
                     ? 'Tutup Rincian ▲'
-                    : `Buka ${inProgressTickets} Tiket Assignment ▼`;
+                    : `Buka ${inProgressTicketsAll.length} Tiket Assignment ▼`;
             }
             if (spkActionWait) {
                 spkActionWait.textContent = (!isHidden && currentWorkflowStatus === 'OUTSTANDING')
                     ? 'Tutup Rincian ▲'
-                    : `Buka ${waitingCloseTickets} Tiket Waiting to Close ▼`;
+                    : `Buka ${waitingCloseTicketsAll.length} Tiket Waiting to Close ▼`;
             }
             if (spkActionClose) {
                 spkActionClose.textContent = (!isHidden && currentWorkflowStatus === 'CLOSED')
                     ? 'Tutup Rincian ▲'
-                    : `Buka ${closedTickets.toLocaleString('id-ID')} Tiket Closed ▼`;
+                    : `Buka ${closedTicketsAll.length.toLocaleString('id-ID')} Tiket Closed ▼`;
+            }
+
+            // 3. Update jumlah pada tab filter DT vs PM untuk status aktif
+            if (currentWorkflowStatus && statusMap[currentWorkflowStatus]) {
+                const activeTicketsAll = statusMap[currentWorkflowStatus];
+                const activeDtCount = activeTicketsAll.filter(t => !t.isPm).length;
+                const activePmCount = activeTicketsAll.filter(t => t.isPm).length;
+
+                const cntAll = document.getElementById('workflowTypeCount_ALL');
+                const cntDt = document.getElementById('workflowTypeCount_DT');
+                const cntPm = document.getElementById('workflowTypeCount_PM');
+                if (cntAll) cntAll.textContent = activeTicketsAll.length;
+                if (cntDt) cntDt.textContent = activeDtCount;
+                if (cntPm) cntPm.textContent = activePmCount;
             }
 
             const cardSpkActionText = document.getElementById('cardSpkActionText');
@@ -200,8 +275,8 @@
                 if (bannerEl) { bannerEl.className = meta.bannerClass; bannerEl.textContent = meta.bannerText; }
             }
 
+            updateWorkflowTypeFilterButtons();
             renderWorkflowStatusTable();
-
             updateSpkWorkflowCardActions();
 
             setTimeout(() => {
@@ -233,9 +308,20 @@
             const tbody = document.getElementById('workflowTableBody');
             if (!tbody) return;
 
-            const items = getFilteredWorkflowTickets(currentWorkflowStatus);
+            const items = getFilteredWorkflowTickets(currentWorkflowStatus, currentWorkflowTypeFilter);
             const countEl = document.getElementById('workflowShowingCount');
             if (countEl) countEl.textContent = items.length;
+
+            // Hitung total untuk tombol filter DT vs PM
+            const allForActive = getFilteredWorkflowTickets(currentWorkflowStatus, 'ALL');
+            const dtForActive = allForActive.filter(item => !item.isPm).length;
+            const pmForActive = allForActive.filter(item => item.isPm).length;
+            const cntAll = document.getElementById('workflowTypeCount_ALL');
+            const cntDt = document.getElementById('workflowTypeCount_DT');
+            const cntPm = document.getElementById('workflowTypeCount_PM');
+            if (cntAll) cntAll.textContent = allForActive.length;
+            if (cntDt) cntDt.textContent = dtForActive;
+            if (cntPm) cntPm.textContent = pmForActive;
 
             const { page, pageSize } = tablePaginationState.workflow;
             const totalPages = pageSize === Infinity ? 1 : Math.ceil(items.length / pageSize) || 1;
@@ -250,7 +336,8 @@
 
             if (pagedItems.length === 0) {
                 const labelStatus = currentWorkflowStatus === 'PROSES' ? 'ASSIGNMENT' : currentWorkflowStatus === 'OUTSTANDING' ? 'WAITING TO CLOSE' : currentWorkflowStatus;
-                tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-gray-400">Tidak ada tiket ${labelStatus} pada filter yang dipilih.</td></tr>`;
+                const typeNote = currentWorkflowTypeFilter === 'DT' ? 'tipe DT / Kerusakan' : (currentWorkflowTypeFilter === 'PM' ? 'tipe PM / Regular' : '');
+                tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-gray-400">Tidak ada tiket ${labelStatus} ${typeNote} pada filter yang dipilih.</td></tr>`;
                 renderPaginationControls('workflow', 0, 1, 10);
                 return;
             }
@@ -262,27 +349,40 @@
                 CLOSED: '<span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">4. CLOSED</span>'
             };
 
-            tbody.innerHTML = pagedItems.map((item, idx) => `
-                <tr onclick="openMachineModal('${item.code}')" class="hover:bg-slate-50 cursor-pointer transition">
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-center font-bold text-gray-500">${baseIdx + idx + 1}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 font-mono font-bold text-blue-700 whitespace-nowrap">${item.ticketCode || '-'}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-center font-mono text-gray-600 whitespace-nowrap">${item.date}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-center">${getBranchBadge(item.branch)}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">
-                        <span class="font-bold text-gray-800 block">${item.code}</span>
-                        <span class="text-[11px] text-gray-500">${item.unitName}</span>
-                    </td>
-                    <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-gray-800 text-xs max-w-xs">
-                        <div class="line-clamp-2">${item.problem || '-'}</div>
-                    </td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-gray-600 text-[11px] max-w-xs">
-                        <div class="line-clamp-2">${item.sparepart && item.sparepart !== '-' ? item.sparepart : 'Pemeriksaan teknisi standar'}</div>
-                    </td>
-                    <td class="py-2.5 px-3 border-r border-gray-200 text-right font-mono font-semibold ${item.dtRepair > 0 ? 'text-red-600' : 'text-gray-400'} whitespace-nowrap">${item.dtRepair > 0 ? item.dtRepair.toFixed(1) + ' Jam' : '-'}</td>
-                    <td class="py-2.5 px-3 text-center whitespace-nowrap">${statusBadges[item.ticketStatus] || item.ticketStatus}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = pagedItems.map((item, idx) => {
+                const typeBadge = item.isPm
+                    ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 mt-1">PM • Perawatan Rutin</span>'
+                    : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 mt-1">DT • Kerusakan Mesin</span>';
+
+                const hoursCol = item.isPm
+                    ? `<span class="font-semibold text-blue-700 whitespace-nowrap">${item.dtRepair > 0 ? item.dtRepair.toFixed(1) + ' Jam' : '0.0 Jam (PM)'}</span>`
+                    : `<span class="font-bold text-red-600 whitespace-nowrap">${item.dtRepair > 0 ? item.dtRepair.toFixed(1) + ' Jam' : '0.0 Jam'}</span>`;
+
+                return `
+                    <tr onclick="openMachineModal('${item.code}')" class="hover:bg-slate-50 cursor-pointer transition">
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center font-bold text-gray-500">${baseIdx + idx + 1}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">
+                            <span class="font-mono font-bold text-blue-700 block">${item.ticketCode || '-'}</span>
+                            ${typeBadge}
+                        </td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center font-mono text-gray-600 whitespace-nowrap">${item.date}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-center">${getBranchBadge(item.branch)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">
+                            <span class="font-bold text-gray-800 block">${item.code}</span>
+                            <span class="text-[11px] text-gray-500">${item.unitName}</span>
+                        </td>
+                        <td class="py-2.5 px-3 border-r border-gray-200">${getCategoryBadge(item.category)}</td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-gray-800 text-xs max-w-xs">
+                            <div class="line-clamp-2">${item.problem || '-'}</div>
+                        </td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-gray-600 text-[11px] max-w-xs">
+                            <div class="line-clamp-2">${item.sparepart && item.sparepart !== '-' ? item.sparepart : 'Pemeriksaan teknisi standar'}</div>
+                        </td>
+                        <td class="py-2.5 px-3 border-r border-gray-200 text-right font-mono font-semibold whitespace-nowrap">${hoursCol}</td>
+                        <td class="py-2.5 px-3 text-center whitespace-nowrap">${statusBadges[item.ticketStatus] || item.ticketStatus}</td>
+                    </tr>
+                `;
+            }).join('');
 
             renderPaginationControls('workflow', items.length, activePage, pageSize);
         }

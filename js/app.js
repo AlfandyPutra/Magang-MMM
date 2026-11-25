@@ -1110,6 +1110,7 @@
         }
 
         function closePlantCostBreakdownModal() {
+            closePlantTicketsListModal();
             const modal = document.getElementById('plantCostBreakdownModal');
             if (modal) modal.classList.add('hidden');
             if (typeof plantCostModalChartInstance !== 'undefined' && plantCostModalChartInstance) {
@@ -1124,18 +1125,38 @@
             }
         }
 
-        function togglePlantModalTicketsTable() {
-            const container = document.getElementById('plantModalTicketsContainer');
-            const textEl = document.getElementById('plantModalToggleTicketsText');
-            if (!container) return;
-            const isHidden = container.classList.contains('hidden');
-            if (isHidden) {
-                container.classList.remove('hidden');
-                if (textEl) textEl.textContent = 'Tutup Daftar Tiket ▲';
-            } else {
-                container.classList.add('hidden');
-                if (textEl) textEl.textContent = 'Buka Daftar Tiket ▼';
+        function openPlantTicketsListModal() {
+            const modal = document.getElementById('plantTicketsListModal');
+            if (!modal) return;
+
+            const searchInput = document.getElementById('plantModalTicketSearchInput');
+            if (searchInput) searchInput.value = '';
+
+            // Sinkronkan judul modal dengan cabang yang sedang dibuka
+            const branchTitleEl = document.getElementById('plantModalTitle');
+            const ticketsTitleEl = document.getElementById('plantTicketsModalTitle');
+            if (ticketsTitleEl) {
+                const branchLabel = branchTitleEl ? branchTitleEl.textContent.replace(/^Cost & Maintenance Breakdown —\s*/i, '') : currentPlantModalBranch;
+                ticketsTitleEl.textContent = `Rincian Tiket SPK — ${branchLabel}`;
             }
+
+            applyPlantModalTicketsFilter();
+            modal.classList.remove('hidden');
+        }
+
+        function closePlantTicketsListModal() {
+            const modal = document.getElementById('plantTicketsListModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function closePlantTicketsListModalOnBackdrop(e) {
+            if (e.target.id === 'plantTicketsListModal') {
+                closePlantTicketsListModal();
+            }
+        }
+
+        function togglePlantModalTicketsTable() {
+            openPlantTicketsListModal();
         }
 
         let plantModalSpecificFilter = null;
@@ -1143,13 +1164,13 @@
         function filterPlantModalByCategory(catKey) {
             const cat = PROBLEM_CATEGORIES[catKey] || PROBLEM_CATEGORIES.sensor_other;
             plantModalSpecificFilter = { type: 'cat', key: catKey, label: `Kategori ${cat.name}` };
-            openPlantTicketsAccordionWithFilter();
+            openPlantTicketsListModal();
         }
 
         function filterPlantModalByMachine(machineCode) {
             const mObj = masterMachines.find(m => m.code === machineCode) || { code: machineCode, unitName: '' };
             plantModalSpecificFilter = { type: 'machine', code: machineCode, label: `Mesin ${machineCode} (${mObj.unitName || ''})` };
-            openPlantTicketsAccordionWithFilter();
+            openPlantTicketsListModal();
         }
 
         function clearPlantModalSpecificFilter() {
@@ -1158,16 +1179,7 @@
         }
 
         function openPlantTicketsAccordionWithFilter() {
-            const container = document.getElementById('plantModalTicketsContainer');
-            const textEl = document.getElementById('plantModalToggleTicketsText');
-            if (container && container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                if (textEl) textEl.textContent = 'Tutup Daftar Tiket ▲';
-            }
-            applyPlantModalTicketsFilter();
-            setTimeout(() => {
-                if (container) container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 60);
+            openPlantTicketsListModal();
         }
 
         function setPlantTicketFilter(type) {
@@ -1238,11 +1250,70 @@
             renderPlantModalTicketsTable(logs);
         }
 
+        function togglePlantTicketDetailRow(idx) {
+            const detailRow = document.getElementById(`plantTicketDetailRow_${idx}`);
+            const chevronEl = document.getElementById(`plantTicketChevron_${idx}`);
+            const mainRow = document.getElementById(`plantTicketMainRow_${idx}`);
+            if (!detailRow) return;
+
+            const isHidden = detailRow.classList.contains('hidden');
+            detailRow.classList.toggle('hidden');
+
+            if (chevronEl) {
+                chevronEl.textContent = isHidden ? '▾' : '▸';
+                chevronEl.classList.toggle('text-blue-600', isHidden);
+                chevronEl.classList.toggle('text-gray-400', !isHidden);
+            }
+            if (mainRow) {
+                mainRow.classList.toggle('bg-blue-50/70', isHidden);
+            }
+        }
+
+        function formatSparepartDetailList(rawText) {
+            if (!rawText || rawText === '-') {
+                return '<p class="text-xs text-gray-400 italic">Tidak ada catatan sparepart atau tindakan tambahan.</p>';
+            }
+            // Pisahkan antara daftar sparepart dan bagian Tindakan (biasanya dipisah tanda "•")
+            const mainSections = String(rawText).split('•').map(s => s.trim()).filter(Boolean);
+            return mainSections.map(sec => {
+                if (sec.toLowerCase().startsWith('tindakan:')) {
+                    const actionBody = sec.replace(/^tindakan:\s*/i, '').trim();
+                    return `
+                        <div class="mt-2 pt-2 border-t border-slate-200/80">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 block mb-0.5">Tindakan Perbaikan:</span>
+                            <p class="text-xs text-gray-700 leading-relaxed">${actionBody}</p>
+                        </div>
+                    `;
+                }
+                const items = sec.split(';').map(i => i.trim()).filter(Boolean);
+                if (items.length <= 1) {
+                    return `<p class="text-xs text-gray-700 leading-relaxed">${sec}</p>`;
+                }
+                return `
+                    <ul class="space-y-1 text-xs text-gray-700">
+                        ${items.map(it => `
+                            <li class="flex items-start gap-1.5 leading-snug">
+                                <span class="text-amber-600 font-bold mt-0.5">•</span>
+                                <span>${it}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }).join('');
+        }
+
         function renderPlantModalTicketsTable(logs) {
             const tbody = document.getElementById('plantModalTicketsTableBody');
+            const costBadge = document.getElementById('plantTicketsModalCostBadge');
+            const footerInfo = document.getElementById('plantTicketsModalFooterInfo');
+
+            const sumCost = logs.reduce((s, l) => s + (l.costDt || 0) + (l.costPm || 0), 0);
+            if (costBadge) costBadge.textContent = `Total: ${formatIDR(sumCost)} (${logs.length} Tiket)`;
+            if (footerInfo) footerInfo.textContent = `Menampilkan ${logs.length} tiket SPK pemeliharaan`;
+
             if (!tbody) return;
             if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-gray-400 italic">Tidak ada tiket yang cocok.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-400 italic">Tidak ada tiket yang cocok dengan filter ini.</td></tr>';
                 return;
             }
             tbody.innerHTML = logs.map((log, idx) => {
@@ -1256,18 +1327,24 @@
                     : `<span class="font-bold text-amber-700 whitespace-nowrap">${formatIDR(cost)}</span>`;
                 const formattedDate = log.date ? `${log.date.slice(8, 10)}/${log.date.slice(5, 7)}/${log.date.slice(0, 4)}` : '-';
 
+                const mObj = masterMachines.find(m => m.code === log.code) || { unitName: '' };
+                const sparepartHtml = formatSparepartDetailList(log.sparepart);
+
                 return `
-                    <tr class="hover:bg-blue-50/50 transition border-b border-gray-100">
-                        <td class="py-2 pl-3 pr-2 text-center font-bold text-gray-400">${idx + 1}</td>
-                        <td class="py-2 px-2.5 whitespace-nowrap">
+                    <tr class="hover:bg-blue-50/40 transition border-b border-gray-100 align-top">
+                        <td class="py-2.5 pl-3 pr-2 text-center font-bold text-gray-400 whitespace-nowrap">${idx + 1}</td>
+                        <td class="py-2.5 px-2.5 whitespace-nowrap">
                             <span class="font-mono font-bold text-blue-700 block">${log.ticketCode || '-'}</span>
                             ${typeBadge}
                         </td>
-                        <td class="py-2 px-2 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
-                        <td class="py-2 px-2 font-semibold text-gray-800 whitespace-nowrap">${log.code}</td>
-                        <td class="py-2 px-2 text-gray-800 line-clamp-1 block truncate max-w-[180px]" title="${log.problem || '-'}">${log.problem || '-'}</td>
-                        <td class="py-2 px-2 text-gray-600 text-[11px] truncate max-w-[180px]" title="${log.sparepart || '-'}">${log.sparepart || '-'}</td>
-                        <td class="py-2 px-2 text-right">${costValHtml}</td>
+                        <td class="py-2.5 px-2 text-center text-gray-600 whitespace-nowrap">${formattedDate}</td>
+                        <td class="py-2.5 px-2.5 whitespace-nowrap">
+                            <span class="font-bold text-gray-800 block">${log.code}</span>
+                            <span class="text-[10px] text-gray-500 block truncate max-w-[120px]" title="${mObj.unitName || ''}">${mObj.unitName || ''}</span>
+                        </td>
+                        <td class="py-2.5 px-3 text-gray-800 leading-relaxed min-w-[200px]">${log.problem || '-'}</td>
+                        <td class="py-2.5 px-3 text-gray-600 min-w-[240px]">${sparepartHtml}</td>
+                        <td class="py-2.5 pr-4 pl-2 text-right whitespace-nowrap">${costValHtml}</td>
                     </tr>
                 `;
             }).join('');
@@ -2448,66 +2525,173 @@
         }
 
         // ============================================================================
-        // 7.1 MACHINE STATUS BREAKDOWN MODAL HANDLERS (GAYA RESMI DASHBOARD MMM)
+        // 7.1 MACHINE STATUS MODAL HANDLERS (RUNNING / BREAKDOWN / NO ORDER)
         // ============================================================================
+        let activeMachineStatusModalData = { items: [], status: 'Breakdown', branch: '', category: '' };
+
+        // Konfigurasi jumlah status real-time per cabang & kategori (selaras dengan kartu Machine Status)
+        const MACHINE_STATUS_COUNTS = {
+            MMM: { Injection: { Breakdown: 4, Running: 21, 'No Order': 27 }, Printing: { Breakdown: 3, Running: 0, 'No Order': 13 } },
+            MMN: { Injection: { Breakdown: 1, Running: 11, 'No Order': 53 }, Blowing: { Breakdown: 0, Running: 0, 'No Order': 6 } },
+            MMS: { Injection: { Breakdown: 4, Running: 0, 'No Order': 19 }, Printing: { Breakdown: 0, Running: 0, 'No Order': 2 } },
+            MMG: { Injection: { Breakdown: 3, Running: 0, 'No Order': 13 } }
+        };
+
         function showBreakdownMachinesModal(branch, category) {
+            showMachineStatusModal(branch, category, 'Breakdown');
+        }
+
+        function showMachineStatusModal(branch, category, status = 'Breakdown', expectedCount = null) {
             const modal = document.getElementById('breakdownMachinesModal');
             if (!modal) return;
 
+            const headerEl = document.getElementById('breakdownModalHeader');
+            const iconEl = document.getElementById('breakdownModalIcon');
             const titleEl = document.getElementById('breakdownModalTitle');
+            const subtitleEl = document.getElementById('breakdownModalSubtitle');
             const badgeEl = document.getElementById('breakdownModalCountBadge');
-            const tbody = document.getElementById('breakdownModalTableBody');
+            const col4HeaderEl = document.getElementById('breakdownModalCol4Header');
+            const searchEl = document.getElementById('breakdownModalSearch');
+            if (searchEl) searchEl.value = '';
 
-            // Ambil data mesin untuk cabang dan kategori tersebut
-            let items = currentAggregatedList.filter(m => m.branch === branch && m.category === category);
-            // Urutkan berdasarkan jam downtime tertinggi
-            items.sort((a, b) => b.dtRepair - a.dtRepair);
+            // Hitung agregasi mesin lengkap untuk cabang & kategori ini (tidak terpengaruh filter top bar)
+            const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+            const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+            const branchAgg = computeAggregates(startDate, endDate, branch, category, 'ALL', '').aggregated;
 
-            // Filter yang memiliki catatan gangguan / DT
-            let brokenItems = items.filter(m => m.dtRepair > 0 || (m.problemSummary && m.problemSummary !== 'Tidak ada catatan kerusakan pada periode ini'));
-            if (brokenItems.length === 0) {
-                brokenItems = items.slice(0, 4);
-            }
+            // Urutkan dari downtime tertinggi agar mesin bermasalah konsisten masuk kelompok Breakdown
+            branchAgg.sort((a, b) => b.dtRepair - a.dtRepair || a.code.localeCompare(b.code));
 
-            if (titleEl) titleEl.textContent = `[${branch}] Mesin Breakdown — Kategori ${category}`;
-            if (badgeEl) badgeEl.textContent = `${brokenItems.length} Mesin Dalam Penanganan`;
+            const counts = (MACHINE_STATUS_COUNTS[branch] && MACHINE_STATUS_COUNTS[branch][category]) || { Breakdown: 0, Running: 0, 'No Order': 0 };
+            const bdCount = counts.Breakdown || 0;
+            const runCount = counts.Running || 0;
+            const noCount = counts['No Order'] || 0;
 
-            if (tbody) {
-                if (brokenItems.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-gray-400 italic">Tidak ada mesin berstatus breakdown pada kategori ini.</td></tr>';
-                } else {
-                    tbody.innerHTML = brokenItems.map((m, idx) => {
-                        const prob = m.problemSummary && m.problemSummary !== 'Tidak ada catatan kerusakan pada periode ini'
-                            ? m.problemSummary.split(';')[0]
-                            : 'Pemeriksaan Berkala & Perbaikan Mekanikal';
-                        return `
-                            <tr class="hover:bg-red-50/40 transition">
-                                <td class="py-2 px-3 text-center font-bold text-gray-500">${idx + 1}</td>
-                                <td class="py-2 px-3 font-bold text-blue-700 whitespace-nowrap">
-                                    ${m.code}
-                                </td>
-                                <td class="py-2 px-3 font-medium text-gray-800 whitespace-nowrap">
-                                    ${m.unitName || 'Unit Mesin'}
-                                </td>
-                                <td class="py-2 px-3 text-gray-700 text-xs">
-                                    <span class="line-clamp-1 block" title="${prob}">${prob}</span>
-                                </td>
-                                <td class="py-2 px-3 text-right font-bold text-red-600 whitespace-nowrap">
-                                    ${m.dtRepair.toFixed(1)} Jam
-                                </td>
-                                <td class="py-2 px-3 text-center">
-                                    <button type="button" onclick="closeBreakdownMachinesModal(); openMachineModal('${m.code}')"
-                                        class="px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition cursor-pointer shadow-2xs">
-                                        Rincian 🔍
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
+            let selectedItems = [];
+            if (status === 'Breakdown') {
+                const limit = expectedCount || bdCount || 4;
+                selectedItems = branchAgg.slice(0, limit);
+            } else if (status === 'Running') {
+                const limit = expectedCount || runCount;
+                selectedItems = branchAgg.slice(bdCount, bdCount + limit);
+            } else { // 'No Order'
+                const limit = expectedCount || noCount;
+                selectedItems = branchAgg.slice(bdCount + runCount, bdCount + runCount + limit);
+                // Jika jumlah master mesin lebih sedikit dari expectedCount, tampilkan sisa mesin yang tersedia
+                if (selectedItems.length === 0 && branchAgg.length > 0) {
+                    selectedItems = branchAgg.slice(0, limit);
                 }
             }
 
+            // Tema warna dinamis sesuai status
+            const themes = {
+                'Running': {
+                    headerBg: 'bg-emerald-50/70',
+                    iconBg: 'bg-emerald-100 text-emerald-700',
+                    iconText: '✓',
+                    badgeClass: 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200',
+                    title: `[${branch}] Mesin Running — Divisi ${category}`,
+                    subtitle: 'Unit mesin yang sedang aktif beroperasi & produksi normal',
+                    col4: 'Status Operasional / Riwayat Terakhir',
+                    badgeLabel: `${selectedItems.length} Mesin Aktif`
+                },
+                'Breakdown': {
+                    headerBg: 'bg-red-50/60',
+                    iconBg: 'bg-red-100 text-red-600',
+                    iconText: '⚠️',
+                    badgeClass: 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200',
+                    title: `[${branch}] Mesin Breakdown — Divisi ${category}`,
+                    subtitle: 'Unit mesin yang sedang dalam penanganan perbaikan teknisi',
+                    col4: 'Masalah Utama / Tiket SPK',
+                    badgeLabel: `${selectedItems.length} Mesin Breakdown`
+                },
+                'No Order': {
+                    headerBg: 'bg-amber-50/70',
+                    iconBg: 'bg-amber-100 text-amber-700',
+                    iconText: '⏸',
+                    badgeClass: 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200',
+                    title: `[${branch}] Mesin No Order — Divisi ${category}`,
+                    subtitle: 'Unit mesin sedang standby (tanpa jadwal produksi) — ideal untuk jadwal Preventive Maintenance (PM)',
+                    col4: 'Catatan Kondisi & Rekomendasi PM',
+                    badgeLabel: `${selectedItems.length} Mesin Standby`
+                }
+            };
+            const t = themes[status] || themes['Breakdown'];
+
+            if (headerEl) {
+                headerEl.className = `p-4 sm:p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 ${t.headerBg}`;
+            }
+            if (iconEl) {
+                iconEl.className = `w-9 h-9 rounded-xl ${t.iconBg} flex items-center justify-center font-bold text-sm shadow-2xs`;
+                iconEl.textContent = t.iconText;
+            }
+            if (titleEl) titleEl.textContent = t.title;
+            if (subtitleEl) subtitleEl.textContent = t.subtitle;
+            if (badgeEl) {
+                badgeEl.className = t.badgeClass;
+                badgeEl.textContent = t.badgeLabel;
+            }
+            if (col4HeaderEl) col4HeaderEl.textContent = t.col4;
+
+            activeMachineStatusModalData = { items: selectedItems, status, branch, category };
+            renderMachineStatusModalRows(selectedItems, status);
             modal.classList.remove('hidden');
+        }
+
+        function filterMachineStatusModal(keyword) {
+            const kw = (keyword || '').toLowerCase().trim();
+            const { items, status } = activeMachineStatusModalData;
+            const filtered = !kw ? items : items.filter(m =>
+                (m.code && m.code.toLowerCase().includes(kw)) ||
+                (m.unitName && m.unitName.toLowerCase().includes(kw)) ||
+                (m.problemSummary && m.problemSummary.toLowerCase().includes(kw))
+            );
+            renderMachineStatusModalRows(filtered, status);
+        }
+
+        function renderMachineStatusModalRows(items, status) {
+            const tbody = document.getElementById('breakdownModalTableBody');
+            if (!tbody) return;
+
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-gray-400 italic">Tidak ada unit mesin yang cocok untuk status ${status}.</td></tr>`;
+                return;
+            }
+
+            const hoverClass = status === 'Running' ? 'hover:bg-emerald-50/50'
+                : (status === 'No Order' ? 'hover:bg-amber-50/50' : 'hover:bg-red-50/40');
+            const statusPill = status === 'Running'
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Running</span>'
+                : (status === 'No Order'
+                    ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">No Order</span>'
+                    : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">Breakdown</span>');
+
+            tbody.innerHTML = items.map((m, idx) => {
+                const hasRealProb = m.problemSummary && m.problemSummary !== 'Tidak ada catatan kerusakan pada periode ini';
+                let noteText = '';
+                if (status === 'Breakdown') {
+                    noteText = hasRealProb ? m.problemSummary.split(';')[0] : 'Pemeriksaan Berkala & Perbaikan Mekanikal';
+                } else if (status === 'Running') {
+                    noteText = hasRealProb ? `Beroperasi Normal (Riwayat: ${m.problemSummary.split(';')[0]})` : 'Beroperasi Normal • Tanpa Gangguan Periode Ini';
+                } else {
+                    noteText = m.dtPm > 0 ? 'Standby (PM terjadwal periode ini)' : 'Standby • Direkomendasikan untuk Jadwal PM Rutin';
+                }
+
+                const dtColor = m.dtRepair > 0 ? 'text-red-600' : 'text-gray-400';
+
+                return `
+                    <tr onclick="closeBreakdownMachinesModal(); openMachineModal('${m.code}')" class="${hoverClass} cursor-pointer transition">
+                        <td class="py-2 px-3 text-center font-bold text-gray-500">${idx + 1}</td>
+                        <td class="py-2 px-3 font-bold text-blue-700 whitespace-nowrap">${m.code}</td>
+                        <td class="py-2 px-3 font-medium text-gray-800 whitespace-nowrap">${m.unitName || 'Unit Mesin'}</td>
+                        <td class="py-2 px-3 text-gray-700 text-xs">
+                            <span class="line-clamp-1 block" title="${noteText}">${noteText}</span>
+                        </td>
+                        <td class="py-2 px-3 text-right font-bold ${dtColor} whitespace-nowrap">${m.dtRepair.toFixed(1)} Jam</td>
+                        <td class="py-2 pr-4 pl-2 text-center whitespace-nowrap">${statusPill}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function closeBreakdownMachinesModal() {
@@ -2525,7 +2709,13 @@
         // 7. MODAL HANDLERS
         // ============================================================================
         function openMachineModal(code) {
-            const machine = currentAggregatedList.find(m => m.code === code);
+            let machine = currentAggregatedList.find(m => m.code === code);
+            if (!machine) {
+                const startDate = document.getElementById('startDate') ? document.getElementById('startDate').value : '';
+                const endDate = document.getElementById('endDate') ? document.getElementById('endDate').value : '';
+                const allAgg = computeAggregates(startDate, endDate, 'ALL', 'ALL', code, '').aggregated;
+                machine = allAgg[0];
+            }
             if (!machine) return;
 
             const startDate = document.getElementById('startDate').value;

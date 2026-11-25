@@ -2772,17 +2772,29 @@
 // 9. APPLICATION LIFECYCLE & EVENT LISTENERS
 // ============================================================================
 document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') {
+    if (event.key !== 'Escape') return;
+
+    // Tutup pop-up secara bertingkat dari lapisan paling atas terlebih dahulu
+    const isVisible = (id) => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains('hidden');
+    };
+
+    if (isVisible('plantTicketsListModal') && typeof closePlantTicketsListModal === 'function') {
+        closePlantTicketsListModal();
+    } else if (isVisible('plantCostBreakdownModal') && typeof closePlantCostBreakdownModal === 'function') {
+        closePlantCostBreakdownModal();
+    } else if (isVisible('dtBreakdownModal') && typeof closeDtBreakdownModal === 'function') {
+        closeDtBreakdownModal();
+    } else if (isVisible('breakdownMachinesModal') && typeof closeBreakdownMachinesModal === 'function') {
+        closeBreakdownMachinesModal();
+    } else if (isVisible('machineModal') && typeof closeModal === 'function') {
         closeModal();
-        if (typeof closeDtBreakdownModal === 'function') {
-            closeDtBreakdownModal();
-        }
-        if (typeof closeBreakdownMachinesModal === 'function') {
-            closeBreakdownMachinesModal();
-        }
-        if (typeof closeProjectModal === 'function') {
-            closeProjectModal();
-        }
+    } else if (isVisible('projectDetailModal') && typeof closeProjectModal === 'function') {
+        closeProjectModal();
+    } else if (isVisible('datePickerPopup')) {
+        const popup = document.getElementById('datePickerPopup');
+        if (popup) popup.classList.add('hidden');
     }
 });
 

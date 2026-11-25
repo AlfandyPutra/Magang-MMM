@@ -1,4 +1,4 @@
-﻿# MMS Maintenance Summary Dashboard (Month-to-Date)
+# MMS Maintenance Summary Dashboard (Month-to-Date)
 **PT Mitra Mulia Makmur (MMM Plastic)**  
 *Sistem Rekapitulasi Downtime (Jam), Cost Pemeliharaan (IDR), Realisasi SPK & Monitoring Proyek Maintenance*
 
@@ -11,41 +11,31 @@ Folder proyek telah dirapikan ke dalam struktur modular berikut agar mudah dikel
 ```text
 c:\Kuliah\AntiGravity\Magang MMM\
 │
-├── maintenancesummary-mtd.html    # Aplikasi Dashboard Utama (Standalone Single-Page App)
 ├── index.html                     # Halaman pintasan redirect otomatis untuk Live Server
+├── maintenancesummary-mtd.html    # Aplikasi Dashboard Utama (Executive Single-Page App)
 ├── README.md                      # Dokumentasi & panduan struktur direktori
+├── LARAVEL_MIGRATION_GUIDE.md     # Panduan integrasi backend Laravel & API
 │
-├── 📁 data/                       # Berkas data sumber & hasil parsing
-│   ├── Ticket_Detail_Source.xlsx  # File Excel data riil dari sistem MMS (1.190 tiket)
-│   ├── mms_real_data.js           # Dataset riil terstruktur format JavaScript
-│   ├── generated_data.js          # Dataset cadangan
-│   ├── ticket_detail_parsed.csv   # Data tiket terurai format CSV
-│   └── ticket_detail_parsed.tsv   # Data tiket terurai format TSV
+├── 📁 css/
+│   └── style.css                  # Styling tambahan & kustomisasi antarmuka
 │
-├── 📁 reports/                    # Berkas laporan hasil ekspor (Excel & CSV)
-│   ├── Maintenance_Summary_Real_2026-11-01_sd_2026-11-10.xls
-│   ├── Maintenance_Summary_2026-11-01_sd_2026-11-17.xls
-│   ├── Maintenance_Summary_2026-11-01_sd_2026-11-17.csv
-│   ├── Maintenance_Summary_2026-10-01_sd_2026-10-31.xls
-│   └── Maintenance_Summary_2026-10-01_sd_2026-10-31.csv
+├── 📁 js/
+│   ├── app.js                     # Logika inti dashboard, filter, modal, & kalkulasi KPI
+│   ├── 📁 data/                   # Dataset terstruktur (Mesin, Log Harian, Proyek)
+│   │   ├── daily-logs.js
+│   │   ├── machines-data.js
+│   │   └── projects-data.js
+│   └── 📁 modules/                # Modul fungsional terpisah
+│       ├── charts.js              # Konfigurasi & rendering grafik Chart.js
+│       ├── workflow-spk.js        # Logika alur kerja & pelacakan tiket SPK
+│       ├── project-module.js      # Modul monitoring proyek maintenance
+│       └── export-tools.js        # Fitur ekspor laporan Excel (.XLS) & CSV
 │
-├── 📁 scripts/                    # Skrip otomasi PowerShell untuk parsing & build
-│   ├── analyze_xlsx.ps1           # Analisis struktur kolom file Excel
-│   ├── build_full_app.ps1         # Kompilasi aplikasi dashboard
-│   ├── build_real_data.ps1        # Ekstraksi data riil sheet 1 & sheet 2
-│   ├── export_real_excel.ps1      # Generator file laporan Excel (.XLS)
-│   ├── generate_complete_app.ps1  # Generator dashboard lengkap
-│   ├── generate_js_data.ps1       # Generator variabel JavaScript
-│   ├── generate_reports.ps1       # Generator laporan periodik
-│   ├── parse_xlsx.ps1             # Parser berkas OpenXML XLSX
-│   ├── patch_ui.ps1               # Patch antarmuka visual
-│   ├── read_xlsx.ps1              # Reader cepat berkas Excel
-│   └── ... skrip verifikasi & pengujian
+├── 📁 data/
+│   └── Ticket_Detail_Source.xlsx  # File Excel sumber data riil MMS
 │
-└── 📁 backups/                    # Berkas cadangan versi sebelumnya
-    ├── maintenancesummary-mtd.html.bak
-    ├── maintenancesummary-mtd.html.bak2
-    └── maintenancesummary-mtd.html.bak3
+└── 📁 reports/
+    └── Maintenance_Summary_Real_2026-11-01_sd_2026-11-10.xls  # Contoh laporan hasil ekspor
 ```
 
 ---

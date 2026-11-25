@@ -81,18 +81,39 @@
                 return '<span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; background-color: #fef3c7; color: #92400e; border: 0.5pt solid #fde68a; border-radius: 4px;">1. OPEN</span>';
             };
 
+            const estimateRowHeightPt = (textList, charsPerLine, minPt = 24, maxPt = 115) => {
+                let maxLines = 1;
+                textList.forEach(txt => {
+                    if (!txt) return;
+                    const parts = String(txt).split(/\r?\n|<br\s*\/?>/i);
+                    let lines = 0;
+                    parts.forEach(p => {
+                        lines += Math.max(1, Math.ceil(p.trim().length / Math.max(12, charsPerLine)));
+                    });
+                    if (lines > maxLines) maxLines = lines;
+                });
+                return Math.min(maxPt, Math.max(minPt, (maxLines * 14) + 12));
+            };
+
+            const trimExcelText = (str, maxLen = 240) => {
+                if (!str) return '-';
+                const s = String(str).trim();
+                return s.length > maxLen ? s.slice(0, maxLen).trim() + '…' : s;
+            };
+
             let projectRowsHtml = '';
             branchProjects.forEach((p, idx) => {
                 const zebraBg = (idx % 2 === 1) ? 'background-color: #f8fafc;' : 'background-color: #ffffff;';
                 const statusBadge = getProjectStatusBadge(p.status);
                 const catStyle = getCategoryStyle(p.category);
+                const rowH = estimateRowHeightPt([`${p.name}\n${p.desc}`, p.impact], 42, 34, 95);
                 projectRowsHtml += `
-<tr style="${zebraBg}">
+<tr style="${zebraBg} height: ${rowH}pt;">
   <td class="td-c">${idx + 1}</td>
   <td class="td-c" style="font-weight: bold;">${escapeHTML(p.branch)}</td>
-  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(p.code)}</td>
-  <td class="td-l" colspan="2" style="font-weight: 500;"><strong>${escapeHTML(p.name)}</strong><br><span style="font-size: 8pt; color: #64748b;">${escapeHTML(p.desc)}</span></td>
-  <td class="td-l" colspan="2" style="font-size: 8.5pt;">${escapeHTML(p.machine)}</td>
+  <td class="td-c" style="font-weight: bold; mso-number-format: '@';">${escapeHTML(p.code)}</td>
+  <td class="td-l" colspan="2" style="font-weight: 500; white-space: normal;"><strong>${escapeHTML(p.name)}</strong><br style="mso-data-placement:same-cell;">${escapeHTML(p.desc)}</td>
+  <td class="td-l" colspan="2" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(p.machine)}</td>
   <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${catStyle}">${escapeHTML(p.category)}</span></td>
   <td class="td-l">${escapeHTML(p.pic)}</td>
   <td class="td-c" style="font-weight: bold;">${p.progress}%</td>
@@ -106,25 +127,28 @@
             sortedData.forEach((item, idx) => {
                 const zebraBg = (idx % 2 === 1) ? 'background-color: #f8fafc;' : 'background-color: #ffffff;';
                 const catStyle = getCategoryStyle(item.category);
+                const probClean = trimExcelText(item.problemSummary, 220);
+                const partClean = trimExcelText(item.sparepartSummary, 240);
+                const rowH = estimateRowHeightPt([probClean, partClean, item.unitName], 44, 26, 98);
 
                 tableRowsHtml += `
-<tr style="${zebraBg}">
+<tr style="${zebraBg} height: ${rowH}pt;">
   <td class="td-c">${idx + 1}</td>
   <td class="td-c" style="font-weight: bold;">${escapeHTML(item.branch)}</td>
-  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(item.code)}</td>
-  <td class="td-l" style="font-weight: 500;">${escapeHTML(item.unitName)}</td>
+  <td class="td-c" style="font-weight: bold; white-space: nowrap; mso-number-format: '@';">${escapeHTML(item.code)}</td>
+  <td class="td-l" style="font-weight: 500; white-space: normal;">${escapeHTML(item.unitName)}</td>
   <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${catStyle}">${escapeHTML(item.category)}</span></td>
   <td class="num-dec" style="color: #dc2626; font-weight: bold;">${item.dtRepair.toFixed(1)}</td>
   <td class="num-dec" style="color: #2563eb;">${item.dtPm.toFixed(1)}</td>
   <td class="num-dec" style="font-weight: bold; background-color: #f1f5f9;">${item.totalHours.toFixed(1)}</td>
-  <td class="num-curr">${item.costDt}</td>
-  <td class="num-curr">${item.costPm}</td>
-  <td class="num-curr" style="font-weight: bold; background-color: #fef3c7;">${item.totalCost}</td>
+  <td class="num-curr">${Math.round(item.costDt || 0)}</td>
+  <td class="num-curr">${Math.round(item.costPm || 0)}</td>
+  <td class="num-curr" style="font-weight: bold; background-color: #fef3c7;">${Math.round(item.totalCost || 0)}</td>
   <td class="num-int">${item.spkDt}</td>
   <td class="num-int">${item.spkPm}</td>
   <td class="num-int" style="font-weight: bold; background-color: #d1fae5;">${item.totalSpk}</td>
-  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(item.problemSummary)}</td>
-  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(item.sparepartSummary)}</td>
+  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(probClean)}</td>
+  <td class="td-l" style="font-size: 8.5pt; white-space: normal;">${escapeHTML(partClean)}</td>
 </tr>`;
             });
 
@@ -133,20 +157,23 @@
                 const rankBadgeStyle = idx === 0
                     ? 'background-color: #fee2e2; color: #b91c1c; font-weight: bold; border: 1pt solid #f87171;'
                     : 'background-color: #fef3c7; color: #92400e; font-weight: bold; border: 1pt solid #fbbf24;';
+                const probClean = trimExcelText(item.problemSummary, 200);
+                const partClean = trimExcelText(item.sparepartSummary, 220);
+                const rowH = estimateRowHeightPt([`Problem: ${probClean}\nPart: ${partClean}`], 95, 38, 95);
 
                 top5RowsHtml += `
-<tr>
+<tr style="height: ${rowH}pt;">
   <td class="td-c" style="${rankBadgeStyle}">#${idx + 1}</td>
   <td class="td-c" style="font-weight: bold;">${escapeHTML(item.branch)}</td>
-  <td class="td-c" style="font-weight: bold; mso-number-format: '\\@';">${escapeHTML(item.code)}</td>
-  <td class="td-l" colspan="2" style="font-weight: bold;">${escapeHTML(item.unitName)}</td>
+  <td class="td-c" style="font-weight: bold; white-space: nowrap; mso-number-format: '@';">${escapeHTML(item.code)}</td>
+  <td class="td-l" colspan="2" style="font-weight: bold; white-space: normal;">${escapeHTML(item.unitName)}</td>
   <td class="td-c"><span style="display:inline-block; padding: 2px 8px; font-size: 8.5pt; font-weight: bold; ${getCategoryStyle(item.category)}">${escapeHTML(item.category)}</span></td>
   <td class="num-dec" style="color: #dc2626; font-weight: bold; font-size: 10.5pt;">${item.dtRepair.toFixed(1)}</td>
   <td class="num-dec" style="color: #2563eb;">${item.dtPm.toFixed(1)}</td>
   <td class="num-dec" style="font-weight: bold; background-color: #fee2e2; font-size: 10.5pt;">${item.totalHours.toFixed(1)}</td>
-  <td class="num-curr" colspan="2" style="font-weight: bold;">${item.totalCost}</td>
+  <td class="num-curr" colspan="2" style="font-weight: bold;">${Math.round(item.totalCost || 0)}</td>
   <td class="num-int">${item.totalSpk}</td>
-  <td class="td-l" colspan="4" style="font-size: 8.5pt; white-space: normal;"><strong>Problem:</strong> ${escapeHTML(item.problemSummary)}<br><strong>Part:</strong> ${escapeHTML(item.sparepartSummary)}</td>
+  <td class="td-l" colspan="4" style="font-size: 8.5pt; white-space: normal;"><strong>Problem:</strong> ${escapeHTML(probClean)}<br style="mso-data-placement:same-cell;"><strong>Part:</strong> ${escapeHTML(partClean)}</td>
 </tr>`;
             });
 
@@ -177,107 +204,108 @@ ${tagHeadOpen}
 <![endif]-->
 <style>
   body, table, td, th { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 9.5pt; color: #1e293b; }
-  .banner-company { background-color: #1e3a8a; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; padding: 12px; }
-  .banner-subtitle { background-color: #dbeafe; color: #1e3a8a; font-size: 11pt; font-weight: bold; text-align: center; padding: 7px; border-bottom: 2pt solid #2563eb; }
-  .section-header { background-color: #1e40af; color: #ffffff; font-size: 10.5pt; font-weight: bold; padding: 8px 12px; border: 1pt solid #1e3a8a; text-transform: uppercase; }
-  .meta-title { font-size: 9pt; color: #475569; font-weight: bold; padding: 5px 8px; border: 0.5pt solid #cbd5e1; background-color: #f1f5f9; }
-  .meta-val { font-size: 9pt; color: #0f172a; padding: 5px 8px; border: 0.5pt solid #cbd5e1; }
-  .th-blue { background-color: #2563eb; color: #ffffff; font-weight: bold; text-align: center; border: 1pt solid #1d4ed8; padding: 8px 6px; font-size: 9pt; }
-  .th-accent { background-color: #1d4ed8; color: #ffffff; font-weight: bold; text-align: center; border: 1pt solid #172554; padding: 8px 6px; font-size: 9pt; }
-  .td-c { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: center; vertical-align: middle; }
-  .td-l { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: left; vertical-align: middle; }
-  .td-r { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; }
-  .num-dec { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; mso-number-format: "0\\.0"; }
-  .num-curr { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: right; vertical-align: middle; mso-number-format: "\"Rp \"\\#\\,\\#\\#0"; }
-  .num-int { border: 0.5pt solid #cbd5e1; padding: 6px; text-align: center; vertical-align: middle; mso-number-format: "\\#\\,\\#\\#0"; }
+  br { mso-data-placement: same-cell; }
+  .banner-company { background-color: #1e3a8a; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 12px; }
+  .banner-subtitle { background-color: #dbeafe; color: #1e3a8a; font-size: 11pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 7px; border-bottom: 2pt solid #2563eb; }
+  .section-header { background-color: #1e40af; color: #ffffff; font-size: 10.5pt; font-weight: bold; vertical-align: middle; padding: 8px 12px; border: 1pt solid #1e3a8a; text-transform: uppercase; }
+  .meta-title { font-size: 9pt; color: #475569; font-weight: bold; padding: 6px 8px; border: 0.5pt solid #cbd5e1; background-color: #f1f5f9; vertical-align: middle; }
+  .meta-val { font-size: 9pt; color: #0f172a; padding: 6px 8px; border: 0.5pt solid #cbd5e1; vertical-align: middle; }
+  .th-blue { background-color: #2563eb; color: #ffffff; font-weight: bold; text-align: center; vertical-align: middle; white-space: normal; border: 1pt solid #1d4ed8; padding: 8px 6px; font-size: 9pt; }
+  .th-accent { background-color: #1d4ed8; color: #ffffff; font-weight: bold; text-align: center; vertical-align: middle; white-space: normal; border: 1pt solid #172554; padding: 8px 6px; font-size: 9pt; }
+  .td-c { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: center; vertical-align: middle; }
+  .td-l { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  .td-r { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: right; vertical-align: middle; }
+  .num-dec { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: right; vertical-align: middle; mso-number-format: "0.0"; }
+  .num-curr { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: right; vertical-align: middle; mso-number-format: '"Rp "#,##0'; }
+  .num-int { border: 0.5pt solid #cbd5e1; padding: 6px 8px; text-align: center; vertical-align: middle; mso-number-format: "#,##0"; }
   .total-row { background-color: #e2e8f0; font-weight: bold; border-top: 2pt solid #334155; border-bottom: 3pt double #334155; }
 </style>
 ${tagHeadClose}
 ${tagBodyOpen}
 <table border="0" cellpadding="0" cellspacing="0">
-<col width="45">
-<col width="65">
+<col width="48">
+<col width="70">
+<col width="145">
+<col width="245">
 <col width="110">
-<col width="230">
-<col width="105">
+<col width="135">
+<col width="115">
 <col width="125">
-<col width="120">
-<col width="130">
-<col width="150">
-<col width="150">
-<col width="165">
+<col width="155">
+<col width="155">
+<col width="170">
 <col width="80">
 <col width="80">
 <col width="90">
-<col width="340">
-<col width="320">
+<col width="380">
+<col width="400">
 
 <!-- Header Perusahaan -->
-<tr><td colspan="16" class="banner-company">PT MITRA MULIA MAKMUR (MMM PLASTIC)</td></tr>
-<tr><td colspan="16" class="banner-subtitle">LAPORAN SUMMARY MAINTENANCE (MONTH TO DATE)</td></tr>
-<tr><td colspan="16" style="height: 6px;"></td></tr>
+<tr style="height: 32pt;"><td colspan="16" class="banner-company">PT MITRA MULIA MAKMUR (MMM PLASTIC)</td></tr>
+<tr style="height: 24pt;"><td colspan="16" class="banner-subtitle">LAPORAN SUMMARY MAINTENANCE (MONTH TO DATE)</td></tr>
+<tr style="height: 10pt;"><td colspan="16"></td></tr>
 
 <!-- Meta Info Laporan -->
-<tr>
+<tr style="height: 22pt;">
   <td colspan="3" class="meta-title">Periode Laporan:</td>
   <td colspan="5" class="meta-val"><strong>${formatDateIndo(startDate)} s/d ${formatDateIndo(endDate)}</strong></td>
   <td colspan="3" class="meta-title">Filter Terpasang:</td>
   <td colspan="5" class="meta-val">Cabang: <strong>${escapeHTML(selectedBranch)}</strong> | Kat: <strong>${escapeHTML(selectedCat)}</strong> | Unit: <strong>${escapeHTML(selectedCode)}</strong></td>
 </tr>
-<tr>
+<tr style="height: 22pt;">
   <td colspan="3" class="meta-title">Tanggal & Jam Unduh:</td>
   <td colspan="5" class="meta-val">${new Date().toLocaleString('id-ID')}</td>
   <td colspan="3" class="meta-title">Total Unit Terekam:</td>
   <td colspan="5" class="meta-val"><strong>${sortedData.length} Mesin</strong></td>
 </tr>
-<tr><td colspan="16" style="height: 10px;"></td></tr>
+<tr style="height: 12pt;"><td colspan="16"></td></tr>
 
 <!-- Kartu KPI Berwarna Eksekutif -->
-<tr>
-  <td colspan="4" style="background-color: #fee2e2; border: 1.5pt solid #ef4444; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DOWNTIME (DT)</span><br>
-    <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totals.dtRepair.toFixed(1)} Jam</span><br>
+<tr style="height: 68pt;">
+  <td colspan="4" style="background-color: #fee2e2; border: 1.5pt solid #ef4444; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #991b1b; font-weight: bold;">TOTAL DOWNTIME (DT)</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #dc2626; font-weight: bold;">${totals.dtRepair.toFixed(1)} Jam</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #7f1d1d;">PM Servis: ${totals.dtPm.toFixed(1)} Jam • Total DT+PM: ${totals.totalHours.toFixed(1)} Jam (${dtRatio}% : ${pmRatio}%)</span>
   </td>
-  <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">TOTAL BIAYA MAINTENANCE</span><br>
-    <span style="font-size: 15pt; color: #b45309; font-weight: bold;">${formatIDR(totals.totalCost)}</span><br>
+  <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">TOTAL BIAYA MAINTENANCE</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 15pt; color: #b45309; font-weight: bold;">${formatIDR(totals.totalCost)}</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #78350f;">DT: ${formatIDR(totals.costDt)} | PM: ${formatIDR(totals.costPm)}</span>
   </td>
-  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">STATUS SPK & POSISI TIKET</span><br>
-    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totals.totalSpk} SPK</span><br>
+  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">STATUS SPK & POSISI TIKET</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${totals.totalSpk} SPK</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #1e3a8a;">Closed: ${spkCompletionRate}% • ${spkProgCount} Assignment • ${spkWaitCount} Waiting</span>
   </td>
-  <td colspan="4" style="background-color: #ede9fe; border: 1.5pt solid #8b5cf6; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #5b21b6; font-weight: bold;">DATA PROJECT MAINTENANCE</span><br>
-    <span style="font-size: 16pt; color: #6d28d9; font-weight: bold;">${branchProjects.length} Project</span><br>
+  <td colspan="4" style="background-color: #ede9fe; border: 1.5pt solid #8b5cf6; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #5b21b6; font-weight: bold;">DATA PROJECT MAINTENANCE</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #6d28d9; font-weight: bold;">${branchProjects.length} Project</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #4c1d95;">${prjDoneCount} Closed • ${prjProgCount} Assignment • ${prjWaitCount} Waiting • ${prjOpenCount} Open</span>
   </td>
 </tr>
-<tr><td colspan="16" style="height: 14px;"></td></tr>
+<tr style="height: 16pt;"><td colspan="16"></td></tr>
 
 <!-- Bagian 1: Top 5 Pareto -->
-<tr><td colspan="16" class="section-header">BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA (PARETO)</td></tr>
-<tr>
-  <th class="th-accent" style="width: 45px;">Rank</th>
-  <th class="th-accent" style="width: 65px;">Cabang</th>
-  <th class="th-accent" style="width: 110px;">Kode Mesin</th>
-  <th class="th-accent" colspan="2" style="width: 335px;">Nama / Spesifikasi Unit</th>
-  <th class="th-accent" style="width: 105px;">Kategori</th>
-  <th class="th-accent" style="width: 125px;">DT Perbaikan (Jam)</th>
-  <th class="th-accent" style="width: 120px;">PM (Jam)</th>
-  <th class="th-accent" style="width: 130px; background-color: #991b1b;">Total DT+PM</th>
-  <th class="th-accent" colspan="2" style="width: 300px;">Total Biaya (IDR)</th>
-  <th class="th-accent" style="width: 80px;">Total SPK</th>
+<tr style="height: 26pt;"><td colspan="16" class="section-header">BAGIAN 1: TOP 5 DOWNTIME TERBESAR & DETAIL PROBLEM UTAMA (PARETO)</td></tr>
+<tr style="height: 32pt;">
+  <th class="th-accent">Rank</th>
+  <th class="th-accent">Cabang</th>
+  <th class="th-accent">Kode Mesin</th>
+  <th class="th-accent" colspan="2">Nama / Spesifikasi Unit</th>
+  <th class="th-accent">Kategori</th>
+  <th class="th-accent">DT Perbaikan (Jam)</th>
+  <th class="th-accent">PM (Jam)</th>
+  <th class="th-accent" style="background-color: #991b1b;">Total DT+PM</th>
+  <th class="th-accent" colspan="2">Total Biaya (IDR)</th>
+  <th class="th-accent">Total SPK</th>
   <th class="th-accent" colspan="4">Detail Problem Terbesar & Sparepart Terpakai</th>
 </tr>
 ${top5RowsHtml}
-<tr><td colspan="16" style="height: 14px;"></td></tr>
+<tr style="height: 16pt;"><td colspan="16"></td></tr>
 
 <!-- Bagian 2: Rekapitulasi Komprehensif Seluruh Mesin -->
-<tr><td colspan="16" class="section-header">BAGIAN 2: REKAPITULASI DETAIL SELURUH MESIN (DOWNTIME, BIAYA & SPK)</td></tr>
-<tr>
+<tr style="height: 26pt;"><td colspan="16" class="section-header">BAGIAN 2: REKAPITULASI DETAIL SELURUH MESIN (DOWNTIME, BIAYA & SPK)</td></tr>
+<tr style="height: 32pt;">
   <th class="th-blue">No</th>
   <th class="th-blue">Cabang</th>
   <th class="th-blue">Kode Mesin</th>
@@ -296,50 +324,50 @@ ${top5RowsHtml}
   <th class="th-blue">Sparepart / Tindakan</th>
 </tr>
 ${tableRowsHtml}
-<tr class="total-row">
+<tr class="total-row" style="height: 28pt;">
   <td colspan="5" class="td-r" style="font-size: 9.5pt; padding-right: 12px;">TOTAL KESELURUHAN</td>
   <td class="num-dec" style="color: #dc2626;">${totals.dtRepair.toFixed(1)}</td>
   <td class="num-dec" style="color: #2563eb;">${totals.dtPm.toFixed(1)}</td>
   <td class="num-dec" style="background-color: #cbd5e1;">${totals.totalHours.toFixed(1)}</td>
-  <td class="num-curr" style="color: #dc2626;">${totals.costDt}</td>
-  <td class="num-curr" style="color: #2563eb;">${totals.costPm}</td>
-  <td class="num-curr" style="background-color: #cbd5e1;">${totals.totalCost}</td>
+  <td class="num-curr" style="color: #dc2626;">${Math.round(totals.costDt || 0)}</td>
+  <td class="num-curr" style="color: #2563eb;">${Math.round(totals.costPm || 0)}</td>
+  <td class="num-curr" style="background-color: #cbd5e1;">${Math.round(totals.totalCost || 0)}</td>
   <td class="num-int" style="color: #dc2626;">${totals.spkDt}</td>
   <td class="num-int" style="color: #2563eb;">${totals.spkPm}</td>
   <td class="num-int" style="background-color: #cbd5e1;">${totals.totalSpk}</td>
   <td colspan="2" class="td-l" style="font-size: 8.5pt; color: #475569;">Akumulasi Seluruh Unit Terfilter (${sortedData.length} Mesin)</td>
 </tr>
-<tr><td colspan="16" style="height: 14px;"></td></tr>
+<tr style="height: 16pt;"><td colspan="16"></td></tr>
 
 <!-- Bagian 3: Status SPK & Posisi Tiket Kerja -->
-<tr><td colspan="16" class="section-header">BAGIAN 3: STATUS SPK & POSISI TIKET KERJA (WORKFLOW ALUR)</td></tr>
-<tr>
-  <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">1. OPEN</span><br>
-    <span style="font-size: 16pt; color: #b45309; font-weight: bold;">${spkOpenCount} Tiket</span><br>
+<tr style="height: 26pt;"><td colspan="16" class="section-header">BAGIAN 3: STATUS SPK & POSISI TIKET KERJA (WORKFLOW ALUR)</td></tr>
+<tr style="height: 68pt;">
+  <td colspan="4" style="background-color: #fef3c7; border: 1.5pt solid #f59e0b; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #92400e; font-weight: bold;">1. OPEN</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #b45309; font-weight: bold;">${spkOpenCount} Tiket</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #78350f;">Pekerjaan belum dikerjakan namun sudah ada SPK-nya</span>
   </td>
-  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">2. ASSIGNMENT</span><br>
-    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${spkProgCount} Tiket</span><br>
+  <td colspan="4" style="background-color: #dbeafe; border: 1.5pt solid #3b82f6; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #1e40af; font-weight: bold;">2. ASSIGNMENT</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #2563eb; font-weight: bold;">${spkProgCount} Tiket</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #1e3a8a;">Menentukan siapa pelaksana / proyek sedang berjalan</span>
   </td>
-  <td colspan="4" style="background-color: #f3e8ff; border: 1.5pt solid #a855f7; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #6b21a8; font-weight: bold;">3. WAITING TO CLOSE</span><br>
-    <span style="font-size: 16pt; color: #7e22ce; font-weight: bold;">${spkWaitCount} Tiket</span><br>
+  <td colspan="4" style="background-color: #f3e8ff; border: 1.5pt solid #a855f7; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #6b21a8; font-weight: bold;">3. WAITING TO CLOSE</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #7e22ce; font-weight: bold;">${spkWaitCount} Tiket</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #581c87;">Pekerjaan fisik selesai, menunggu disetujui</span>
   </td>
-  <td colspan="4" style="background-color: #d1fae5; border: 1.5pt solid #10b981; padding: 10px; text-align: center;">
-    <span style="font-size: 8.5pt; color: #065f46; font-weight: bold;">4. CLOSED (${spkCompletionRate}% Tuntas)</span><br>
-    <span style="font-size: 16pt; color: #059669; font-weight: bold;">${spkClosedCount.toLocaleString('id-ID')} Tiket</span><br>
+  <td colspan="4" style="background-color: #d1fae5; border: 1.5pt solid #10b981; padding: 10px; text-align: center; vertical-align: middle;">
+    <span style="font-size: 8.5pt; color: #065f46; font-weight: bold;">4. CLOSED (${spkCompletionRate}% Tuntas)</span><br style="mso-data-placement:same-cell;">
+    <span style="font-size: 16pt; color: #059669; font-weight: bold;">${spkClosedCount.toLocaleString('id-ID')} Tiket</span><br style="mso-data-placement:same-cell;">
     <span style="font-size: 8pt; color: #064e3b;">Pekerjaan disetujui & ditutup resmi</span>
   </td>
 </tr>
-<tr><td colspan="16" style="height: 14px;"></td></tr>
+<tr style="height: 16pt;"><td colspan="16"></td></tr>
 
 <!-- Bagian 4: Monitoring Data Project Maintenance & Upgrading -->
-<tr><td colspan="16" class="section-header">BAGIAN 4: MONITORING DATA PROJECT MAINTENANCE & UPGRADING</td></tr>
-<tr>
+<tr style="height: 26pt;"><td colspan="16" class="section-header">BAGIAN 4: MONITORING DATA PROJECT MAINTENANCE & UPGRADING</td></tr>
+<tr style="height: 32pt;">
   <th class="th-accent" style="width: 45px;">No</th>
   <th class="th-accent" style="width: 65px;">Cabang</th>
   <th class="th-accent" style="width: 110px;">Kode Proyek</th>

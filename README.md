@@ -16,6 +16,9 @@ c:\Kuliah\AntiGravity\Magang MMM\
 ├── README.md                      # Dokumentasi & panduan struktur direktori
 ├── LARAVEL_MIGRATION_GUIDE.md     # Panduan integrasi backend Laravel & API
 │
+├── 📁 assets/
+│   └── logo-mmm.png               # Logo resmi PT Mitra Mulia Makmur (MMM Plastic)
+│
 ├── 📁 css/
 │   └── style.css                  # Styling tambahan & kustomisasi antarmuka
 │

@@ -12,7 +12,7 @@
     <!-- Load Google Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- MMS Custom Stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
 <body class="min-h-screen flex flex-col">
@@ -25,7 +25,7 @@
                 <div class="flex items-center gap-6">
                     <div class="flex items-center">
                         <!-- Logo Resmi PT Mitra Mulia Makmur (MMM Plastic) -->
-                        <img src="assets/logo-mmm.png" alt="MMM Plastic"
+                        <img src="{{ asset('assets/logo-mmm.png') }}" alt="MMM Plastic"
                             class="h-10 sm:h-11 w-auto object-contain select-none">
                     </div>
 
@@ -2730,18 +2730,21 @@
 
     <!-- ==================== JAVASCRIPT DATA & LOGIC MODULES ==================== -->
     <!-- 1. Master Data Sets -->
-    <script src="js/data/machines-data.js"></script>
-    <script src="js/data/daily-logs.js"></script>
-    <script src="js/data/projects-data.js"></script>
+        <!-- Live Data dari MySQL Database (mmm_maintenance) via Laravel Controller -->
+    <script>
+        const masterMachines = @json($masterMachines);
+        const dailyMaintenanceLogs = @json($dailyMaintenanceLogs);
+        const maintenanceProjectsList = @json($maintenanceProjectsList);
+    </script>
 
     <!-- 2. Feature & Visualization Modules -->
-    <script src="js/modules/charts.js"></script>
-    <script src="js/modules/workflow-spk.js"></script>
-    <script src="js/modules/project-module.js"></script>
-    <script src="js/modules/export-tools.js"></script>
+    <script src="{{ asset('js/modules/charts.js') }}"></script>
+    <script src="{{ asset('js/modules/workflow-spk.js') }}"></script>
+    <script src="{{ asset('js/modules/project-module.js') }}"></script>
+    <script src="{{ asset('js/modules/export-tools.js') }}"></script>
 
     <!-- 3. Core Dashboard Controller -->
-    <script src="js/app.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 
 </html>

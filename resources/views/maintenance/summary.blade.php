@@ -2730,11 +2730,20 @@
 
     <!-- ==================== JAVASCRIPT DATA & LOGIC MODULES ==================== -->
     <!-- 1. Master Data Sets -->
-        <!-- Live Data dari MySQL Database (mmm_maintenance) via Laravel Controller -->
+    <!-- Live Data dari MySQL Database (mmm_maintenance) via Laravel Controller -->
+    <script id="mmm-machines-data" type="application/json">
+        @json($masterMachines)
+    </script>
+    <script id="mmm-logs-data" type="application/json">
+        @json($dailyMaintenanceLogs)
+    </script>
+    <script id="mmm-projects-data" type="application/json">
+        @json($maintenanceProjectsList)
+    </script>
     <script>
-        const masterMachines = @json($masterMachines);
-        const dailyMaintenanceLogs = @json($dailyMaintenanceLogs);
-        const maintenanceProjectsList = @json($maintenanceProjectsList);
+        const masterMachines = JSON.parse(document.getElementById('mmm-machines-data').textContent || '[]');
+        const dailyMaintenanceLogs = JSON.parse(document.getElementById('mmm-logs-data').textContent || '[]');
+        const maintenanceProjectsList = JSON.parse(document.getElementById('mmm-projects-data').textContent || '[]');
     </script>
 
     <!-- 2. Feature & Visualization Modules -->
